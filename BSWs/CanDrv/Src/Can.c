@@ -5,11 +5,17 @@ static uint8_t CanStateType= CAN_UNINIT;
 static uint8_t InterruptDisableCount[NUMBER_OF_CAN_CONTROLLER ];
 static uint8_t InterruptEnableCount[NUMBER_OF_CAN_CONTROLLER ];
 
-/***************************************************************************************/
-/* Description! This function disables all interrupts for this CAN controller.         */
-/* Input      !number of  Controllers                                                  */
-/* Output     ! Nothing                                                                */
-/***************************************************************************************/
+/***********************************************************************************************
+Service name:                     Can_DisableControllerInterrupts
+Service ID[hex]:                               0x04
+Sync/Async:                                 Synchronous
+Reentrancy:                                  Reentrant
+Parameters (in):           Controller --> CAN controller for which interrupts shall be disabled.
+Parameters (inout):                            None
+Parameters (out):                              None
+Return value:                                  None
+Description:               This function disables all interrupts for this CAN controller.
+***********************************************************************************************/
 void Can_DisableControllerInterrupts(uint8_t Controller)
 {
     if (CanStateType!= CAN_READY) //check if can driver is not ready
@@ -94,11 +100,17 @@ void Can_DisableControllerInterrupts(uint8_t Controller)
     }
 }
 
-/***************************************************************************************/
-/* Description! This function enables all allowed interrupts.                          */
-/* Input      !number of  Controllers                                                  */
-/* Output     ! Nothing                                                                */
-/***************************************************************************************/
+/***********************************************************************************************
+Service name:                     Can_EnableControllerInterrupts
+Service ID[hex]:                               0x05
+Sync/Async:                                 Synchronous
+Reentrancy:                                  Reentrant
+Parameters (in):          Controller --> CAN controller for which interrupts shall be re-enabled
+Parameters (inout):                            None
+Parameters (out):                              None
+Return value:                                  None
+Description:               This function enables all interrupts for this CAN controller.
+***********************************************************************************************/
 void Can_EnableControllerInterrupts(uint8_t Controller)
 {
     if (CanStateType!= CAN_READY) //check if can driver is not ready
