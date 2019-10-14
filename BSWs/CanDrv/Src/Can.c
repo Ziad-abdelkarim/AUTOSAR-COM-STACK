@@ -6,9 +6,12 @@
 **                                                     Type definitions                                                                                         **
 ********************************************************************************************************************************/
 typedef struct{
+	uint8_t MessageObjectNumber,
 	bool Confirmation,
 	PduIdType PduId
 }MessageObjectType;
+
+MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUM_OF_HOH][MAX_NUMBER_OF_HANDLERS];
 
 /********************************************************************************************************************************
 **                                                     Global Variables                                                                                         **
@@ -31,11 +34,12 @@ void Can_Init(const Can_ConfigType *Config)
 		SYSCTL_PERIPH_CAN0,
 		SYSCTL_PERIPH_CAN1
 	}
-	
 	uint8_t ControllerIndex, HardwareObjectIndex, ObjectIndex;
+	uint8_t MessageObjectNumber[NUMBER_OF_CONTROLLERS] = {1,1};
 	bool UninitCheck = true;
 	tCANBitClkParms CANBitClkParms;
 	tCANMsgObject CANMsgObject;
+	CanObjectType HardwareObjectType;
 	
 	/* [SWS_Can_00174] If default error detection for the Can module is enabled: The
 		function Can_Init shall raise the error CAN_E_TRANSITION if the driver is not in
@@ -49,7 +53,7 @@ void Can_Init(const Can_ConfigType *Config)
 		/* [SWS_Can_00408] If default error detection for the Can module is enabled: The
 			function Can_Init shall raise the error CAN_E_TRANSITION if the CAN controllers
 			are not in state UNINIT. */
-		for(ControllerIndex=0; ControllerIndex < NUMBER_OF_CONTROLLERS; ControllerIndex++)
+		for(ControllerIndex=0U; ControllerIndex < NUMBER_OF_CONTROLLERS; ControllerIndex++)
 		{
 			if(CanControllerState[ControllerIndex] != CAN_CS_UNINIT)
 			{
@@ -57,7 +61,7 @@ void Can_Init(const Can_ConfigType *Config)
 			}
 			else
 			{
-				
+				//MISRA
 			}
 		}
 
@@ -92,50 +96,58 @@ void Can_Init(const Can_ConfigType *Config)
 					CANBitTimingSet(Config->CanConfigSet.CanController[ControllerIndex].CanControllerBaseAddress, CANBitClkParms);
 					
 					/* [SWS_Can_00259] The function Can_Init shall set all CAN controllers in the state STOPPED. */
-					CanControllerState[ControllerIndex] = CAN_CS_STOPPED;
+					Can_SetControllerMode(ControllerIndex, CAN_T_STOP);
 				}
 				else
 				{
-					
+					//MISRA
 				}
 				
 			}
 			
 			// Loop over all HOH
 			for(HardwareObjectIndex = 0; HardwareObjectIndex < NUMBER_OF_HOH ; HardwareObjectIndex++)
-			{	
+			{
+				// Get HOH's Controller ID
+				ControllerIndex = Config->CanConfigSet.CanHardwareObject[HardwareObject].CanControllerRef->CanControllerId;
+				// Get HOH's Object Type
+				HardwareObjectType = Config->CanConfigSet.CanHardwareObject[HardwareObject].CanObjectType;
+				
 				// Loop over all HTH or HRH
 				for(ObjectIndex = 0; ObjectIndex < Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHwObjectCount; ObjectIndex++)
-				{	
-					// If the HOH type was receive
-					if(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanObjectType == RECEIVE)
+				{
+					// Assign a message object to the HTH or HRH
+					MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].MessageObjectNumber = MessageObjectNumber[ControllerIndex];
+					
+					// If the HOH type was receive then additional operations must be done
+					if(HardwareObjectType == receive)
 					{
 						// Set HRH values
 						CANMsgObject.ui32MsgID = Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHWFilter.CanHwFilterCode;
 						CANMsgObject.ui32MsgIDMask = Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHWFilter.CanHwFilterMask;
-						CANMsgObject.ui32MsgLen = MAX_RECEIVED_MSG_LEN;
+						CANMsgObject.ui32MsgLen = 8U;
 						
 						if(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex]CanIdType == STANDARD)
 						{
 							CANMsgObject.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER | MSG_OBJ_FIFO;
 						}
-						else
+						else if(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanIdType == EXTENDED)
 						{
 							CANMsgObject.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER | MSG_OBJ_EXTENDED_ID | MSG_OBJ_USE_EXT_FILTER | MSG_OBJ_FIFO;
 						}
 						else
 						{
-							
+							//MISRA
 						}
 						
 						// Make controller receive on this message object
 						CANMessageSet(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanControllerRef->CanControllerBaseAddress,
-									Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanObjectId,
+									MessageObjectNumber[ControllerIndex],
 									&CANMsgObject, MSG_OBJ_TYPE_RX);	
 					}
 					else
 					{
-						
+						//MISRA
 					}
 					
 					// Increment message object number for next HTH or HRH
