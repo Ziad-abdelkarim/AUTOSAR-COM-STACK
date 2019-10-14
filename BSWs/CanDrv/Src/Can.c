@@ -48,7 +48,7 @@ void Can_DisableControllerInterrupts(uint8 Controller)
                     if (InterruptEnableCount[Controller] == ZERO)
                     { //Disables the specified CAN controller interrupt sources. Only enabled interrupt sources can cause a processor interrupt.
                         CANIntDisable(
-                                Can.CanConfigSet.CanController[Controller]->CanControllerBaseAddress,
+                                Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress,
                                 CAN_INT_MASTER | CAN_INT_ERROR | CAN_INT_STATUS);
                         // disable interrupts for CAN0
                         IntDisable(INT_CAN0);
@@ -81,7 +81,7 @@ void Can_DisableControllerInterrupts(uint8 Controller)
                     if (InterruptEnableCount[Controller] == ZERO)
                     { //Disables the specified CAN controller interrupt sources. Only enabled interrupt sources can cause a processor interrupt.
                         CANIntDisable(
-                                Can.CanConfigSet.CanController[Controller]->CanControllerBaseAddress,
+                                Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress,
                                 CAN_INT_MASTER | CAN_INT_ERROR | CAN_INT_STATUS);
                         // enable to disable interrupts for CAN1
                         IntDisable(INT_CAN1);
@@ -144,7 +144,7 @@ void Can_EnableControllerInterrupts(uint8 Controller)
                     if (InterruptDisableCount[Controller] == ZERO)
                     { //This function enables specific interrupt sources of the CAN controller. Only enabled sources cause a processor interrupt.
                         CANIntEnable(
-                                Can.CanConfigSet.CanController[Controller]->CanControllerBaseAddress,
+                                Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress,
                                 CAN_INT_MASTER | CAN_INT_ERROR | CAN_INT_STATUS);
                         // enable interrupts for CAN0
                         IntEnable(INT_CAN0);
@@ -177,7 +177,7 @@ void Can_EnableControllerInterrupts(uint8 Controller)
                     if (InterruptDisableCount[Controller] == ZERO)
                     { //This function enables specific interrupt sources of the CAN controller. Only enabled sources cause a processor interrupt.
                         CANIntEnable(
-                                Can.CanConfigSet.CanController[Controller]->CanControllerBaseAddress,
+                                Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress,
                                 CAN_INT_MASTER | CAN_INT_ERROR | CAN_INT_STATUS);
                         // enable  interrupts for CAN1
                         IntEnable(INT_CAN1);
