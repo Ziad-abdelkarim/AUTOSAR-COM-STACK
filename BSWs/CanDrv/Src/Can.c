@@ -36,11 +36,15 @@ Description:
 Can_ReturnType    Can_SetControllerMode (uint8 Controller,Can_StateTransitionType Transition) {
 	uint32 cancontrollerbaseadress,Itration=0 ;
 	cancontrollerbaseadress=Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress;
-	
+	if(CanDriverState == CAN_UNINIT){
+		CanDevelopmentError=CAN_E_UNINIT;
+		return CAN_NOT_OK;
+		
+	}
 /**[SWS_Can_00261] [ The function Can_SetControllerMode(CAN_T_START) shall
 set the hardware registers in a way that makes the CAN controller participating on
 the network.]**/
-	if ( Transition ==CAN_T_START)
+else	if ( Transition ==CAN_T_START)
 	{
 		if(status_Initialization){
 /**[SWS_Can_00262] [ The function Can_SetControllerMode(CAN_T_START) shall
@@ -57,6 +61,7 @@ SWS_Can_00398.]**/
 is entered and the CAN controller is not in state STOPPED it shall detect a invalid
 state transition (Compare to SWS_Can_00200).**/
 		else{
+			CanDevelopmentError=CAN_E_TRANSITION;
 			return CAN_NOT_OK;
 		}
 	}
@@ -88,6 +93,7 @@ cancel pending messages. ]*/
 entered and the CAN controller is neither in state STARTED nor in state STOPPED,
 it shall detect a invalid state transition (Compare to SWS_Can_00200).] */
 		else{
+			CanDevelopmentError=CAN_E_TRANSITION;
 			return CAN_NOT_OK;
 		}
 	}
@@ -111,6 +117,7 @@ sleep mode.]**/
 is entered and the CAN controller is neither in state STOPPED nor in state SLEEP, it
 shall detect a invalid state transition]**/
 		else{
+			CanDevelopmentError=CAN_E_TRANSITION;
 			return CAN_NOT_OK;
 		}
 	}
@@ -138,11 +145,13 @@ SWS_Can_00398.]**/
 neither in state SLEEP nor in state STOPPED, it shall detect a invalid state transition
 (Compare to SWS_Can_00200).]**/
 		else{
+			CanDevelopmentError=CAN_E_TRANSITION;
 			return CAN_NOT_OK;
 		}
 	
 	}
 	else {
+		CanDevelopmentError=CAN_E_PARAM_CONTROLLER;
 		return CAN_NOT_OK;
 	}
 	

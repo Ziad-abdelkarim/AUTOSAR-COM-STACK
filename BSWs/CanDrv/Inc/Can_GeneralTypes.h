@@ -10,8 +10,8 @@ AUTOSAR Version:            4.2.2
 /*************************************************************************************
 **                                          Includes                                                          **
 *************************************************************************************/
-
-#define  NUMBER_OF_BAUDRATES           2
+#include "ComStack_Types.h"
+#define  NUMBER_OF_BAUDRATE           2
 #define  NUMBER_OF_CONTROLLERS         2
 #define  NUMBER_OF_HOH				   2
 #define POLLING 2U
@@ -30,8 +30,8 @@ Multiplicity:                                       1
 Type:                          EcucEnumerationParamDef
 *************************************************************************************/
 typedef enum  {
-    Basic,
-	Full
+    BASIC,
+	FULL
 }CanHandleType;
 
 /************************************************************************************
@@ -44,8 +44,8 @@ Type:                          EcucEnumerationParamDef
 
 
 typedef enum {
-	Recieve,
-	Transmit
+	RECEIVE,
+	TRANSMIT
 }CanObjectType;
 
 /************************************************************************************
@@ -78,7 +78,7 @@ typedef struct {
 	uint8  CanControllerPropSeg;
 	uint8  CanControllerSeg1;
 	uint8  CanControllerSeg2;
-	uint16 CanContollerBaudRateConfigId;
+	uint16 CanControllerBaudRateConfigId;
 	
 }CanControllerBaudrateConfig;
 
@@ -97,6 +97,40 @@ typedef struct{
 }CanMainFunctionRWPeriods;
 
 /************************************************************************************
+Name:                                  CanController
+Description:
+                    This container contains the configuration parameters of the CAN controller(s).
+Multiplicity:                                       2
+Type:                                         Container
+*************************************************************************************/
+
+typedef struct {
+    uint8  CanControllerId;
+    CanControllerBaudrateConfig  CanControllerBaudrateConfig[NUMBER_OF_BAUDRATE];
+    bool  CanControllerActivation;
+    uint32  CanControllerBaseAddress ;
+    CanControllerBaudrateConfig *CanControllerDefaultBaudrate;
+}CanController;
+
+
+/**************************************************************************************************
+**
+Name:                                     Can_IdType
+Type:                                      uint16, uint32
+Description:
+                     Represents the Identifier of an L-PDU. The two most significant bits specify the frame type:
+                     00 CAN message with Standard CAN ID
+                     01 CAN FD frame with Standard CAN ID                                             **
+**************************************************************************************************/
+#if    ( CAN_IDTYPE == UINT16)
+typedef uint16  Can_IdType;
+#elif (CAN_IDTYPE == UINT32)
+typedef uint32  Can_IdType;
+#else // default is uint16
+typedef uint16  Can_IdType;
+#endif
+
+/************************************************************************************
 Name:                                 CanHardwareObject
 Description: 
                    This container contains the configuration (parameters) of CAN Hardware Objects.
@@ -105,31 +139,16 @@ Type:                          				Container
 *************************************************************************************/
 
 typedef struct {
-	bool ConTriggerTransmitEnable;
+	bool CanTriggerTransmitEnable;
 	CanHwFilter CanHwFilter;
 	CanHandleType CanHandleType;
 	CanObjectType CanObjectType;
 	CanController* CanControllerRef;
-	CanIdType CanIdType;
+	Can_IdType CanIdType;
 	uint16 CanObjectId;
 	uint8 CanHwObjectCount;
 }CanHardwareObject;
 
-/************************************************************************************
-Name:                              	   CanController
-Description: 
-                    This container contains the configuration parameters of the CAN controller(s). 
-Multiplicity:                                       2
-Type:                        				  Container
-*************************************************************************************/
-
-typedef struct {
-	uint8  CanControllerId;
-    CanControllerBaudrateConfig  CanControllerBaudrateConfig[MAX_NUMBER_OF_BAUDRATE];
-	bool  CanControllerActivation;
-	uint32  CanControllerBaseAddress ;
-	CanControllerBaudrateConfig *CanControllerDefaultBaudrate;
-}CanController;
 
 /************************************************************************************
 Name:                                 CanConfigSet
@@ -141,7 +160,7 @@ Type:                         				 Container
 *************************************************************************************/
 
 typedef struct {
-	CanController CanController[NUMBER_OF_CAN_CONTROLLER];
+	CanController CanController[NUMBER_OF_CONTROLLERS];
 	CanHardwareObject CanHardwareObject[NUMBER_OF_HOH];
 }CanConfigSet;
 
@@ -168,7 +187,7 @@ Type:                                        container
 typedef struct {
 	CanGeneral  CanGeneral;
 	CanConfigSet  CanConfigSet;
-}Can;
+}CAN;
 
 
 
@@ -176,22 +195,7 @@ typedef struct {
 **                                        Types Declerations                                                             **
 ***************************************************************************************************/
 
-/**************************************************************************************************
-**
-Name:                                     Can_IdType
-Type:                                      uint16, uint32
-Description:  
-                     Represents the Identifier of an L-PDU. The two most significant bits specify the frame type:
-                     00 CAN message with Standard CAN ID
-                     01 CAN FD frame with Standard CAN ID                                             **
-**************************************************************************************************/
-#if    ( CAN_IDTYPE == UINT16)
-typedef	uint16  Can_IdType;
-#elif (CAN_IDTYPE == UINT32)
-typedef	uint32  Can_IdType;
-#else // default is uint16
-typedef	uint16  Can_IdType;
-#endif
+
 /**************************************************************************************************
 **
 Name:                                    Can_HwHandleType
@@ -268,5 +272,19 @@ typedef enum {
 	CAN_NOT_OK,
 	CAN_BUSY
 }Can_ReturnType;
+
+enum CanDevelopmentError
+{  //Development Errors
+    CAN_E_PARAM_POINTER = 0x01, //API Service called with wrong parameter
+    CAN_E_PARAM_HANDLE = 0x02, //API Service called with wrong parameter
+    CAN_E_PARAM_DLC = 0x03, //API Service called with wrong parameter
+    CAN_E_PARAM_CONTROLLER = 0x04, //API Service called with wrong parameter
+    CAN_E_UNINIT = 0x05, //API Service used without initialization
+    CAN_E_TRANSITION = 0x06, //Invalid transition for the current mode
+    CAN_E_DATALOST = 0x07, //Received CAN message is lost
+    CAN_E_PARAM_BAUDRATE = 0x08, //Parameter Baudrate has an invalid value
+    CAN_E_ICOM_CONFIG_INVALID = 0x09, //Invalid ICOM Configuration Id
+    CAN_E_INIT_FAILED = 0x0A  //Invalid configuration set selection
+};
 
 #endif /** (CAN_GENERALTYPES_H	) **/
