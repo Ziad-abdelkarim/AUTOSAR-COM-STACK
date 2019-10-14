@@ -5,6 +5,17 @@ AUTOSAR Version:            4.2.2
 #ifndef CAN_CFG_H
 #define CAN_CFG_H
 
+
+/*************************************************************************************
+
+ **                                   Includes                                       **
+
+ *************************************************************************************/
+
+#include "Can_GeneralTypes.h"
+/************************************************************************************/
+
+
 #define Can0RxProcessing	POLLING
 #define Can1RxProcessing	INTERRUPT
 #define Can0TxProcessing	POLLING
@@ -12,4 +23,5 @@ AUTOSAR Version:            4.2.2
 #define Can0BusoffProcessing	INTERRUPT
 #define	Can1BusoffProcessing	INTERRUPT
 
+extern CAN Can;
 #endif /** (CAN_CFG_H) **/

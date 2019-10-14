@@ -11,6 +11,7 @@ AUTOSAR Version:                            4.2.2
 **                                          Includes                                                       					             **
 ***************************************************************************************************/
 #include <stdint.h>
+#include <stdbool.h>
 
 #ifndef 								TRUE
 #define 								TRUE 											1

@@ -13,7 +13,7 @@ AUTOSAR Version:            4.2.2
 #include "Platform_Types.h"
 
 
-#ifndef			`STATUSTYPEDEFINED
+#ifndef			STATUSTYPEDEFINED
 #define		 STATUSTYPEDEFINED
 #define					E_OK																		0x00u
 #define 				E_NOT_OK 																0x01u
