@@ -12,29 +12,37 @@ AUTOSAR Version:                            4.2.2
 ***************************************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 
-#ifndef 								TRUE
-#define 								TRUE 											1
-#endif
-#ifndef 								FALSE
-#define 								FALSE 										0
-#endif
+#include <inc/hw_ints.h>
+#include <inc/hw_types.h>
+#include <inc/hw_memmap.h>
+#include <inc/hw_can.h>
+
+#include <driverlib/pin_map.h>
+#include <driverlib/can.h>
+#include <driverlib/interrupt.h>
+#include <driverlib/sysctl.h>
+#include <driverlib/gpio.h>
+#include <driverlib/debug.h>
+
+
 
 /***************************************************************************************************
 **                                        Types Declerations                                                                       **
 ***************************************************************************************************/
 
 
-typedef  								signed char 									 sint8;
+typedef  								signed char 							   sint8;
 typedef 								unsigned char 							 	uint8;
-typedef         						 short 												sint16;
+typedef         						 short 										sint16;
 typedef 								unsigned short 								uint16;
-typedef      						    int                                                    sint32;
-typedef 								unsigned int								   uint32;
-typedef          						long long                                         sint64;
-typedef 								unsigned long long 						   uint64;
-typedef          						float                                                float32;
-typedef 								double                  						   float64;
-typedef                               bool                                                boolean;
+typedef      						    int                                         sint32;
+typedef 								unsigned int								uint32;
+typedef          						long long                                   sint64;
+typedef 								unsigned long long 						    uint64;
+typedef          						float                                       float32;
+typedef 								double                  			        float64;
+typedef                                  bool                                       boolean;
 
 #endif

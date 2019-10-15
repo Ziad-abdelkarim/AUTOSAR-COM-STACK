@@ -14,6 +14,7 @@ AUTOSAR Version:            4.2.2
 #define  NUMBER_OF_BAUDRATE           2
 #define  NUMBER_OF_CONTROLLERS         2
 #define  NUMBER_OF_HOH				   2
+#define MAX_NUMBER_OF_HANDLERS          1
 #define POLLING 2U
 #define	INTERRUPT 0U
 #define EXTENDED 1U
@@ -273,7 +274,7 @@ typedef enum {
 	CAN_BUSY
 }Can_ReturnType;
 
-enum CanDevelopmentError
+enum
 {  //Development Errors
     CAN_E_PARAM_POINTER = 0x01, //API Service called with wrong parameter
     CAN_E_PARAM_HANDLE = 0x02, //API Service called with wrong parameter
@@ -285,6 +286,24 @@ enum CanDevelopmentError
     CAN_E_PARAM_BAUDRATE = 0x08, //Parameter Baudrate has an invalid value
     CAN_E_ICOM_CONFIG_INVALID = 0x09, //Invalid ICOM Configuration Id
     CAN_E_INIT_FAILED = 0x0A  //Invalid configuration set selection
-};
+}CanDevelopmentError;
+
+/**************************************************************************************************
+**
+Name:                                     MessageObjectType
+Type:                                      Structure
+Description:                         Contains data about message objects
+                                                                                                                                       **
+**************************************************************************************************/
+typedef struct{
+    uint8 MessageObjectNumber;
+    boolean Confirmation;
+    PduIdType PduId;
+}MessageObjectType;
+
+typedef enum {
+    CAN_UNINIT,
+    CAN_READY
+}CanDriverStateType;
 
 #endif /** (CAN_GENERALTYPES_H	) **/

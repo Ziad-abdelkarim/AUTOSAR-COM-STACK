@@ -5,7 +5,8 @@ FileName:                          Can.h
 AUTOSAR Version:            4.2.2
 																																															**
 ********************************************************************************************************************************/
-
+#ifndef CAN_H
+#define CAN_H
 /********************************************************************************************************************************
 **                                                                       includes                                                                                  				       **
 ********************************************************************************************************************************/
@@ -29,9 +30,11 @@ AUTOSAR Version:            4.2.2
 #define    SET_BIT(A,B,P)                          *((volatile uint32_t *)((A)+(B)))|(1 << P))
 #define     status_Initialization   (GET_ADDRESS_VAL(cancontrollerbaseadress,CANCTL))&CAN_CTL_INIT
 boolean LogicalSleep[NUMBER_OF_CONTROLLERS];
-enum  {CAN_UNINIT, CAN_READY}CanDriverState = CAN_UNINIT;
 boolean ControllerState[NUMBER_OF_CONTROLLERS];
-
+uint32 CanTimeoutDuration=5000;
 void Can_MainFunction_Mode(void);
 void Can_MainFunction_Busoff(void);
 Can_ReturnType    Can_SetControllerMode (uint8 Controller,Can_StateTransitionType Transition);
+Can_ReturnType    Can_Write( Can_HwHandleType Hth,const Can_PduType* PduInfo);
+
+#endif /* CAN_H */
