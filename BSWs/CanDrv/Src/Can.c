@@ -306,14 +306,14 @@ void Can0_InterruptHandler(void)
                                     < Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectCount;
                             ui8NumberOfObject++)
                     {
-                        if (MessageObject[0U][ui8NumberOfObjectHandler][ui8NumberOfObjectHandler2]
+                        if (MessageObject[0U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
                                 == ui32Status) //check which MessageObjectNumber we need to receive in it 
                         {
                             CANMessageGet(
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerBaseAddress,
                                     MessageObject[0U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber,
                                     &ReceivedMessage, 0U);
-                            ReceiverMailBox.Hoh = ui8NumberOfObjectHandler;
+                            ReceiverMailBox.Hoh = Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectId;
                             ReceiverMailBox.ControllerId =
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerId;
                             ReceiverMailBox.CanId = ReceivedMessage.ui32MsgId;
@@ -457,14 +457,14 @@ void Can1_InterruptHandler(void)
                                     < Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectCount;
                             ui8NumberOfObject++)
                     {
-                        if (MessageObject[1U][ui8NumberOfObjectHandler][ui8NumberOfObjectHandler2]
+                        if (MessageObject[1U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
                                 == ui32Status) //check which MessageObjectNumber we need to receive in it 
                         {
                             CANMessageGet(
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerBaseAddress,
                                     MessageObject[1U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber,
                                     &ReceivedMessage, 1U);
-                            ReceiverMailBox.Hoh = ui8NumberOfObjectHandler;
+                            ReceiverMailBox.Hoh = Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectId;
                             ReceiverMailBox.ControllerId =
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerId;
                             ReceiverMailBox.CanId = ReceivedMessage.ui32MsgId;
