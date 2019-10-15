@@ -2,7 +2,7 @@
 /********************************************************************************************************************************
 **
 
-FileName:                          Can.c                                    
+FileName:                          Can.c
 AUTOSAR Version:            4.2.2
 																																															**
 ********************************************************************************************************************************/
@@ -65,11 +65,13 @@ Description:
                                                              transmission.
 *******************************************************************************************************************************/
 
-Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo){
+Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo)
+{
 
 
 
       tCANMsgObject  sCANMessage;
+      uint8 id =0;
   /*
   4- The function Can_Write shall return CAN_BUSY if a preemptive call of Can_Write has been issued, that could not be handled reentrant
   (i.e. a call with the same HTH). ⌋ (SRS_BSW_00312, SRS_Can_01049)[SWS_Can_00214]
@@ -109,6 +111,22 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo){
             for(uint8 ObjInd = 0 ; ObjInd < CurrentHObj->CanHwObjectCount;ObjInd++){
                 if(MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][ObjInd].confirmation==true)
                 {
+                  id = ObjInd;
+                  break;
+                }else{
+                  //is not free
+                  /*
+                  3- The function Can_Write shall perform no actions if the hardware transmit object is busy with another transmit request for an L-PDU:
+                  [SWS_Can_00213]
+                        a. The transmission of the other L-PDU shall not be cancelled and the function Can_Write is left without any actions.
+                        b. The function Can_Write shall return CAN_BUSY.⌋ (SRS_Can_01049).
+                  */
+                      return CAN_BUSY;
+
+
+                }
+
+            }
                   //is free
                   /*
                   2- if HTH is free :
@@ -119,7 +137,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo){
                         d.The mutex for that HTH is released
                         e.The function returns with CAN_OK⌋ (SRS_Can_01049)
                   */
-                      MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][ObjInd].confirmation=false;
+                      MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][Id].confirmation=false;
                       /*
                       9. If default error detection for CanDrv is enabled: Can_Write() shall raise CAN_E_PARAM_POINTER and shall return CAN_NOT_OK
                       if the parameter PduInfo is a null pointer. ⌋ () [SWS_CAN_00219]
@@ -141,7 +159,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo){
                             if(CurrentHObj->CanTriggerTransmitEnable==false)
                             {
                                 //CanDevolpmentErrorType=CAN_E_PARAM_POINTER;
-                              return E_NOT_OK;
+                              return Can_NOT_OK;
                             }else{
                                 /*
                                 10- Can_Write() shall accept a null pointer as SDU (Can_PduType.Can_SduPtrType = NULL) if the trigger transmit API is enabled
@@ -152,7 +170,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo){
                                 (Can_PduType.Can_SduPtrType = NULL) as request for using the trigger transmit interface.
                                 If so and the hardware object is free, Can_Write() shall call CanIf_TriggerTransmit() to acquire the PDU’s data. ⌋ ()[SWS_CAN_00504]
                                 */
-                                if(MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][ObjInd].confirmation==true){
+                                if(MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][Id].confirmation==true){
                                   //nadyi 3ala el api mn canif bta3t el transmitapi
 
                                   /*
@@ -181,7 +199,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo){
                               // full
                               if(PduInfo->length<8u){
                                 // send data
-                                MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][ObjInd].PduId=swPduHandle;
+                                MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][Id].PduId=swPduHandle;
                                 sCANMessage.ui32MsgID = PduInfo->id;
                                 sCANMessage.ui32MsgLen = PduInfo->length;
                                 if(PduInfo->length<1U)
@@ -203,8 +221,8 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo){
                                                 sCANMessage.ui32Flags = MSG_OBJ_TX_INT_ENABLE;
                                                  }
                                             CANMessageSet(CurrentHObj->CanControllerRef->CanControllerBaseAddress,
-                                            MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][ObjInd].MessageObjectNumber, &sCANMessage, MSG_OBJ_TYPE_TX);
-                                            MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][ObjInd].confirmation=true;
+                                            MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][Id].MessageObjectNumber, &sCANMessage, MSG_OBJ_TYPE_TX);
+                                            MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][Id].confirmation=true;
                                               return  CAN_OK;
 
                               }else{
@@ -218,20 +236,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo){
 
 
 
-                }else{
-                  //is not free
-                  /*
-                  3- The function Can_Write shall perform no actions if the hardware transmit object is busy with another transmit request for an L-PDU:
-                  [SWS_Can_00213]
-                        a. The transmission of the other L-PDU shall not be cancelled and the function Can_Write is left without any actions.
-                        b. The function Can_Write shall return CAN_BUSY.⌋ (SRS_Can_01049).
-                  */
-                      return CAN_BUSY;
 
-
-                }
-
-            }
 
 
 
@@ -274,7 +279,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo){
 
 <<<<<<< Updated upstream
 /*********************************************************************************************************************************
-/*********************************************************************************************************************************       
+/*********************************************************************************************************************************
 Service name:                                       Can_SetControllerMode
 Service ID[hex]:                                                   0x03
 Sync/Async:                                                  Asynchronous
@@ -299,7 +304,7 @@ Can_ReturnType    Can_SetControllerMode (uint8 Controller,Can_StateTransitionTyp
 	if(CanDriverState == CAN_UNINIT){
 		CanDevelopmentError=CAN_E_UNINIT;
 		return CAN_NOT_OK;
-		
+
 	}
 /**[SWS_Can_00261] [ The function Can_SetControllerMode(CAN_T_START) shall
 set the hardware registers in a way that makes the CAN controller participating on
@@ -313,9 +318,9 @@ SWS_Can_00398.]**/
 		while( CanTimeoutDuration & status_Initialization){
 			CanTimeoutDuration--;
 			Can_EnableControllerInterrupts(Controller);
-		    CANEnable(cancontrollerbaseadress); 
+		    CANEnable(cancontrollerbaseadress);
 		}
-		   return CAN_OK;		   
+		   return CAN_OK;
 		}
 /**[SWS_Can_00409]  When the function Can_SetControllerMode(CAN_T_START)
 is entered and the CAN controller is not in state STOPPED it shall detect a invalid
@@ -325,7 +330,7 @@ state transition (Compare to SWS_Can_00200).**/
 			return CAN_NOT_OK;
 		}
 	}
-	
+
 /**	[SWS_Can_00263] [ The function Can_SetControllerMode(CAN_T_STOP) shall set
 the bits inside the CAN hardware such that the CAN controller stops participating on
 the network.]**/
@@ -337,17 +342,17 @@ SWS_Can_00398.]**/
 		while( CanTimeoutDuration & (!status_Initialization)){
 			CanTimeoutDuration--;
 /**[SWS_Can_00282] [ The function Can_SetControllerMode(CAN_T_STOP) shall
-cancel pending messages. ]*/			
+cancel pending messages. ]*/
 			for(Itration=0x01;Itration<=0x20;Itration){
-			CLEAR_PIN(cancontrollerbaseadress,CANIF1CMSK,7); 
-			CLEAR_PIN(cancontrollerbaseadress,CANIF1CMSK,2); 
-			CLEAR_PIN(cancontrollerbaseadress,CANIF1MCTL,8); 
+			CLEAR_PIN(cancontrollerbaseadress,CANIF1CMSK,7);
+			CLEAR_PIN(cancontrollerbaseadress,CANIF1CMSK,2);
+			CLEAR_PIN(cancontrollerbaseadress,CANIF1MCTL,8);
 			GET_ADDRESS_VAL(cancontrollerbaseadress,CANIF1CRQ) = Itration;
 			}
 			Can_DisableControllerInterrupts(Controller);
-		    CANDisable(cancontrollerbaseadress); 
+		    CANDisable(cancontrollerbaseadress);
 		}
-		   return CAN_OK;		   
+		   return CAN_OK;
 		}
 /**[SWS_Can_00410] [ When the function Can_SetControllerMode(CAN_T_STOP) is
 entered and the CAN controller is neither in state STARTED nor in state STOPPED,
@@ -368,10 +373,10 @@ sleep mode.]**/
 		while( CanTimeoutDuration & (!status_Initialization)  & !(LogicalSleep[Controller])){
 			CanTimeoutDuration--;
 			Can_DisableControllerInterrupts(Controller);
-		    CANDisable(cancontrollerbaseadress); 
+		    CANDisable(cancontrollerbaseadress);
 			LogicalSleep[Controller]=1;
 		}
-		   return CAN_OK;		   
+		   return CAN_OK;
 		}
 /**[SWS_Can_00411] [ When the function Can_SetControllerMode(CAN_T_SLEEP)
 is entered and the CAN controller is neither in state STOPPED nor in state SLEEP, it
@@ -381,12 +386,12 @@ shall detect a invalid state transition]**/
 			return CAN_NOT_OK;
 		}
 	}
-	
+
 /**[SWS_Can_00267] [If the CAN HW does not support a sleep mode, the function
 Can_SetControllerMode(CAN_T_WAKEUP) shall return from the logical sleep mode,but have no effect to the CAN controller state (as the controller is already in stopped
 state).]**/
 	else if (Transition ==CAN_T_WAKEUP){
-			
+
 		if(status_Initialization & LogicalSleep[Controller]){
 /**[SWS_Can_00268] [ The function Can_SetControllerMode(CAN_T_WAKEUP) shall
 wait for a limited time until the CAN controller is in STOPPED state. Compare to
@@ -394,11 +399,11 @@ SWS_Can_00398.]**/
 		while( CanTimeoutDuration & status_Initialization & LogicalSleep[Controller]){
 			CanTimeoutDuration--;
 			Can_EnableControllerInterrupts(Controller);
-		    CANEnable(cancontrollerbaseadress); 
+		    CANEnable(cancontrollerbaseadress);
 			LogicalSleep[Controller]=0;
-			
+
 		}
-		   return CAN_OK;		   
+		   return CAN_OK;
 		}
 /**[SWS_Can_00412]
 [When the function Can_SetControllerMode(CAN_T_WAKEUP) is entered and the CAN controller is
@@ -408,11 +413,11 @@ neither in state SLEEP nor in state STOPPED, it shall detect a invalid state tra
 			CanDevelopmentError=CAN_E_TRANSITION;
 			return CAN_NOT_OK;
 		}
-	
+
 	}
 	else {
 		CanDevelopmentError=CAN_E_PARAM_CONTROLLER;
 		return CAN_NOT_OK;
 	}
-	
+
 }
