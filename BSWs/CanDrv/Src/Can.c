@@ -16,10 +16,7 @@ AUTOSAR Version:            4.2.2
 #include "Can.h"
 
 
-        uint8 INDEX_HOH;
-        uint8 INDEX_MESGOBJ;
 
-        #if(CanTxProcessing0==POLLING)
 
 /********************************************************************************************************************************
  **                                                                       Global Variables                                                                                         **
@@ -36,7 +33,7 @@ static CanDriverStateType CanDriverState=CAN_UNINIT;
 static MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUMBER_OF_HOH][MAX_NUMBER_OF_HANDLERS];
 static ControllerStateType ControllerState[NUMBER_OF_CONTROLLERS] = {CAN_CS_UNINIT, CAN_CS_UNINIT};
 
-                                }else{
+
 
 const CanHardwareObject* Can_GetHardwareObjectOfHTH(Can_HwHandleType HTH){
   const CanHardwareObject *ADDRESS;
@@ -57,7 +54,7 @@ Service name:                                                Can_Write
 Service ID[hex]:                                             0x06
 Sync/Async:                                                  Synchronous
 Reentrancy:                                                  Reentrant (thread-safe)
-Parameters (in):                                             Hth ---> information which HW-transmit handle shall be used for transmit.
+Parameters (in):                                             Hth ---> information which HW-TRANSMIT handle shall be used for TRANSMIT.
                                                                       Implicitly this is also the information about the controller to use
                                                                       because the Hth numbers are unique inside one hardware unit.
                                                              PduInfo ---> Pointer to SDU user memory, DLC and Identifier.
@@ -113,7 +110,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo)
         }else
         {
             /*
-                    1- The function Can_Write first checks if the hardware transmit object that is identified
+                    1- The function Can_Write first checks if the hardware TRANSMIT object that is identified
                      by the HTH is free and if another Can_Write is ongoing for the same HTH. [SWS_Can_00212]
              */
             for(ObjInd = 0 ; ObjInd < CurrentHObj->CanHwObjectCount;ObjInd++)
@@ -126,7 +123,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo)
                 {
                     //is not free
                     /*
-                              3- The function Can_Write shall perform no actions if the hardware transmit object is busy with another transmit request for an L-PDU:
+                              3- The function Can_Write shall perform no actions if the hardware TRANSMIT object is busy with another TRANSMIT request for an L-PDU:
                               [SWS_Can_00213]
                                     a. The transmission of the other L-PDU shall not be cancelled and the function Can_Write is left without any actions.
                                     b. The function Can_Write shall return CAN_BUSY.⌋ (SRS_Can_01049).
@@ -143,7 +140,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo)
                           a. The mutex for that HTH is set to ‘signaled’
                           b.The ID, DLC and SDU are put in a format appropriate for the hardware (if necessary) and copied in the appropriate
                             hardware registers/buffers.
-                          c.All necessary control operations to initiate the transmit are done
+                          c.All necessary control operations to initiate the TRANSMIT are done
                           d.The mutex for that HTH is released
                           e.The function returns with CAN_OK⌋ (SRS_Can_01049)
              */
@@ -166,7 +163,7 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo)
                 {
                     /*
                                 12- If default error detection for CanDrv is enabled: Can_Write() shall raise CAN_E_PARAM_POINTER and shall return CAN_NOT_OK
-                                if the trigger transmit API is disabled for this hardware object
+                                if the trigger TRANSMIT API is disabled for this hardware object
                                 (CanTriggerTransmitEnable = FALSE) and the SDU pointer inside PduInfo is a null pointer. ⌋ ()[SWS_CAN_00505]
                      */
                     if(CurrentHObj->CanTriggerTransmitEnable==false)
@@ -177,21 +174,21 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo)
                     }else
                     {
                         /*
-                                      10- Can_Write() shall accept a null pointer as SDU (Can_PduType.Can_SduPtrType = NULL) if the trigger transmit API is enabled
+                                      10- Can_Write() shall accept a null pointer as SDU (Can_PduType.Can_SduPtrType = NULL) if the trigger TRANSMIT API is enabled
                                       for this hardware object (CanTriggerTransmitEnable = TRUE). ⌋ ()[SWS_CAN_00503]
                          */
                         /*
-                                      11- If the trigger transmit API is enabled for the hardware object, Can_Write() shall interpret a null pointer as SDU
-                                      (Can_PduType.Can_SduPtrType = NULL) as request for using the trigger transmit interface.
+                                      11- If the trigger TRANSMIT API is enabled for the hardware object, Can_Write() shall interpret a null pointer as SDU
+                                      (Can_PduType.Can_SduPtrType = NULL) as request for using the trigger TRANSMIT interface.
                                       If so and the hardware object is free, Can_Write() shall call CanIf_TriggerTransmit() to acquire the PDU’s data. ⌋ ()[SWS_CAN_00504]
                          */
                         if(MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][Id].Confirmation==true)
                         {
-                            //nadyi 3ala el api mn canif bta3t el transmitapi
+                            //nadyi 3ala el api mn canif bta3t el TRANSMITapi
 
                             /*
                                         13- If default error detection for CanDrv is enabled:Can_Write() shall raise CAN_E_PARAM_POINTER and shall return CAN_NOT_OK
-                                        if the trigger transmit API (CanIf_TriggerTransmit()) returns E_NOT_OK. ⌋ ()[SWS_CAN_00506]
+                                        if the trigger TRANSMIT API (CanIf_TriggerTransmit()) returns E_NOT_OK. ⌋ ()[SWS_CAN_00506]
                              */
 
                         }else
@@ -558,16 +555,16 @@ void Can0_InterruptHandler(void)
                     == &Can.CanConfigSet.CanController[CONTROLLER_ZERO]) //check which CanController we use
             {
                 if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
-                        == TRANSMIT)  //check if CanObjectType is transmit
+                        == TRANSMIT)  //check if CanObjectType is TRANSMIT
                 {
-                    //determine all OfObjectHandler transmit
+                    //determine all OfObjectHandler TRANSMIT
                     for (ui8NumberOfObject = INDEX_ZERO;
                             ui8NumberOfObject
                                     < Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectCount;
                             ui8NumberOfObject++)
                     {
                         if (MessageObject[CONTROLLER_ZERO][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
-                                == ui32Status) //check which MessageObjectNumber we need to transmit form it
+                                == ui32Status) //check which MessageObjectNumber we need to TRANSMIT form it
                         {
                             //confirms a previously successfully processed transmission
                             MessageObject[CONTROLLER_ZERO][ui8NumberOfObjectHandler][ui8NumberOfObject].Confirmation =
@@ -575,7 +572,7 @@ void Can0_InterruptHandler(void)
                             /*
                              (SRS_Can_01009)
                              Note: The service CanIf_TxConfirmation() is implemented in CanIf and called
-                             by the CanDrv after the CAN L-PDU has been transmitted on the CAN network.
+                             by the CanDrv after the CAN L-PDU has been TRANSMITted on the CAN network.
                              */
                             CanIf_TxConfirmation(MessageObject[CONTROLLER_ZERO][ui8NumberOfObjectHandler][ui8NumberOfObject].PduId);
                         }
@@ -709,16 +706,16 @@ void Can1_InterruptHandler(void)
                     == &Can.CanConfigSet.CanController[CONTROLLER_ONE]) //check which CanController we use
             {
                 if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
-                        == TRANSMIT)  //check if CanObjectType is transmit
+                        == TRANSMIT)  //check if CanObjectType is TRANSMIT
                 {
-                    //determine all OfObjectHandler transmit
+                    //determine all OfObjectHandler TRANSMIT
                     for (ui8NumberOfObject = INDEX_ZERO;
                             ui8NumberOfObject
                                     < Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectCount;
                             ui8NumberOfObject++)
                     {
                         if (MessageObject[CONTROLLER_ONE][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
-                                == ui32Status) //check which MessageObjectNumber we need to transmit form it
+                                == ui32Status) //check which MessageObjectNumber we need to TRANSMIT form it
                         {
                             //confirms a previously successfully processed transmission
                             MessageObject[CONTROLLER_ONE][ui8NumberOfObjectHandler][ui8NumberOfObject].Confirmation =
@@ -726,7 +723,7 @@ void Can1_InterruptHandler(void)
                             /*
                              (SRS_Can_01009)
                              Note: The service CanIf_TxConfirmation() is implemented in CanIf and called
-                             by the CanDrv after the CAN L-PDU has been transmitted on the CAN network.
+                             by the CanDrv after the CAN L-PDU has been TRANSMITted on the CAN network.
                              */
                             CanIf_TxConfirmation(MessageObject[CONTROLLER_ONE][ui8NumberOfObjectHandler][ui8NumberOfObject].PduId);
                         }
@@ -1491,11 +1488,11 @@ Service ID[hex]:                                                   0x01
 Description:                    This function performs the polling of TX indications when CAN_TX_PROCESSING is set to POLLING.
 
 **********************************************************************************************************************************************************/
-#if(CanTxProcessing0==INTERRUPT && CanTxProcessing1==INTERRUPT)
+#if(Can0TxProcessing==INTERRUPT && Can1TxProcessing==INTERRUPT)
                void Can_MainFunction_Write(){
                     //empty define function in interrupt mode
                 }
-#elif(CanTxProcessing0==POLLING || CanTxProcessing1==POLLING)
+#elif(Can0TxProcessing==POLLING || Can1TxProcessing==POLLING)
 
     void Can_MainFunction_Write(){
 
@@ -1503,22 +1500,22 @@ Description:                    This function performs the polling of TX indicat
         uint8 INDEX_HOH;
         uint8 INDEX_MESGOBJ;
 
-        #if(CanTxProcessing0==POLLING)
+        #if(Can0TxProcessing==POLLING)
 
            if(Can.CanConfigSet.CanController[0].CanControllerActivation){
                 for(INDEX_HOH=0;INDEX_HOH<NUMBER_OF_HOH;INDEX_HOH++){
                     if(Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanControllerRef== &Can.CanConfigSet.CanController[0]){
-                        if(Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanObjectType==transmit){
+                        if(Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanObjectType==TRANSMIT){
                           for(INDEX_MESGOBJ=0;INDEX_MESGOBJ<=Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanHwObjectCount;INDEX_MESGOBJ++){
                              if(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber <= 16){
-                                if(!(CHECK_BIT(CAN0_BASE+CAN_O_TXRQ1,(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber-1)))){
+                                if(!(GetBit(CAN0_BASE+CAN_O_TXRQ1,(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber-1)))){
 
                                     /*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
                                    successful transmission.It shall either called by the TX-interrupt service routine
                                    of the corresponding HW resource or inside the Can_MainFunction_Write in case of
                                    polling mode.*/
 
-                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                     //CanIf_TxConfirmation()
 
                                 }else{
@@ -1531,20 +1528,20 @@ Description:                    This function performs the polling of TX indicat
                                      */
 
                                     //CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId)
-                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                 }
 
 
                             }else{
 
-                                if(!(CHECK_BIT(CAN0_BASE+CAN_O_TXRQ2,(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber)-1))){
+                                if(!(GetBit(CAN0_BASE+CAN_O_TXRQ2,(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber)-1))){
 
                                     /*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
                                    successful transmission.It shall either called by the TX-interrupt service routine
                                    of the corresponding HW resource or inside the Can_MainFunction_Write in case of
                                    polling mode.*/
 
-                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                     //CanIf_TxConfirmation().
 
                                 }else{
@@ -1557,7 +1554,7 @@ Description:                    This function performs the polling of TX indicat
                                      */
 
                                     //CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId)
-                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                 }
 
                             }
@@ -1573,24 +1570,24 @@ Description:                    This function performs the polling of TX indicat
                #endif
 
 
-        #if(CanTxProcessing1==POLLING)
+        #if(Can1TxProcessing==POLLING)
 
            if(Can.CanConfigSet.CanController[1].CanControllerActivation){
 
                 for(INDEX_HOH=0;INDEX_HOH<NUMBER_OF_HOH;INDEX_HOH++){
                     if(Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanControllerRef== &Can.CanConfigSet.CanController[1]){
-                        if(Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanObjectType==transmit){
+                        if(Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanObjectType==TRANSMIT){
                           for(INDEX_MESGOBJ=0;INDEX_MESGOBJ<=Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanHwObjectCount;INDEX_MESGOBJ++){
                            //if(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber){}
                              if(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber <= 16){
-                                if(!(CHECK_BIT(CAN1_BASE+CAN_O_TXRQ1,(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber-1)))){
+                                if(!(GetBit(CAN1_BASE+CAN_O_TXRQ1,(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber-1)))){
 
                                     /*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
                                    successful transmission.It shall either called by the TX-interrupt service routine
                                    of the corresponding HW resource or inside the Can_MainFunction_Write in case of
                                    polling mode.*/
 
-                                    MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
+                                    MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                     //CanIf_TxConfirmation().
 
                                 }else{
@@ -1603,20 +1600,20 @@ Description:                    This function performs the polling of TX indicat
                                      */
 
                                     //CanIf_TxConfirmation(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].PduId)
-                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                 }
 
 
                             }else{
 
-                                if(!(CHECK_BIT(CAN1_BASE+CAN_O_TXRQ2,(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber)-1))){
+                                if(!(GetBit(CAN1_BASE+CAN_O_TXRQ2,(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber)-1))){
 
                                     /*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
                                    successful transmission.It shall either called by the TX-interrupt service routine
                                    of the corresponding HW resource or inside the Can_MainFunction_Write in case of
                                    polling mode.*/
 
-                                    MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
+                                    MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                     //CanIf_TxConfirmation().
 
                                 }else{
@@ -1630,7 +1627,7 @@ Description:                    This function performs the polling of TX indicat
 
 
                                     //CanIf_TxConfirmation(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].PduId)
-                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                 }
                               }
                           }
