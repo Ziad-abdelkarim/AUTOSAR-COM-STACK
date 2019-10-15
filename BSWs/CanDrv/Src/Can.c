@@ -1,3 +1,8 @@
+/******************************************************************************************************************************
+Service name:                                             Can_MainFunction_Write
+Service ID[hex]:                                                   0x01
+Description:                    This function performs the polling of TX indications when CAN_TX_PROCESSING is set to POLLING.
+*******************************************************************************************************************************/
 /********************************************************************************************************************************
  **
 
@@ -11,12 +16,19 @@ AUTOSAR Version:            4.2.2
 #include "Can.h"
 
 
+        uint8 INDEX_HOH;
+        uint8 INDEX_MESGOBJ;
 
+        #if(CanTxProcessing0==POLLING)
 
 /********************************************************************************************************************************
  **                                                                       Global Variables                                                                                         **
  ********************************************************************************************************************************/
 
+                                    /*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
+                                   successful transmission.It shall either called by the TX-interrupt service routine
+                                   of the corresponding HW resource or inside the Can_MainFunction_Write in case of
+                                   polling mode.*/
 
 static uint8 InterruptDisableCount[NUMBER_OF_CONTROLLERS];
 static uint8 InterruptEnableCount[NUMBER_OF_CONTROLLERS];
@@ -24,6 +36,7 @@ static CanDriverStateType CanDriverState=CAN_UNINIT;
 static MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUMBER_OF_HOH][MAX_NUMBER_OF_HANDLERS];
 static ControllerStateType ControllerState[NUMBER_OF_CONTROLLERS] = {CAN_CS_UNINIT, CAN_CS_UNINIT};
 
+                                }else{
 
 const CanHardwareObject* Can_GetHardwareObjectOfHTH(Can_HwHandleType HTH){
   const CanHardwareObject *ADDRESS;
