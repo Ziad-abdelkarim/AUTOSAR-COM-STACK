@@ -11,7 +11,7 @@ AUTOSAR Version:            4.2.2
 **                                          Includes                                                          **
 *************************************************************************************/
 #include "ComStack_Types.h"
-#define  NUMBER_OF_BAUDRATE           2
+#define  NUMBER_OF_BAUDRATES          2
 #define  NUMBER_OF_CONTROLLERS         2
 #define  NUMBER_OF_HOH				   2
 #define MAX_NUMBER_OF_HANDLERS          1
@@ -19,6 +19,7 @@ AUTOSAR Version:            4.2.2
 #define	INTERRUPT 0U
 #define EXTENDED 1U
 #define STANDARD 2U
+
 
 /************************************************************************************
 **                           Post-Build Configuration variables                    **
@@ -107,7 +108,7 @@ Type:                                         Container
 
 typedef struct {
     uint8  CanControllerId;
-    CanControllerBaudrateConfig  CanControllerBaudrateConfig[NUMBER_OF_BAUDRATE];
+    CanControllerBaudrateConfig  CanControllerBaudrateConfig[NUMBER_OF_BAUDRATES];
     bool  CanControllerActivation;
     uint32  CanControllerBaseAddress ;
     CanControllerBaudrateConfig *CanControllerDefaultBaudrate;

@@ -1684,32 +1684,32 @@ Std_ReturnType Can_SetBaudrate( uint8 Controller, uint16 BaudRateConfigID )
                           the function Can_SetBaudrate shall raise the error CAN_E_PARAM_CONTROLLER
                           and return E_NOT_OK if the parameter Controller is out of range.?()*/
 
-                        CanDevolpmentError = CAN_E_PARAM_CONTROLLER;
+                        CanDevelopmentError = CAN_E_PARAM_CONTROLLER;
 
                                 return E_NOT_OK;
                 }
                 else
                 {
-                    if(/*ControllerStatus == STOPPED*/)
+                    if(ControllerState[Controller] == CAN_CS_STOPPED)
                     {
                         if(BaudRateConfigID < NUMBER_OF_BAUDRATES)
                         {
                             for(BaudRateIndex = 0 ; BaudRateIndex < NUMBER_OF_BAUDRATES ; BaudRateIndex++)
                             {
-                                    if(Config->CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex]->CanControllerBaudRateConfigID == BaudRateConfigID)
+                                    if(Can.CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex].CanControllerBaudRateConfigId == BaudRateConfigID)
                                     {
                                        
-                                                CanBitTimingParameters.ui32SyncPropPhase1Seg = Config->CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex]->CanControllerPropSeg +\
-                                                                                               Config->CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex]->CanControllerSeg1 + 1U ;
+                                                CanBitTimingParameters.ui32SyncPropPhase1Seg = Can.CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex].CanControllerPropSeg +\
+                                                                                               Can.CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex].CanControllerSeg1 + 1U ;
 
-                                                CanBitTimingParameters.ui32Phase2Seg         = Config->CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex]->CanControllerSeg2;
+                                                CanBitTimingParameters.ui32Phase2Seg         = Can.CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex].CanControllerSeg2;
 
-                                                CanBitTimingParameters.ui32SJW               = Config->CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex]->CanControllerSyncJumpWidth;
+                                                CanBitTimingParameters.ui32SJW               = Can.CanConfigSet.CanController[Controller].CanControllerBaudrateConfig[BaudRateIndex].CanControllerSyncJumpWidth;
 
                                                 CanBitTimingParameters. ui32QuantumPrescaler = SysCtlClockGet()/(CanBitTimingParameters.ui32SyncPropPhase1Seg + CanBitTimingParameters.ui32Phase2Seg)*\
-                                                                                               (Config->CanConfigSet.CanController[index1].CanControllerDefaultBaudRate->CanControllerBaudRate * 1000U);
+                                                                                               (Can.CanConfigSet.CanController[Controller].CanControllerDefaultBaudrate->CanControllerBaudRate * 1000U);
 
-                                                CANBitTimingSet(Config->CanConfigSet.CanController[Controller].CanControllerBaseAddress , CanBitTimingParameters);
+                                                CANBitTimingSet(Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress , &CanBitTimingParameters);
 
                                                         return E_OK;
                                        
@@ -1727,7 +1727,7 @@ Std_ReturnType Can_SetBaudrate( uint8 Controller, uint16 BaudRateConfigID )
                                   The function Can_SetBaudrate shall raise the error CAN_E_PARAM_BAUDRATE
                                   and return E_NOT_OK if the parameter BaudRateConfigID has an invalid value.?()*/
 
-                                        CanDevolpmentError = BaudRateConfigID;
+                                        CanDevelopmentError = CAN_E_PARAM_BAUDRATE;
 
                                                 return E_NOT_OK;
                         }
@@ -1747,10 +1747,11 @@ Std_ReturnType Can_SetBaudrate( uint8 Controller, uint16 BaudRateConfigID )
             The function Can_SetBaudrate shall raise the error CAN_E_UNINIT and return
             E_NOT_OK if the driver is not yet initialized.?()*/
 
-            CanDevolpmentError = CAN_E_UNINIT;
+            CanDevelopmentError = CAN_E_UNINIT;
 
                 return E_NOT_OK;
     }
+    return E_NOT_OK;
 }
 
 

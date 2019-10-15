@@ -52,6 +52,6 @@ void Can1_InterruptHandler(void);
 void Can_DisableControllerInterrupts(uint8 Controller);
 void Can_Init(const Can_ConfigType* Config);
 void CanIf_RxIndication(const Can_HwType* Mailbox,const PduInfoType* PduInfoPtr);
+Std_ReturnType Can_SetBaudrate( uint8 Controller, uint16 BaudRateConfigID );
 #endif /* CAN_H */
 
-Std_ReturnType Can_SetBaudrate( uint8 Controller, uint16 BaudRateConfigID );
