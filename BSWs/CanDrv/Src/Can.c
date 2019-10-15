@@ -50,9 +50,9 @@ Description:                    This function performs the polling of TX indicat
                                     organized perTH to avoid new search of the L-PDU ID for call of
 
                                      */
-                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=false;
-                                    //CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId)
 
+                                    //CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId)
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
                                 }
 
 
@@ -76,9 +76,9 @@ Description:                    This function performs the polling of TX indicat
                                     organized perTH to avoid new search of the L-PDU ID for call of
 
                                      */
-                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=fasle;
-                                    //CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId)
 
+                                    //CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId)
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
                                 }
 
                             }
@@ -122,9 +122,9 @@ Description:                    This function performs the polling of TX indicat
                                     organized perTH to avoid new search of the L-PDU ID for call of
 
                                      */
-                                    MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].confirmation=fasle;
-                                    //CanIf_TxConfirmation(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].PduId)
 
+                                    //CanIf_TxConfirmation(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].PduId)
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
                                 }
 
 
@@ -149,9 +149,9 @@ Description:                    This function performs the polling of TX indicat
 
                                      */
 
-                                    MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].confirmation=fasle;
-                                    //CanIf_TxConfirmation(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].PduId)
 
+                                    //CanIf_TxConfirmation(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].PduId)
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].confirmation=true;
                                 }
                               }
                           }
@@ -168,3 +168,6 @@ Description:                    This function performs the polling of TX indicat
 
 #else //misra error
 #endif
+
+
+
