@@ -13,8 +13,14 @@ AUTOSAR Version:            4.2.2
 #include "Can_GeneralTypes.h"
 #include "ComStack_Types.h"
 #include "Can_Cfg.h"
+#include <CanIf_stub.h>
 //These Are the Values of The COntrol Registers After a Reset Brought From TM4CGH6PM Data Sheet
-
+#define CONTROLLER_ZERO            0U
+#define CONTROLLER_ONE             1U
+#define MIN_OBJECT_HANDLER         0x01U
+#define MAX_OBJECT_HANDLER         0x20U
+#define INDEX_ZERO                 0U
+#define INDEX_ONE                  1U
 #define RST_CANCTL                0x00000001
 #define RST_CANBRPE               0x00000000
 #define RST_CANTST                0x00000000
@@ -36,5 +42,8 @@ void Can_MainFunction_Mode(void);
 void Can_MainFunction_Busoff(void);
 Can_ReturnType    Can_SetControllerMode (uint8 Controller,Can_StateTransitionType Transition);
 Can_ReturnType    Can_Write( Can_HwHandleType Hth,const Can_PduType* PduInfo);
-
+void Can0_InterruptHandler(void);
+void Can_EnableControllerInterrupts(uint8 Controller);
+void Can1_InterruptHandler(void);
+void Can_DisableControllerInterrupts(uint8 Controller);
 #endif /* CAN_H */
