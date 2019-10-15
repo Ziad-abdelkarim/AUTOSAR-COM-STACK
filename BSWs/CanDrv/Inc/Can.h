@@ -30,6 +30,7 @@ AUTOSAR Version:            4.2.2
 #define     status_Initialization   (GET_ADDRESS_VAL(cancontrollerbaseadress,CANCTL))&CAN_CTL_INIT
 boolean LogicalSleep[NUMBER_OF_CONTROLLERS];
 enum  {CAN_UNINIT, CAN_READY}CanDriverState = CAN_UNINIT;
+boolean ControllerState[NUMBER_OF_CONTROLLERS];
 
 void Can_MainFunction_Mode(void);
 void Can_MainFunction_Busoff(void);

@@ -34,7 +34,7 @@ Description:
                                   State machine.
 *******************************************************************************************************************************/
 Can_ReturnType    Can_SetControllerMode (uint8 Controller,Can_StateTransitionType Transition) {
-	uint32 cancontrollerbaseadress,Itration=0 ;
+	uint32 cancontrollerbaseadress, HardwareObjectIndex=0 ,ObjectIndex=0;
 	cancontrollerbaseadress=Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress;
 	if(CanDriverState == CAN_UNINIT){
 		CanDevelopmentError=CAN_E_UNINIT;
@@ -50,12 +50,21 @@ else	if ( Transition ==CAN_T_START)
 /**[SWS_Can_00262] [ The function Can_SetControllerMode(CAN_T_START) shall
 wait for limited time until the CAN controller is fully operational. Compare to
 SWS_Can_00398.]**/
-		while( CanTimeoutDuration & status_Initialization){
+        CANEnable(cancontrollerbaseadress); 
+		while( CanTimeoutDuration && status_Initialization){
 			CanTimeoutDuration--;
-			Can_EnableControllerInterrupts(Controller);
-		    CANEnable(cancontrollerbaseadress); 
+		    
 		}
-		   return CAN_OK;		   
+		if(CanTimeoutDuration==0)
+		{  
+	       CanDevelopmentError=CAN_E_TRANSITION;
+	       return CAN_NOT_OK;
+		}
+		else if (CanTimeoutDuration != 0){
+		   Can_EnableControllerInterrupts(Controller);
+		    ControllerState[Controller]=true;
+		   return CAN_OK;	
+        }		   
 		}
 /**[SWS_Can_00409]  When the function Can_SetControllerMode(CAN_T_START)
 is entered and the CAN controller is not in state STOPPED it shall detect a invalid
@@ -74,20 +83,37 @@ the network.]**/
 /**[SWS_Can_00264] [ The function Can_SetControllerMode(CAN_T_STOP) shall
 wait for a limited time until the CAN controller is really switched off. Compare to
 SWS_Can_00398.]**/
-		while( CanTimeoutDuration & (!status_Initialization)){
-			CanTimeoutDuration--;
+			CANDisable(cancontrollerbaseadress); 
+			while( CanTimeoutDuration && (!status_Initialization)){
+					CanTimeoutDuration--;
 /**[SWS_Can_00282] [ The function Can_SetControllerMode(CAN_T_STOP) shall
-cancel pending messages. ]*/			
-			for(Itration=0x01;Itration<=0x20;Itration){
-			CLEAR_PIN(cancontrollerbaseadress,CANIF1CMSK,7); 
-			CLEAR_PIN(cancontrollerbaseadress,CANIF1CMSK,2); 
-			CLEAR_PIN(cancontrollerbaseadress,CANIF1MCTL,8); 
-			GET_ADDRESS_VAL(cancontrollerbaseadress,CANIF1CRQ) = Itration;
+cancel pending messages. ]*/			   
 			}
-			Can_DisableControllerInterrupts(Controller);
-		    CANDisable(cancontrollerbaseadress); 
-		}
-		   return CAN_OK;		   
+		
+			if(CanTimeoutDuration==0)
+			{  
+				CanDevelopmentError=CAN_E_TRANSITION;
+				return CAN_NOT_OK;
+			}
+			else if (CanTimeoutDuration != 0){
+				
+
+				for(HardwareObjectIndex =0; HardwareObjectIndex < NUMBER_OF_HOH ; HardwareObjectIndex++){
+					if(Can.CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanObjectType == TRANSMIT && Can.CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanControllerRef -> CanControllerId == Controller)
+					{
+						for(ObjectIndex = 0; HardwareObjectIndex < Can.CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHwObjectCount ; ObjectIndex ++){
+							CLEAR_PIN(cancontrollerbaseadress,CANIF1CMSK,7); 
+							CLEAR_PIN(cancontrollerbaseadress,CANIF1CMSK,2); 
+							CLEAR_PIN(cancontrollerbaseadress,CANIF1MCTL,8); 
+							GET_ADDRESS_VAL(cancontrollerbaseadress,CANIF1CRQ) = MessageObject[Controller][HardwareObjectIndex][ObjectIndex].MessageObjectNumber;
+					    }
+		            }
+				}
+				Can_DisableControllerInterrupts(Controller);
+				ControllerState[Controller]=false;
+				return CAN_OK;	
+			}	
+		   		   
 		}
 /**[SWS_Can_00410] [ When the function Can_SetControllerMode(CAN_T_STOP) is
 entered and the CAN controller is neither in state STARTED nor in state STOPPED,
@@ -104,15 +130,22 @@ set the controller into sleep mode.]**/
 /**[SWS_Can_00290] [ If the CAN HW does not support a sleep mode, the function
 Can_SetControllerMode(CAN_T_SLEEP) shall set the CAN controller to the logical
 sleep mode.]**/
-		if(!status_Initialization & ! LogicalSleep[Controller]){
-		while( CanTimeoutDuration & (!status_Initialization)  & !(LogicalSleep[Controller])){
-			CanTimeoutDuration--;
-			Can_DisableControllerInterrupts(Controller);
-		    CANDisable(cancontrollerbaseadress); 
-			LogicalSleep[Controller]=1;
-		}
-		   return CAN_OK;		   
-		}
+		if( (!status_Initialization) && (! LogicalSleep[Controller]) ){
+			
+			CANDisable(cancontrollerbaseadress); 
+		    while( CanTimeoutDuration && (!status_Initialization) && (!LogicalSleep[Controller]) ){
+			     CanTimeoutDuration--; 
+			}
+			if(CanTimeoutDuration==0)
+			{  
+				CanDevelopmentError=CAN_E_TRANSITION;
+				return CAN_NOT_OK;
+			}
+			else if (CanTimeoutDuration != 0){
+				Can_DisableControllerInterrupts(Controller);
+				LogicalSleep[Controller]=true;
+				return CAN_OK;	
+			}	
 /**[SWS_Can_00411] [ When the function Can_SetControllerMode(CAN_T_SLEEP)
 is entered and the CAN controller is neither in state STOPPED nor in state SLEEP, it
 shall detect a invalid state transition]**/
@@ -127,18 +160,26 @@ Can_SetControllerMode(CAN_T_WAKEUP) shall return from the logical sleep mode,but
 state).]**/
 	else if (Transition ==CAN_T_WAKEUP){
 			
-		if(status_Initialization & LogicalSleep[Controller]){
+		if(status_Initialization &&LogicalSleep[Controller]){
 /**[SWS_Can_00268] [ The function Can_SetControllerMode(CAN_T_WAKEUP) shall
 wait for a limited time until the CAN controller is in STOPPED state. Compare to
 SWS_Can_00398.]**/
-		while( CanTimeoutDuration & status_Initialization & LogicalSleep[Controller]){
-			CanTimeoutDuration--;
-			Can_EnableControllerInterrupts(Controller);
-		    CANEnable(cancontrollerbaseadress); 
-			LogicalSleep[Controller]=0;
-			
-		}
-		   return CAN_OK;		   
+             CANEnable(cancontrollerbaseadress); 
+		    while( CanTimeoutDuration && status_Initialization && LogicalSleep[Controller]){
+			     CanTimeoutDuration--;
+		    
+			}
+			if(CanTimeoutDuration==0)
+			{  
+				CanDevelopmentError=CAN_E_TRANSITION;
+				return CAN_NOT_OK;
+			}
+			else if (CanTimeoutDuration != 0){
+				Can_EnableControllerInterrupts(Controller);
+				LogicalSleep[Controller]=false;
+				return CAN_OK;	
+			}	
+		   
 		}
 /**[SWS_Can_00412]
 [When the function Can_SetControllerMode(CAN_T_WAKEUP) is entered and the CAN controller is
