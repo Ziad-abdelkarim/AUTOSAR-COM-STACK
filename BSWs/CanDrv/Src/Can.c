@@ -118,7 +118,8 @@ void Can_Init(const Can_ConfigType *Config)
 				{
 					// Assign a message object to the HTH or HRH
 					MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].MessageObjectNumber = MessageObjectNumber[ControllerIndex];
-					
+					// Set Message Objects as Free
+					MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].Confirmation = true;
 					// If the HOH type was receive then additional operations must be done
 					if(HardwareObjectType == receive)
 					{
