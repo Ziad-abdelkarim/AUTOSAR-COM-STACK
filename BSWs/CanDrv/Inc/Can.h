@@ -26,6 +26,8 @@ AUTOSAR Version:            4.2.2
 #define RST_CANBRPE               0x00000000
 #define RST_CANBIT                0x00002301
 #define RST_CANERR                0x00000000
+#define CAN0_IF1CRQ_R           (*((volatile uint32_t *)0x40040020))
+#define CAN0_IF1MCTL_R          (*((volatile uint32_t *)0x40040038))
 #define 	CANCTL                0x000
 #define 	CANIF1MCTL            0x038
 #define 	CANIF1CMSK            0x024
@@ -37,7 +39,7 @@ AUTOSAR Version:            4.2.2
 #define    CLEAR_BIT(A,B,P)                    *((volatile uint32_t *)((A)+(B))) & (~(1 << P))
 #define    SET_BIT(A,B,P)                          *((volatile uint32_t *)((A)+(B)))|(1 << P))
 #define     status_Initialization   (GET_ADDRESS_VAL(cancontrollerbaseadress,CANCTL))&CAN_CTL_INIT
-#define GetBit(reg,n)              ((reg>>n)&1)
+#define      GetBit(reg,n)              ((reg>>n)&1)
 boolean LogicalSleep[NUMBER_OF_CONTROLLERS];
 uint32 CanTimeoutDuration=5000;
 void Can_MainFunction_Mode(void);

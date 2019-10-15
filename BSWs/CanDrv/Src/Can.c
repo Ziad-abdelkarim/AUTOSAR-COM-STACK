@@ -12,22 +12,6 @@ AUTOSAR Version:            4.2.2
 
 
 
-/************************************************************************************
-Name:                                 MessageObjectType
-Description:
-                   This container contains the configuration (parameters) of CAN Message Objects
-                               (PduId ,Confirmation Flag and Message object Number).
-Multiplicity:                                       1..*
-Type:                                       Container
- *************************************************************************************/
-
-typedef struct{
-    uint8 MessageObjectNumber;
-    boolean Confirmation;
-    PduIdType PduId;
-}MessageObjectType;
-
-MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUMBER_OF_HOH][MAX_NUMBER_OF_HANDLERS];
 
 /********************************************************************************************************************************
  **                                                                       Global Variables                                                                                         **
@@ -40,24 +24,6 @@ static CanDriverStateType CanDriverState=CAN_UNINIT;
 static MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUMBER_OF_HOH][MAX_NUMBER_OF_HANDLERS];
 static ControllerStateType ControllerState[NUMBER_OF_CONTROLLERS] = {CAN_CS_UNINIT, CAN_CS_UNINIT};
 
-/*
- * [SWS_Can_00108] The function Can_MainFunction_Read shall perform the polling of RX indications when CanRxProcessing
- *             is set to POLLING or mixed.In case of mixed processing only the hardware objects for which CanHardwareObjectUses
- *              Polling is set to TRUE shall be polled.(SRS_BSW_00432, SRS_SPAL_00157)
- */
- 
- 
-/*********************************************************************************************************************************       
-Service name:                                       Can_MainFunction_Read0
-Service ID[hex]:                                                   0x08
-
-Parameters (in):                                    				void
-Parameters (inout):                                               None
-Parameters (out):                                                  void
-Return value:                                                		void
-Description:   
-                                  This function performs the polling of RX indications when CAN_RX_PROCESSING is set to POLLING.
-*******************************************************************************************************************************/
 
 const CanHardwareObject* Can_GetHardwareObjectOfHTH(Can_HwHandleType HTH){
   const CanHardwareObject *ADDRESS;
@@ -809,7 +775,25 @@ void Can1_InterruptHandler(void)
 
 
 
-/*********************************************************************************************************************************
+/*
+ * [SWS_Can_00108] The function Can_MainFunction_Read shall perform the polling of RX indications when CanRxProcessing
+ *             is set to POLLING or mixed.In case of mixed processing only the hardware objects for which CanHardwareObjectUses
+ *              Polling is set to TRUE shall be polled.(SRS_BSW_00432, SRS_SPAL_00157)
+ */
+ 
+ 
+/*********************************************************************************************************************************       
+Service name:                                       Can_MainFunction_Read0
+Service ID[hex]:                                                   0x08
+
+Parameters (in):                                    				void
+Parameters (inout):                                               None
+Parameters (out):                                                  void
+Return value:                                                		void
+Description:   
+                                  This function performs the polling of RX indications when CAN_RX_PROCESSING is set to POLLING.
+*******************************************************************************************************************************/
+
 
 
 
@@ -835,21 +819,20 @@ void Can_MainFunction_Read0(void)
                                                               and the corresponding length of the SDU in bytes.*/
 
     CanMsgReceived.pui8MsgData=ReceivedMsgArray0;           /*pointer of Data in a message is pointing to an Array where data will be stored*/
+    uint32 cancontrollerbaseadress  =Can.CanConfigSet.CanController[0].CanControllerBaseAddress;
 
-    extern CAN Can;
     /*
      *check if if the CAN controller 0 is used in the configuration.
      */
-    if(Can.CanConfigSet.CanController[CanController0].CanControllerActivation)
+    if(Can.CanConfigSet.CanController[CONTROLLER_ZERO].CanControllerActivation)
     {
 
         /*
          * Reset 7th bit in CANIF1CMSK to Transfer the data in the CAN message object specified by
            the MNUM field in the CANIFnCRQ register into the CANIFn registers.
          */
-        RstBit((CAN0_IF1CMSK_R) ,WRNRD_Bit);
-        RstBit((CAN0_IF1CMSK_R),CANIF1CMSK_TXRQST_Bit);
-
+        CLEAR_BIT(cancontrollerbaseadress,CAN_O_IF1CMSK,WRNRD_Bit);
+        CLEAR_BIT(cancontrollerbaseadress,CAN_O_IF1CMSK,CANIF1CMSK_TXRQST_Bit);
         /*
          * loop for the number of hardware objects which are 32 in TIVA C
          */
@@ -867,7 +850,7 @@ void Can_MainFunction_Read0(void)
                  * Configurations of can controller 0.
                  */
 
-                if(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef == & Can.CanConfigSet.CanController[CanController0])
+                if(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef == & Can.CanConfigSet.CanController[CONTROLLER_ZERO])
                 {
                     /*
                      *iterate on number of Message objects  in each hardware object
@@ -878,7 +861,7 @@ void Can_MainFunction_Read0(void)
                         /*
                          *Selects one of the 32 message objects in the message RAM for data transfer. The message objects are numbered from 1 to 32.
                          */
-                        (CAN0_IF1CRQ_R)= MessageObject[CanController0][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber ;
+                        (CAN0_IF1CRQ_R)= MessageObject[CONTROLLER_ZERO][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber ;
 
                         /*
                          * check if NEWDAT bit may have two values :
@@ -911,7 +894,7 @@ void Can_MainFunction_Read0(void)
                                  |*                                                                                                    *|
                                  |******************************************************************************************************/
                             CANMessageGet(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef ->CanControllerBaseAddress,
-                                          MessageObject[CanController0][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber,
+                                          MessageObject[CONTROLLER_ZERO][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber,
                                           &CanMsgReceived, STD_OFF);
 
                             ReceiverMailBox.CanId= CanMsgReceived.ui32MsgID;
@@ -996,21 +979,22 @@ void Can_MainFunction_Read1(void)
                                                               and the corresponding length of the SDU in bytes.*/
 
     CanMsgReceived.pui8MsgData=ReceivedMsgArray0;           /*pointer of Data in a message is pointing to an Array where data will be stored*/
-    extern CAN Can;
+    uint32 cancontrollerbaseadress  =Can.CanConfigSet.CanController[1].CanControllerBaseAddress;
+
+
 
     /*
      *check if if the CAN controller 1 is used in the configuration.
      */
-    if(Can.CanConfigSet.CanController[CanController1].CanControllerActivation)
+    if(Can.CanConfigSet.CanController[CONTROLLER_ONE].CanControllerActivation)
     {
 
         /*
          * Reset 7th bit in CANIF1CMSK to Transfer the data in the CAN message object specified by
            the MNUM field in the CANIFnCRQ register into the CANIFn registers.
          */
-        RstBit((CAN0_IF1CMSK_R) ,WRNRD_Bit);
-        RstBit((CAN0_IF1CMSK_R),CANIF1CMSK_TXRQST_Bit);
-
+        CLEAR_BIT(cancontrollerbaseadress,CAN_O_IF1CMSK,WRNRD_Bit);
+        CLEAR_BIT(cancontrollerbaseadress,CAN_O_IF1CMSK,CANIF1CMSK_TXRQST_Bit);
         /*
          * loop for the number of hardware objects which are 32 in TIVA C
          */
@@ -1028,7 +1012,7 @@ void Can_MainFunction_Read1(void)
                  * Configurations of can controller 1.
                  */
 
-                if(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef == & Can.CanConfigSet.CanController[CanController1])
+                if(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef == & Can.CanConfigSet.CanController[CONTROLLER_ONE])
                 {
                     /*
                      *iterate on number of Message objects  in each hardware object
@@ -1039,7 +1023,7 @@ void Can_MainFunction_Read1(void)
                         /*
                          *Selects one of the 32 message objects in the message RAM for data transfer. The message objects are numbered from 1 to 32.
                          */
-                        (CAN0_IF1CRQ_R)= MessageObject[CanController1][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber ;
+                        (CAN0_IF1CRQ_R)= MessageObject[CONTROLLER_ONE][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber ;
 
                         /*
                          * check if NEWDAT bit may have two values :
@@ -1072,7 +1056,7 @@ void Can_MainFunction_Read1(void)
                                  |*                                                                                                    *|
                                  |******************************************************************************************************/
                             CANMessageGet(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef ->CanControllerBaseAddress,
-                                          MessageObject[CanController1][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber,
+                                          MessageObject[CONTROLLER_ONE][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber,
                                           &CanMsgReceived, STD_OFF);
 
                             ReceiverMailBox.CanId= CanMsgReceived.ui32MsgID;
