@@ -18,7 +18,7 @@
 /************************************************************************************
  **                      Post-Build Configuration variables values                  **
  ************************************************************************************/
-CAN Can =
+Can_ConfigType Can =
 { .CanGeneral =
 { .CanMainFunctionRWPeriods = {
                                { .CanMainFunctionPeriod = 0.01 }, { .CanMainFunctionPeriod =

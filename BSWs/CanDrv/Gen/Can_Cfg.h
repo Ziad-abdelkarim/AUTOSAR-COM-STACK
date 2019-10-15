@@ -23,5 +23,5 @@ AUTOSAR Version:            4.2.2
 #define Can0BusoffProcessing	INTERRUPT
 #define	Can1BusoffProcessing	INTERRUPT
 
-extern CAN Can;
+extern Can_ConfigType Can;
 #endif /** (CAN_CFG_H) **/

@@ -188,7 +188,7 @@ Type:                                        container
 typedef struct {
 	CanGeneral  CanGeneral;
 	CanConfigSet  CanConfigSet;
-}CAN;
+}Can_ConfigType;
 
 
 
@@ -305,5 +305,12 @@ typedef enum {
     CAN_UNINIT,
     CAN_READY
 }CanDriverStateType;
+
+typedef enum {
+    CAN_CS_UNINIT,
+    CAN_CS_STOPPED,
+    CAN_CS_STARTED,
+    CAN_CS_SLEEP
+}ControllerStateType;
 
 #endif /** (CAN_GENERALTYPES_H	) **/

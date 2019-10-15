@@ -36,7 +36,6 @@ AUTOSAR Version:            4.2.2
 #define    SET_BIT(A,B,P)                          *((volatile uint32_t *)((A)+(B)))|(1 << P))
 #define     status_Initialization   (GET_ADDRESS_VAL(cancontrollerbaseadress,CANCTL))&CAN_CTL_INIT
 boolean LogicalSleep[NUMBER_OF_CONTROLLERS];
-boolean ControllerState[NUMBER_OF_CONTROLLERS];
 uint32 CanTimeoutDuration=5000;
 void Can_MainFunction_Mode(void);
 void Can_MainFunction_Busoff(void);
@@ -46,4 +45,5 @@ void Can0_InterruptHandler(void);
 void Can_EnableControllerInterrupts(uint8 Controller);
 void Can1_InterruptHandler(void);
 void Can_DisableControllerInterrupts(uint8 Controller);
+void Can_Init(const Can_ConfigType* Config);
 #endif /* CAN_H */

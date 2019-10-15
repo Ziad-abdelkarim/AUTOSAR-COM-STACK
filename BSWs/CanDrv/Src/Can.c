@@ -1,170 +1,14 @@
 /********************************************************************************************************************************
  **
 
-MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUM_OF_HOH][MAX_NUMBER_OF_HANDLERS];
-
 FileName:                          Can.c
 AUTOSAR Version:            4.2.2
  **
  ********************************************************************************************************************************/
 /********************************************************************************************************************************
-**                                                     Global Variables                                                                                         **
-********************************************************************************************************************************/
-static MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUM_OF_HOH][MAX_NUMBER_OF_HANDLERS];
-/*********************************************************************************************************************************       
-Service name:                                       Can_Init
-Service ID[hex]:                                    0x00
-Sync/Async:                                         Synchronous
-Reentrancy:                                         Non Reentrant
-Parameters (in):                                    Config ---> Pointer to driver configuration.                                            
-Parameters (inout):                                 None
-Parameters (out):                                   None
-Return value:                                       None
-Description:										This function initializes the module.
-*********************************************************************************************************************************/
-void Can_Init(const Can_ConfigType *Config)
-{
-	uint32_t CanSysCtlPeripheral = {
-		SYSCTL_PERIPH_CAN0,
-		SYSCTL_PERIPH_CAN1
-	}
-	uint8_t ControllerIndex, HardwareObjectIndex, ObjectIndex;
-	uint8_t MessageObjectNumber[NUMBER_OF_CONTROLLERS] = {1,1};
-	bool UninitCheck = true;
-	tCANBitClkParms CANBitClkParms;
-	tCANMsgObject CANMsgObject;
-	CanObjectType HardwareObjectType;
-	
-	/* [SWS_Can_00174] If default error detection for the Can module is enabled: The
-		function Can_Init shall raise the error CAN_E_TRANSITION if the driver is not in
-		state CAN_UNINIT. */
-	if(CanDriverState != CAN_UNINIT)
-	{
-		CanDevelopmentError = CAN_E_TRANSITION;
-	}
-	else
-	{
-		/* [SWS_Can_00408] If default error detection for the Can module is enabled: The
-			function Can_Init shall raise the error CAN_E_TRANSITION if the CAN controllers
-			are not in state UNINIT. */
-		for(ControllerIndex=0U; ControllerIndex < NUMBER_OF_CONTROLLERS; ControllerIndex++)
-		{
-			if(CanControllerState[ControllerIndex] != CAN_CS_UNINIT)
-			{
-				UninitCheck = false;
-			}
-			else
-			{
-				//MISRA
-			}
-		}
-
-/********************************************************************************************************************************
  **                                                                       includes                                                                                         **
  ********************************************************************************************************************************/
 #include "Can.h"
-		if(UninitCheck == true)
-		{
-			/* [SWS_Can_00245] The function Can_Init shall initialize all CAN controllers
-				according to their configuration. (SRS_SPAL_12057, SRS_Can_01041) */
-				
-				
-			// Loop over all controllers
-			for(ControllerIndex=0U; ControllerIndex < NUMBER_OF_CONTROLLERS; ControllerIndex++)
-			{
-				// Check if controller needs to be activated
-				if(Config->CanConfigSet.CanController[ControllerIndex].CanControllerActivation)
-				{	
-					// Enable Can peripheral clock
-					SysCtlPeripheralEnable(CanSysCtlPeripheral[ControllerIndex]);
-					// Wait for clock to be enabled
-					while(!SysCtlPeripheralReady(CanSysCtlPeripheral[ControllerIndex]));
-					
-					// Initialize Can controller
-					CANInit(Config->CanConfigSet.CanController[ControllerIndex].CanControllerBaseAddress);
-					
-					// Set bit timing values
-					CANBitClkParms.ui32SyncPropPhase1Seg = Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudRate->CanControllerPropSeg +\
-																Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudRate->CanControllerSeg1 + (uint32_t)1;
-					CANBitClkParms.ui32Phase2Seg = Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudRate->CanControllerSeg2;
-					CANBitClkParms.ui32SJW = Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudRate->CanControllerSyncJumpWidth;
-					CANBitClkParms.ui32QuantumPrescaler =  SysCtlClockGet() / (CANBitClkParms.ui32SyncPropPhase1Seg + CANBitClkParms.ui32Phase2Seg) *\
-																	(Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudRate->CanControllerBaudRate * 1000U);
-					// Set bit timing
-					CANBitTimingSet(Config->CanConfigSet.CanController[ControllerIndex].CanControllerBaseAddress, CANBitClkParms);
-					
-					/* [SWS_Can_00259] The function Can_Init shall set all CAN controllers in the state STOPPED. */
-					Can_SetControllerMode(ControllerIndex, CAN_T_STOP);
-				}
-				else
-				{
-					//MISRA
-				}
-				
-			}
-			
-			// Loop over all HOH
-			for(HardwareObjectIndex = 0; HardwareObjectIndex < NUMBER_OF_HOH ; HardwareObjectIndex++)
-			{
-				// Get HOH's Controller ID
-				ControllerIndex = Config->CanConfigSet.CanHardwareObject[HardwareObject].CanControllerRef->CanControllerId;
-				// Get HOH's Object Type
-				HardwareObjectType = Config->CanConfigSet.CanHardwareObject[HardwareObject].CanObjectType;
-				
-				// Loop over all HTH or HRH
-				for(ObjectIndex = 0; ObjectIndex < Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHwObjectCount; ObjectIndex++)
-				{
-					// Assign a message object to the HTH or HRH
-					MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].MessageObjectNumber = MessageObjectNumber[ControllerIndex];
-					// Set Message Objects as Free
-					MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].Confirmation = true;
-					// If the HOH type was receive then additional operations must be done
-					if(HardwareObjectType == receive)
-					{
-						// Set HRH values
-						CANMsgObject.ui32MsgID = Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHWFilter.CanHwFilterCode;
-						CANMsgObject.ui32MsgIDMask = Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHWFilter.CanHwFilterMask;
-						CANMsgObject.ui32MsgLen = 8U;
-						
-						if(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex]CanIdType == STANDARD)
-						{
-							CANMsgObject.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER | MSG_OBJ_FIFO;
-						}
-						else if(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanIdType == EXTENDED)
-						{
-							CANMsgObject.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER | MSG_OBJ_EXTENDED_ID | MSG_OBJ_USE_EXT_FILTER | MSG_OBJ_FIFO;
-						}
-						else
-						{
-							//MISRA
-						}
-						
-						// Make controller receive on this message object
-						CANMessageSet(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanControllerRef->CanControllerBaseAddress,
-									MessageObjectNumber[ControllerIndex],
-									&CANMsgObject, MSG_OBJ_TYPE_RX);	
-					}
-					else
-					{
-						//MISRA
-					}
-					
-					// Increment message object number for next HTH or HRH
-					MessageObjectNumber[ControllerIndex] ++;
-				}
-			}
-			
-			/* [SWS_Can_00246] The function Can_Init shall change the module state to
-				CAN_READY, after initializing all controllers inside the HW
-				Unit.(SRS_SPAL_12057, SRS_Can_01041) */
-			CanDriverState = CAN_READY;
-		}
-		else
-		{
-			CanDevelopmentError = CAN_E_TRANSITION;
-		}
-	}
-}
 
 
 
@@ -180,7 +24,7 @@ static uint8 InterruptDisableCount[NUMBER_OF_CONTROLLERS];
 static uint8 InterruptEnableCount[NUMBER_OF_CONTROLLERS];
 static CanDriverStateType CanDriverState=CAN_UNINIT;
 static MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUMBER_OF_HOH][MAX_NUMBER_OF_HANDLERS];
-
+static ControllerStateType ControllerState[NUMBER_OF_CONTROLLERS] = {CAN_CS_UNINIT, CAN_CS_UNINIT};
 
 
 
@@ -965,7 +809,7 @@ Description:
                     the network.]**/
         else	if ( Transition ==CAN_T_START)
         {
-            if(status_Initialization)
+            if(ControllerState[Controller]==CAN_CS_STOPPED)
             {
                                     /**[SWS_Can_00262] [ The function Can_SetControllerMode(CAN_T_START) shall
                     wait for limited time until the CAN controller is fully operational. Compare to
@@ -984,7 +828,7 @@ Description:
                 else if (CanTimeoutDuration != 0)
                 {
                     Can_EnableControllerInterrupts(Controller);
-                    ControllerState[Controller]=true;
+                    ControllerState[Controller]=CAN_CS_STARTED;
                     return CAN_OK;
                 }
             }
@@ -1003,7 +847,7 @@ Description:
                 the network.]**/
         else if (Transition ==CAN_T_STOP)
         {
-            if(!status_Initialization)
+            if(ControllerState[Controller]==CAN_CS_STARTED)
             {
                                 /**[SWS_Can_00264] [ The function Can_SetControllerMode(CAN_T_STOP) shall
                 wait for a limited time until the CAN controller is really switched off. Compare to
@@ -1038,7 +882,7 @@ Description:
                         }
                     }
                     Can_DisableControllerInterrupts(Controller);
-                    ControllerState[Controller]=false;
+                    ControllerState[Controller]=CAN_CS_STOPPED;
                     return CAN_OK;
                 }
 
@@ -1060,7 +904,7 @@ Description:
                             /**[SWS_Can_00290] [ If the CAN HW does not support a sleep mode, the function
                 Can_SetControllerMode(CAN_T_SLEEP) shall set the CAN controller to the logical
                 sleep mode.]**/
-            if( (!status_Initialization) && (! LogicalSleep[Controller]) )
+            if( (ControllerState[Controller]==CAN_CS_STARTED) )
             {
 
                 CANDisable(cancontrollerbaseadress);
@@ -1077,6 +921,7 @@ Description:
                 {
                     Can_DisableControllerInterrupts(Controller);
                     LogicalSleep[Controller]=true;
+                    ControllerState[Controller]=CAN_CS_SLEEP;
                     return CAN_OK;
                 }
                                     /**[SWS_Can_00411] [ When the function Can_SetControllerMode(CAN_T_SLEEP)
@@ -1095,7 +940,7 @@ Description:
             else if (Transition ==CAN_T_WAKEUP)
             {
 
-                if(status_Initialization &&LogicalSleep[Controller])
+                if(ControllerState[Controller]==CAN_CS_SLEEP)
                 {
                                             /**[SWS_Can_00268] [ The function Can_SetControllerMode(CAN_T_WAKEUP) shall
                         wait for a limited time until the CAN controller is in STOPPED state. Compare to
@@ -1115,6 +960,7 @@ Description:
                     {
                         Can_EnableControllerInterrupts(Controller);
                         LogicalSleep[Controller]=false;
+                        ControllerState[Controller]=CAN_CS_STARTED;
                         return CAN_OK;
                     }
 
@@ -1142,6 +988,158 @@ Description:
     }
 
 
+
+/*********************************************************************************************************************************       
+Service name:                                       Can_Init
+Service ID[hex]:                                    0x00
+Sync/Async:                                         Synchronous
+Reentrancy:                                         Non Reentrant
+Parameters (in):                                    Config ---> Pointer to driver configuration.                                            
+Parameters (inout):                                 None
+Parameters (out):                                   None
+Return value:                                       None
+Description:										This function initializes the module.
+*********************************************************************************************************************************/
+void Can_Init(const Can_ConfigType* Config)
+{
+	uint32_t CanSysCtlPeripheral[2] = {
+		SYSCTL_PERIPH_CAN0,
+		SYSCTL_PERIPH_CAN1
+	};
+	uint8_t ControllerIndex, HardwareObjectIndex, ObjectIndex;
+	uint8_t MessageObjectNumber[NUMBER_OF_CONTROLLERS] = {1,1};
+	bool UninitCheck = true;
+	tCANBitClkParms CANBitClkParms;
+	tCANMsgObject CANMsgObject;
+	CanObjectType HardwareObjectType;
+	
+	/* [SWS_Can_00174] If default error detection for the Can module is enabled: The
+		function Can_Init shall raise the error CAN_E_TRANSITION if the driver is not in
+		state CAN_UNINIT. */
+	if(CanDriverState != CAN_UNINIT)
+	{
+		CanDevelopmentError = CAN_E_TRANSITION;
+	}
+	else
+	{
+		/* [SWS_Can_00408] If default error detection for the Can module is enabled: The
+			function Can_Init shall raise the error CAN_E_TRANSITION if the CAN controllers
+			are not in state UNINIT. */
+		for(ControllerIndex=0U; ControllerIndex < NUMBER_OF_CONTROLLERS; ControllerIndex++)
+		{
+			if(ControllerState[ControllerIndex] != CAN_CS_UNINIT)
+			{
+				UninitCheck = false;
+			}
+			else
+			{
+				//MISRA
+			}
+		}
+
+
+		if(UninitCheck == true)
+		{
+			/* [SWS_Can_00245] The function Can_Init shall initialize all CAN controllers
+				according to their configuration. (SRS_SPAL_12057, SRS_Can_01041) */
+				
+				
+			// Loop over all controllers
+			for(ControllerIndex=0U; ControllerIndex < NUMBER_OF_CONTROLLERS; ControllerIndex++)
+			{
+				// Check if controller needs to be activated
+				if(Config->CanConfigSet.CanController[ControllerIndex].CanControllerActivation)
+				{	
+					// Enable Can peripheral clock
+					SysCtlPeripheralEnable(CanSysCtlPeripheral[ControllerIndex]);
+					// Wait for clock to be enabled
+					while(!SysCtlPeripheralReady(CanSysCtlPeripheral[ControllerIndex]));
+					
+					// Initialize Can controller
+					CANInit(Config->CanConfigSet.CanController[ControllerIndex].CanControllerBaseAddress);
+					
+					// Set bit timing values
+					CANBitClkParms.ui32SyncPropPhase1Seg = Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudrate->CanControllerPropSeg +\
+																Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudrate->CanControllerSeg1 + (uint32_t)1;
+					CANBitClkParms.ui32Phase2Seg = Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudrate->CanControllerSeg2;
+					CANBitClkParms.ui32SJW = Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudrate->CanControllerSyncJumpWidth;
+					CANBitClkParms.ui32QuantumPrescaler =  SysCtlClockGet() / (CANBitClkParms.ui32SyncPropPhase1Seg + CANBitClkParms.ui32Phase2Seg) *\
+																	(Config->CanConfigSet.CanController[ControllerIndex].CanControllerDefaultBaudrate->CanControllerBaudRate * 1000U);
+					// Set bit timing
+					CANBitTimingSet(Config->CanConfigSet.CanController[ControllerIndex].CanControllerBaseAddress, &CANBitClkParms);
+					
+					/* [SWS_Can_00259] The function Can_Init shall set all CAN controllers in the state STOPPED. */
+					ControllerState[ControllerIndex] = CAN_CS_STOPPED;
+				}
+				else
+				{
+					//MISRA
+				}
+				
+			}
+			
+			// Loop over all HOH
+			for(HardwareObjectIndex = 0; HardwareObjectIndex < NUMBER_OF_HOH ; HardwareObjectIndex++)
+			{
+				// Get HOH's Controller ID
+				ControllerIndex = Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanControllerRef->CanControllerId;
+				// Get HOH's Object Type
+				HardwareObjectType = Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanObjectType;
+				
+				// Loop over all HTH or HRH
+				for(ObjectIndex = 0; ObjectIndex < Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHwObjectCount; ObjectIndex++)
+				{
+					// Assign a message object to the HTH or HRH
+					MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].MessageObjectNumber = MessageObjectNumber[ControllerIndex];
+					// Set Message Objects as Free
+					MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].Confirmation = true;
+					// If the HOH type was receive then additional operations must be done
+					if(HardwareObjectType == RECEIVE)
+					{
+						// Set HRH values
+						CANMsgObject.ui32MsgID = Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHwFilter.CanHwFilterCode;
+						CANMsgObject.ui32MsgIDMask = Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHwFilter.CanHwFilterMask;
+						CANMsgObject.ui32MsgLen = 8U;
+						
+						if(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanIdType == STANDARD)
+						{
+							CANMsgObject.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER | MSG_OBJ_FIFO;
+						}
+						else if(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanIdType == EXTENDED)
+						{
+							CANMsgObject.ui32Flags = MSG_OBJ_RX_INT_ENABLE | MSG_OBJ_USE_ID_FILTER | MSG_OBJ_EXTENDED_ID | MSG_OBJ_USE_EXT_FILTER | MSG_OBJ_FIFO;
+						}
+						else
+						{
+							//MISRA
+						}
+						
+						// Make controller receive on this message object
+						CANMessageSet(Config->CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanControllerRef->CanControllerBaseAddress,
+									MessageObjectNumber[ControllerIndex],
+									&CANMsgObject, MSG_OBJ_TYPE_RX);	
+					}
+					else
+					{
+						//MISRA
+					}
+					
+					// Increment message object number for next HTH or HRH
+					MessageObjectNumber[ControllerIndex] ++;
+				}
+			}
+			
+			/* [SWS_Can_00246] The function Can_Init shall change the module state to
+				CAN_READY, after initializing all controllers inside the HW
+				Unit.(SRS_SPAL_12057, SRS_Can_01041) */
+			CanDriverState = CAN_READY;
+		}
+		else
+		{
+			CanDevelopmentError = CAN_E_TRANSITION;
+		}
+	}
+}
 
 
 
