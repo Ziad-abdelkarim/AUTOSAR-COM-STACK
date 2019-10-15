@@ -1,7 +1,14 @@
-
+#define NUMBER_OF_CAN_CONTROLLER   2U
+#define NUMBER_OF_HOH              2U
+#define CONTROLLER_ZERO            0U
+#define CONTROLLER_ONE             1U
+#define MIN_OBJECT_HANDLER         0x01U
+#define MAX_OBJECT_HANDLER         0x20U
+#define INDEX_ZERO                 0U
+#define INDEX_ONE                  1U
 
 uint8 CanDevolpmentErrorType;
-static uint8 CanStateType= CAN_UNINIT;
+static uint8 CanStateType;
 static uint8 InterruptDisableCount[NUMBER_OF_CAN_CONTROLLER ];
 static uint8 InterruptEnableCount[NUMBER_OF_CAN_CONTROLLER ];
 
@@ -26,18 +33,18 @@ void Can_DisableControllerInterrupts(uint8 Controller)
     {
         if (Controller >= NUMBER_OF_CAN_CONTROLLER) //check parameter Controller is out of range
         {
-            //CanDevolpmentErrorType = CAN_E_PARAM_CONTROLLER; //raise the error CAN_E_PARAM_CONTROLLER if the parameter Controller is out of range
+            CanDevolpmentErrorType = CAN_E_PARAM_CONTROLLER; //raise the error CAN_E_PARAM_CONTROLLER if the parameter Controller is out of range
         }
         else
         { //not found any error {the driver not yet initialized or parameter Controller is out of range}
             InterruptDisableCount[Controller]++; // increase a counter to make disable Controller Interrupts
-            if (Controller == CAN_CONTROLLERS_ONE) //check which controllers (Controller0 or Controller1)
+            if (Controller == CONTROLLER_ZERO) //check which controllers (Controller0 or Controller1)
             { //Disable the CAN0 interrupt if it is enabled.
                 if (IntIsEnabled(INT_CAN0)) //Returns TURE if a peripheral interrupt is enabled.
                 {
                     /*When Can_EnableControllerInterrupts has been called several times,
                      *When Can_DisableControllerInterrupts must be called as many times before the interrupts are disabled. */
-                    if (InterruptEnableCount[Controller] >= ONE) //check how many times you make to disable Controller Interrupts
+                    if (InterruptEnableCount[Controller] >= INDEX_ONE) //check how many times you make to disable Controller Interrupts
                     {
                         InterruptEnableCount[Controller]--; //incremental enable count until reach to zero
                     }
@@ -45,7 +52,7 @@ void Can_DisableControllerInterrupts(uint8 Controller)
                     {
                         //MISRA
                     }
-                    if (InterruptEnableCount[Controller] == ZERO)
+                    if (InterruptEnableCount[Controller] == INDEX_ZERO)
                     { //Disables the specified CAN controller interrupt sources. Only enabled interrupt sources can cause a processor interrupt.
                         CANIntDisable(
                                 Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress,
@@ -63,14 +70,14 @@ void Can_DisableControllerInterrupts(uint8 Controller)
                     //it is disabled
                 }
             }
-            else
-            { //we use here controller1
+            else if(Controller == CONTROLLER_ONE)//check which controllers (Controller0 or Controller1)
+            {
               //Disable the CAN1 interrupt if it is enabled.
                 if (IntIsEnabled(INT_CAN1)) //Returns TURE if a peripheral interrupt is enabled.
                 {
                     /*When Can_EnableControllerInterrupts has been called several times,
                      *When Can_DisableControllerInterrupts must be called as many times before the interrupts are disabled. */
-                    if (InterruptEnableCount[Controller] >= ONE) //check how many times you to make disable Controller Interrupts
+                    if (InterruptEnableCount[Controller] >= INDEX_ONE) //check how many times you to make disable Controller Interrupts
                     {
                         InterruptEnableCount[Controller]--; //incremental enable count until reach to zero
                     }
@@ -78,7 +85,7 @@ void Can_DisableControllerInterrupts(uint8 Controller)
                     {
                         //MISRA
                     }
-                    if (InterruptEnableCount[Controller] == ZERO)
+                    if (InterruptEnableCount[Controller] == INDEX_ZERO)
                     { //Disables the specified CAN controller interrupt sources. Only enabled interrupt sources can cause a processor interrupt.
                         CANIntDisable(
                                 Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress,
@@ -96,6 +103,10 @@ void Can_DisableControllerInterrupts(uint8 Controller)
                     //it is disabled
                 }
             }
+             else
+                {
+                //MISRA
+                }
         }
     }
 }
@@ -121,19 +132,19 @@ void Can_EnableControllerInterrupts(uint8 Controller)
     {
         if (Controller >= NUMBER_OF_CAN_CONTROLLER) //check parameter Controller is out of range
         {
-            //CanDevolpmentErrorType = CAN_E_PARAM_CONTROLLER; //raise the error CAN_E_PARAM_CONTROLLER if the parameter Controller is out of range
+            CanDevolpmentErrorType = CAN_E_PARAM_CONTROLLER; //raise the error CAN_E_PARAM_CONTROLLER if the parameter Controller is out of range
         }
         else
         { //not found any error {the driver not yet initialized or parameter Controller is out of range}
             InterruptEnableCount[Controller]++; // increase a counter to make enable
-            if (Controller == CAN_CONTROLLERS_ONE) //check which controllers (Controller0 or Controller1)
+            if (Controller == CONTROLLER_ZERO) //check which controllers (Controller0 or Controller1)
             {
                 //enable the CAN0 interrupt if it is disabled.
                 if (!IntIsEnabled(INT_CAN0)) //Returns TURE if a peripheral interrupt is enabled.
                 {
                     /*When Can_DisableControllerInterrupts has been called several times,
                      *When  Can_EnableControllerInterrupts must be called as many times before the interrupts are re-enabled. */
-                    if (InterruptDisableCount[Controller] >= ONE) //check how many times you make to enable Controller Interrupts
+                    if (InterruptDisableCount[Controller] >= INDEX_ONE) //check how many times you make to enable Controller Interrupts
                     {
                         InterruptDisableCount[Controller]--; //incremental disable count until reach to zero
                     }
@@ -141,7 +152,7 @@ void Can_EnableControllerInterrupts(uint8 Controller)
                     {
                         //MISRA
                     }
-                    if (InterruptDisableCount[Controller] == ZERO)
+                    if (InterruptDisableCount[Controller] == INDEX_ZERO)
                     { //This function enables specific interrupt sources of the CAN controller. Only enabled sources cause a processor interrupt.
                         CANIntEnable(
                                 Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress,
@@ -159,14 +170,14 @@ void Can_EnableControllerInterrupts(uint8 Controller)
                     //it is enabled
                 }
             }
-            else
-            { //we use here controller1
+            else if(Controller == CONTROLLER_ONE)//check which controllers (Controller0 or Controller1)
+            {
               //enable the CAN1 interrupt if it is disabled.
                 if (!IntIsEnabled(INT_CAN1)) //Returns TURE if a peripheral interrupt is enabled.
                 {
                     /*When Can_DisableControllerInterrupts has been called several times,
                      *When  Can_EnableControllerInterrupts must be called as many times before the interrupts are re-enabled. */
-                    if (InterruptDisableCount[Controller] >= ONE) //check how many times you make to enable Controller Interrupts
+                    if (InterruptDisableCount[Controller] >= INDEX_ONE) //check how many times you make to enable Controller Interrupts
                     {
                         InterruptDisableCount[Controller]--; //incremental disable count  until reach to zero
                     }
@@ -174,7 +185,7 @@ void Can_EnableControllerInterrupts(uint8 Controller)
                     {
                         //MISRA
                     }
-                    if (InterruptDisableCount[Controller] == ZERO)
+                    if (InterruptDisableCount[Controller] == INDEX_ZERO)
                     { //This function enables specific interrupt sources of the CAN controller. Only enabled sources cause a processor interrupt.
                         CANIntEnable(
                                 Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress,
@@ -192,6 +203,10 @@ void Can_EnableControllerInterrupts(uint8 Controller)
                     //it is enabled
                 }
             }
+            else
+            {
+            //MISRA
+            }
         }
     }
 }
@@ -203,14 +218,14 @@ void Can_EnableControllerInterrupts(uint8 Controller)
  Parameters (inout):                            None
  Parameters (out):                              None
  Return value:                                  None
- Description:                      Can0 Interrupt service routine 
+ Description:                      Can0 Interrupt service routine
  ***********************************************************************************************/
 void Can0_InterruptHandler(void)
 {
     uint32 ui32Status;
     uint8 ui8NumberOfObjectHandler;
     uint8 ui8NumberOfObject;
-    uint32 ui32ErrorFlag = 0;
+    uint32 ui32ErrorFlag = INDEX_ZERO;
 
     tCANMsgObject ReceivedMessage;
     Can_HwType ReceiverMailBox;
@@ -224,7 +239,7 @@ void Can0_InterruptHandler(void)
      all other numbers are reserved and have no meaning in this system
      */
     ui32Status = CANIntStatus(
-            Can.CanConfigSet.CanController[0U].CanControllerBaseAddress,
+            Can.CanConfigSet.CanController[CONTROLLER_ZERO].CanControllerBaseAddress,
             CAN_INT_STS_CAUSE);
     /*
      If this was a status interrupt acknowledge it by reading the CAN
@@ -232,7 +247,7 @@ void Can0_InterruptHandler(void)
      */
     if (ui32Status == CAN_INT_INTID_STATUS)
     {
-        CANIntClear(Can.CanConfigSet.CanController[0U].CanControllerBaseAddress,
+        CANIntClear(Can.CanConfigSet.CanController[CONTROLLER_ZERO].CanControllerBaseAddress,
                     ui32Status); // Clear the message object interrupt
         /*
          Read the controller status.  This will return a field of status
@@ -241,44 +256,44 @@ void Can0_InterruptHandler(void)
          The act of reading this status will clear the interrupt.
          */
         ui32Status = CANStatusGet(
-                Can.CanConfigSet.CanController[1U].CanControllerBaseAddress,
+                Can.CanConfigSet.CanController[CONTROLLER_ZERO].CanControllerBaseAddress,
                 CAN_STS_CONTROL);
         ui32ErrorFlag |= ui32Status; //Add ERROR flags to list of current errors To be handled
         if (ui32ErrorFlag & CAN_STATUS_BUS_OFF) //check if CAN controller has entered a Bus Off state.
         {
-            Can_SetControllerMode(ControllerIndex, CAN_T_STOP); // [SWS_Can_00259] The function Can_Init shall set all CAN controllers in the state STOPPED. 
-            /*     
-             The CanIf module is notified with the function CanIf_ControllerBusOff after 
+            Can_SetControllerMode(CONTROLLER_ZERO, CAN_T_STOP); // [SWS_Can_00259] The function Can_Init shall set all CAN controllers in the state STOPPED.
+            /*
+             The CanIf module is notified with the function CanIf_ControllerBusOff after
              STOPPED state is reached referring to the corresponding CAN controller with the abstract CanIf ControllerId.⌋(SRS_Can_01055)
              */
-            //CanIf_ControllerBusOff(1U);           
+            CanIf_ControllerBusOff(CONTROLLER_ZERO);
         }
         else
         {
             //MISRA
         }
     }
-    else if ((ui32Status >= 0x01U) && (ui32Status <= 0x20U)) //check if ObjectHandler in range 1-->32 .
+    else if ((ui32Status >= MIN_OBJECT_HANDLER) && (ui32Status <= MAX_OBJECT_HANDLER)) //check if ObjectHandler in range 1-->32 .
     {
-        CANIntClear(Can.CanConfigSet.CanController[0U].CanControllerBaseAddress,
+        CANIntClear(Can.CanConfigSet.CanController[CONTROLLER_ZERO].CanControllerBaseAddress,
                     ui32Status);  // Clear the message object interrupt
-        for (ui8NumberOfObjectHandler = 0U;
-                ui8NumberOfObjectHandler < NUM_OF_HOH;
-                ui8NumberOfObjectHandler++) //determine OfObjectHandler which we need 
+        for (ui8NumberOfObjectHandler = INDEX_ZERO;
+                ui8NumberOfObjectHandler < NUMBER_OF_HOH;
+                ui8NumberOfObjectHandler++) //determine OfObjectHandler which we need
         {
             if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef
-                    == &CanContainer.CanConfigSet.CanController[1]) //check which CanController we use
+                    == &CanContainer.CanConfigSet.CanController[CONTROLLER_ZERO]) //check which CanController we use
             {
                 if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
                         == TRANSMIT)  //check if CanObjectType is transmit
                 {
-                    //determine all OfObjectHandler transmit  
-                    for (ui8NumberOfObject = 0U;
+                    //determine all OfObjectHandler transmit
+                    for (ui8NumberOfObject = INDEX_ZERO;
                             ui8NumberOfObject
                                     < Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectCount;
                             ui8NumberOfObject++)
                     {
-                        if (MessageObject[0U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
+                        if (MessageObject[CONTROLLER_ZERO][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
                                 == ui32Status) //check which MessageObjectNumber we need to transmit form it
                         {
                             //confirms a previously successfully processed transmission
@@ -289,30 +304,30 @@ void Can0_InterruptHandler(void)
                              Note: The service CanIf_TxConfirmation() is implemented in CanIf and called
                              by the CanDrv after the CAN L-PDU has been transmitted on the CAN network.
                              */
-                            //CanIf_TxConfirmation(Message_Confirmation[ui8NumberOfObjectHandler][ui8NumberOfObject].PduId);
+                            CanIf_TxConfirmation(Message_Confirmation[ui8NumberOfObjectHandler][ui8NumberOfObject].PduId);
                         }
                         else
                         {
-                            //MISRA 
+                            //MISRA
                         }
                     }
                 }
                 else if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
                         == RECEIVE)  //check if CanObjectType is receive
                 {
-                    //determine all OfObjectHandler receive                            
-                    for (ui8NumberOfObject = 0U;
+                    //determine all OfObjectHandler receive
+                    for (ui8NumberOfObject = INDEX_ZERO;
                             ui8NumberOfObject
                                     < Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectCount;
                             ui8NumberOfObject++)
                     {
-                        if (MessageObject[0U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
-                                == ui32Status) //check which MessageObjectNumber we need to receive in it 
+                        if (MessageObject[CONTROLLER_ZERO][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
+                                == ui32Status) //check which MessageObjectNumber we need to receive in it
                         {
                             CANMessageGet(
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerBaseAddress,
-                                    MessageObject[0U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber,
-                                    &ReceivedMessage, 0U);
+                                    MessageObject[CONTROLLER_ZERO][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber,
+                                    &ReceivedMessage, INDEX_ONE);
                             ReceiverMailBox.Hoh = Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectId;
                             ReceiverMailBox.ControllerId =
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerId;
@@ -321,28 +336,28 @@ void Can0_InterruptHandler(void)
                                     ReceivedMessage.pui8MsgData;
                             ReceiverPduInfo.SduLength =
                                     ReceivedMessage.ui32MsgLen;
-                            //CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);                      
+                            CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);
                         }
                         else
                         {
-                            //MISRA 
+                            //MISRA
                         }
                     }
                 }
                 else
                 {
-                    //MISRA 
+                    //MISRA
                 }
             }
             else
             {
-                //MISRA 
+                //MISRA
             }
         }
     }
     else
     {
-        //MISRA         
+        //MISRA
     }
 }
 
@@ -353,7 +368,7 @@ void Can0_InterruptHandler(void)
  Parameters (inout):                            None
  Parameters (out):                              None
  Return value:                                  None
- Description:                      Can1 Interrupt service routine 
+ Description:                      Can1 Interrupt service routine
  ***********************************************************************************************/
 void Can1_InterruptHandler(void)
 {
@@ -361,7 +376,7 @@ void Can1_InterruptHandler(void)
     uint32 ui32Status;
     uint8 ui8NumberOfObjectHandler;
     uint8 ui8NumberOfObject;
-    uint32 ui32ErrorFlag = 0;
+    uint32 ui32ErrorFlag = INDEX_ZERO;
 
     tCANMsgObject ReceivedMessage;
     Can_HwType ReceiverMailBox;
@@ -375,7 +390,7 @@ void Can1_InterruptHandler(void)
      all other numbers are reserved and have no meaning in this system
      */
     ui32Status = CANIntStatus(
-            Can.CanConfigSet.CanController[1U].CanControllerBaseAddress,
+            Can.CanConfigSet.CanController[CONTROLLER_ONE].CanControllerBaseAddress,
             CAN_INT_STS_CAUSE);
     /*
      If this was a status interrupt acknowledge it by reading the CAN
@@ -383,7 +398,7 @@ void Can1_InterruptHandler(void)
      */
     if (ui32Status == CAN_INT_INTID_STATUS)
     {
-        CANIntClear(Can.CanConfigSet.CanController[1U].CanControllerBaseAddress,
+        CANIntClear(Can.CanConfigSet.CanController[CONTROLLER_ONE].CanControllerBaseAddress,
                     ui32Status); // Clear the message object interrupt
         /*
          Read the controller status.  This will return a field of status
@@ -392,44 +407,44 @@ void Can1_InterruptHandler(void)
          The act of reading this status will clear the interrupt.
          */
         ui32Status = CANStatusGet(
-                Can.CanConfigSet.CanController[1U].CanControllerBaseAddress,
+                Can.CanConfigSet.CanController[CONTROLLER_ONE].CanControllerBaseAddress,
                 CAN_STS_CONTROL);
         ui32ErrorFlag |= ui32Status; //Add ERROR flags to list of current errors To be handled
         if (ui32ErrorFlag & CAN_STATUS_BUS_OFF) //check if CAN controller has entered a Bus Off state.
         {
-            Can_SetControllerMode(ControllerIndex, CAN_T_STOP); // [SWS_Can_00259] The function Can_Init shall set all CAN controllers in the state STOPPED. 
-            /*     
-             The CanIf module is notified with the function CanIf_ControllerBusOff after 
+            Can_SetControllerMode(CONTROLLER_ONE, CAN_T_STOP); // [SWS_Can_00259] The function Can_Init shall set all CAN controllers in the state STOPPED.
+            /*
+             The CanIf module is notified with the function CanIf_ControllerBusOff after
              STOPPED state is reached referring to the corresponding CAN controller with the abstract CanIf ControllerId.⌋(SRS_Can_01055)
              */
-            //CanIf_ControllerBusOff(1U);           
+            CanIf_ControllerBusOff(CONTROLLER_ONE);
         }
         else
         {
             //MISRA
         }
     }
-    else if ((ui32Status >= 0x01U) && (ui32Status <= 0x20U)) //check if ObjectHandler in range 1-->32 .
+    else if ((ui32Status >= MIN_OBJECT_HANDLER) && (ui32Status <= MAX_OBJECT_HANDLER)) //check if ObjectHandler in range 1-->32 .
     {
-        CANIntClear(Can.CanConfigSet.CanController[1U].CanControllerBaseAddress,
+        CANIntClear(Can.CanConfigSet.CanController[CONTROLLER_ONE].CanControllerBaseAddress,
                     ui32Status);  // Clear the message object interrupt
-        for (ui8NumberOfObjectHandler = 0U;
-                ui8NumberOfObjectHandler < NUM_OF_HOH;
-                ui8NumberOfObjectHandler++) //determine OfObjectHandler which we need 
+        for (ui8NumberOfObjectHandler = INDEX_ZERO;
+                ui8NumberOfObjectHandler < NUMBER_OF_HOH;
+                ui8NumberOfObjectHandler++) //determine OfObjectHandler which we need
         {
             if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef
-                    == &CanContainer.CanConfigSet.CanController[1]) //check which CanController we use
+                    == &CanContainer.CanConfigSet.CanController[CONTROLLER_ONE]) //check which CanController we use
             {
                 if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
                         == TRANSMIT)  //check if CanObjectType is transmit
                 {
-                    //determine all OfObjectHandler transmit  
-                    for (ui8NumberOfObject = 0U;
+                    //determine all OfObjectHandler transmit
+                    for (ui8NumberOfObject = INDEX_ZERO;
                             ui8NumberOfObject
                                     < Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectCount;
                             ui8NumberOfObject++)
                     {
-                        if (MessageObject[1U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
+                        if (MessageObject[CONTROLLER_ONE][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
                                 == ui32Status) //check which MessageObjectNumber we need to transmit form it
                         {
                             //confirms a previously successfully processed transmission
@@ -440,30 +455,30 @@ void Can1_InterruptHandler(void)
                              Note: The service CanIf_TxConfirmation() is implemented in CanIf and called
                              by the CanDrv after the CAN L-PDU has been transmitted on the CAN network.
                              */
-                            //CanIf_TxConfirmation(Message_Confirmation[ui8NumberOfObjectHandler][ui8NumberOfObject].PduId);
+                            CanIf_TxConfirmation(Message_Confirmation[ui8NumberOfObjectHandler][ui8NumberOfObject].PduId);
                         }
                         else
                         {
-                            //MISRA 
+                            //MISRA
                         }
                     }
                 }
                 else if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
                         == RECEIVE)  //check if CanObjectType is receive
                 {
-                    //determine all OfObjectHandler receive                            
-                    for (ui8NumberOfObject = 0U;
+                    //determine all OfObjectHandler receive
+                    for (ui8NumberOfObject = INDEX_ZERO;
                             ui8NumberOfObject
                                     < Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectCount;
                             ui8NumberOfObject++)
                     {
-                        if (MessageObject[1U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
-                                == ui32Status) //check which MessageObjectNumber we need to receive in it 
+                        if (MessageObject[CONTROLLER_ONE][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
+                                == ui32Status) //check which MessageObjectNumber we need to receive in it
                         {
                             CANMessageGet(
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerBaseAddress,
-                                    MessageObject[1U][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber,
-                                    &ReceivedMessage, 1U);
+                                    MessageObject[CONTROLLER_ONE][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber,
+                                    &ReceivedMessage, INDEX_ONE);
                             ReceiverMailBox.Hoh = Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanHwObjectId;
                             ReceiverMailBox.ControllerId =
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerId;
@@ -472,27 +487,27 @@ void Can1_InterruptHandler(void)
                                     ReceivedMessage.pui8MsgData;
                             ReceiverPduInfo.SduLength =
                                     ReceivedMessage.ui32MsgLen;
-                            //CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);                      
+                            CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);
                         }
                         else
                         {
-                            //MISRA 
+                            //MISRA
                         }
                     }
                 }
                 else
                 {
-                    //MISRA 
+                    //MISRA
                 }
             }
             else
             {
-                //MISRA 
+                //MISRA
             }
         }
     }
     else
     {
-        //MISRA         
+        //MISRA
     }
 }
