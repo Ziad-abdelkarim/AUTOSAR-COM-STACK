@@ -10,42 +10,7 @@ AUTOSAR Version:            4.2.2
 /********************************************************************************************************************************
 **                                                                       includes                                                                                         **
 ********************************************************************************************************************************/
-#include "Can_GeneralTypes.h"
-#include "Std_Types.h"
 #include "Can.h"
-
-
-
-
-
-=======
-
-
-
-
-typedef struct{
-  uint8_t MessageObjectNumber ,
-  bool confirmation,
-  PDUIDTYPE PduId
-}MessageObjectType;
-
-MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUMBER_OF_HOH][MAX_NUMBER_OF_HANDLERS];
-
-typedef enum  {
-  CAN_READY,
-	CAN_UNINIT
-}CanDriveState;
-
-const CanHardwareObject* Can_GetHardwareObjectOfHTH(Can_HwHandleType HTH){
-  const CanHardwareObject *ADDRESS;
-  for(uint8 HOI=0;HOI<NUMBER_OF_HOH;HOI++){
-    if(Can.CanConfigSet.CanHardwareObject[HOI].CanObjectId==HTH){
-      ADDRESS=&CanConfigSet.CanHardwareObject[HOI];
-      return ADDRESS;
-    }
-  }
-}
-
 
 
 /*********************************************************************************************************************************
@@ -263,19 +228,6 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth,const Can_PduType* PduInfo)
 
 
       }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /*
   14- The CAN Frame has to be sent according to the two most significant bits of Can_PduType->id. The CAN FD frame bit is only evaluated if CAN Controller
