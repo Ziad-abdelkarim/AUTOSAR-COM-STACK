@@ -293,6 +293,7 @@ Parameters (out):                              None
 Return value:                                  None
 Description:               This function disables all interrupts for this CAN controller.
 ***********************************************************************************************/
+#if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
 void Can_DisableControllerInterrupts(uint8 Controller)
 {
     if (CanDriverState!= CAN_READY) //check if can driver is not ready
@@ -301,14 +302,15 @@ void Can_DisableControllerInterrupts(uint8 Controller)
     }
     else
     {
-        if (Controller >= NUMBER_OF_CONTROLLERS) //check parameter Controller is out of range
+		if (Controller >= NUMBER_OF_CONTROLLERS) //check parameter Controller is out of range
         {
             CanDevelopmentError = CAN_E_PARAM_CONTROLLER; //raise the error CAN_E_PARAM_CONTROLLER if the parameter Controller is out of range
         }
         else
         { //not found any error {the driver not yet initialized or parameter Controller is out of range}
             InterruptDisableCount[Controller]++; // increase a counter to make disable Controller Interrupts
-            if (Controller == CONTROLLER_ZERO) //check which controllers (Controller0 or Controller1)
+#if(Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)            
+		   if (Controller == CONTROLLER_ZERO) //check which controllers (Controller0 or Controller1)
             { //Disable the CAN0 interrupt if it is enabled.
                 if (IntIsEnabled(INT_CAN0)) //Returns TURE if a peripheral interrupt is enabled.
                 {
@@ -340,6 +342,8 @@ void Can_DisableControllerInterrupts(uint8 Controller)
                     //it is disabled
                 }
             }
+#endif
+#if(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT)			
             else if(Controller == CONTROLLER_ONE)//check which controllers (Controller0 or Controller1)
             {
               //Disable the CAN1 interrupt if it is enabled.
@@ -373,14 +377,15 @@ void Can_DisableControllerInterrupts(uint8 Controller)
                     //it is disabled
                 }
             }
-             else
-                {
-                //MISRA
-                }
+#endif			
+         else
+            {
+             //MISRA
+            }
         }
     }
 }
-
+#endif
 /***********************************************************************************************
 Service name:                     Can_EnableControllerInterrupts
 Service ID[hex]:                               0x05
@@ -392,6 +397,7 @@ Parameters (out):                              None
 Return value:                                  None
 Description:               This function enables all interrupts for this CAN controller.
 ***********************************************************************************************/
+#if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
 void Can_EnableControllerInterrupts(uint8 Controller)
 {
     if (CanDriverState!= CAN_READY) //check if can driver is not ready
@@ -407,7 +413,8 @@ void Can_EnableControllerInterrupts(uint8 Controller)
         else
         { //not found any error {the driver not yet initialized or parameter Controller is out of range}
             InterruptEnableCount[Controller]++; // increase a counter to make enable
-            if (Controller == CONTROLLER_ZERO) //check which controllers (Controller0 or Controller1)
+#if(Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)              
+			if (Controller == CONTROLLER_ZERO) //check which controllers (Controller0 or Controller1)
             {
                 //enable the CAN0 interrupt if it is disabled.
                 if (!IntIsEnabled(INT_CAN0)) //Returns TURE if a peripheral interrupt is enabled.
@@ -440,7 +447,9 @@ void Can_EnableControllerInterrupts(uint8 Controller)
                     //it is enabled
                 }
             }
-            else if(Controller == CONTROLLER_ONE)//check which controllers (Controller0 or Controller1)
+#endif
+#if(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT)           
+		   else if(Controller == CONTROLLER_ONE)//check which controllers (Controller0 or Controller1)
             {
               //enable the CAN1 interrupt if it is disabled.
                 if (!IntIsEnabled(INT_CAN1)) //Returns TURE if a peripheral interrupt is enabled.
@@ -473,6 +482,7 @@ void Can_EnableControllerInterrupts(uint8 Controller)
                     //it is enabled
                 }
             }
+#endif			
             else
             {
             //MISRA
@@ -480,7 +490,7 @@ void Can_EnableControllerInterrupts(uint8 Controller)
         }
     }
 }
-
+#endif
 /***********************************************************************************************
  Service name:                         Can0_InterruptHandler
  Sync/Async:                                 Synchronous
@@ -490,6 +500,7 @@ void Can_EnableControllerInterrupts(uint8 Controller)
  Return value:                                  None
  Description:                      Can0 Interrupt service routine
  ***********************************************************************************************/
+#if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT))
 void Can0_InterruptHandler(void)
 {
     uint32 ui32Status;
@@ -554,7 +565,8 @@ void Can0_InterruptHandler(void)
             if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef
                     == &Can.CanConfigSet.CanController[CONTROLLER_ZERO]) //check which CanController we use
             {
-                if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
+#if(Can0RxProcessing==INTERRUPT)
+				if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
                         == TRANSMIT)  //check if CanObjectType is TRANSMIT
                 {
                     //determine all OfObjectHandler TRANSMIT
@@ -582,6 +594,8 @@ void Can0_InterruptHandler(void)
                         }
                     }
                 }
+#endif
+#if(Can0RxProcessing==INTERRUPT)				
                 else if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
                         == RECEIVE)  //check if CanObjectType is receive
                 {
@@ -614,6 +628,7 @@ void Can0_InterruptHandler(void)
                         }
                     }
                 }
+#endif				
                 else
                 {
                     //MISRA
@@ -630,7 +645,7 @@ void Can0_InterruptHandler(void)
         //MISRA
     }
 }
-
+#endif
 /***********************************************************************************************
  Service name:                         Can1_InterruptHandler
  Sync/Async:                                 Synchronous
@@ -640,6 +655,7 @@ void Can0_InterruptHandler(void)
  Return value:                                  None
  Description:                      Can1 Interrupt service routine
  ***********************************************************************************************/
+#if((Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
 void Can1_InterruptHandler(void)
 {
 
@@ -705,6 +721,7 @@ void Can1_InterruptHandler(void)
             if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef
                     == &Can.CanConfigSet.CanController[CONTROLLER_ONE]) //check which CanController we use
             {
+#if(Can1TxProcessing==INTERRUPT )				
                 if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
                         == TRANSMIT)  //check if CanObjectType is TRANSMIT
                 {
@@ -733,6 +750,8 @@ void Can1_InterruptHandler(void)
                         }
                     }
                 }
+#endif
+#if(Can1RxProcessing==INTERRUPT)				
                 else if (Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanObjectType
                         == RECEIVE)  //check if CanObjectType is receive
                 {
@@ -765,6 +784,7 @@ void Can1_InterruptHandler(void)
                         }
                     }
                 }
+#endif				
                 else
                 {
                     //MISRA
