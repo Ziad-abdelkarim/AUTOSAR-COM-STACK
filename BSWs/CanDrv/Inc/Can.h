@@ -14,6 +14,8 @@ AUTOSAR Version:            4.2.2
 #include "ComStack_Types.h"
 #include <CanIf_stub.h>
 #include "Can_Cfg.h"
+#include "Canif_CLBK_STUB.h"
+
 #define CONTROLLER_ZERO            0U
 //These Are the Values of The COntrol Registers After a Reset Brought From TM4CGH6PM Data Sheet
 #define CONTROLLER_ONE             1U
@@ -53,5 +55,7 @@ void Can_DisableControllerInterrupts(uint8 Controller);
 void Can_Init(const Can_ConfigType* Config);
 void CanIf_RxIndication(const Can_HwType* Mailbox,const PduInfoType* PduInfoPtr);
 Std_ReturnType Can_SetBaudrate( uint8 Controller, uint16 BaudRateConfigID );
+void Can_MainFunctionBusoff(void);
+void Can_MainFunction_Mode(void);
 #endif /* CAN_H */
 
