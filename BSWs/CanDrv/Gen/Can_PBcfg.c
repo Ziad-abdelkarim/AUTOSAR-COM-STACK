@@ -76,7 +76,7 @@ Can_ConfigType Can =
                                                        },
 
                                                          { .CanTriggerTransmitEnable = false,
-                                                           .CanHwFilter = { .CanHwFilterMask = 0x1U,
+                                                           .CanHwFilter = { .CanHwFilterMask = 0x0U,
                                                                             .CanHwFilterCode = 0x0U, },
                                                                             .CanHandleType = FULL,
                                                                             .CanObjectType = RECEIVE,

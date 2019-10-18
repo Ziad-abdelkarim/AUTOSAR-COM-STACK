@@ -17,8 +17,8 @@ AUTOSAR Version:            4.2.2
 #define MAX_NUMBER_OF_HANDLERS          1
 #define POLLING 2U
 #define	INTERRUPT 0U
-#define EXTENDED 1U
-#define STANDARD 2U
+#define EXTENDED (PduIdType)1U
+#define STANDARD (PduIdType)2U
 
 
 /************************************************************************************
