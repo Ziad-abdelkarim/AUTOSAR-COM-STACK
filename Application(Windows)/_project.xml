@@ -85,6 +85,11 @@
 			<type>1</type>
 			<locationURI>TIVAWARE_INSTALL/driverlib/ccs/Debug/driverlib.lib</locationURI>
 		</link>
+		<link>
+			<name>uartstdio.c</name>
+			<type>1</type>
+			<location>C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.c</location>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>

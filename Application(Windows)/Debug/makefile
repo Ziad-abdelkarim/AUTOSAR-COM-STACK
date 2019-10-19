@@ -14,6 +14,7 @@ ORDERED_OBJS += \
 "./CanIf_stub.obj" \
 "./Can_PBcfg.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
+"./uartstdio.obj" \
 "C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/ccs/Debug/driverlib.lib" \
 "../tm4c123gh6pm.cmd" \
 $(GEN_CMDS__FLAG) \
@@ -158,8 +159,8 @@ ApplicationCanDRVTest.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Can.obj" "CanIf_stub.obj" "Can_PBcfg.obj" "tm4c123gh6pm_startup_ccs.obj" 
-	-$(RM) "Can.d" "CanIf_stub.d" "Can_PBcfg.d" "tm4c123gh6pm_startup_ccs.d" 
+	-$(RM) "Can.obj" "CanIf_stub.obj" "Can_PBcfg.obj" "tm4c123gh6pm_startup_ccs.obj" "uartstdio.obj" 
+	-$(RM) "Can.d" "CanIf_stub.d" "Can_PBcfg.d" "tm4c123gh6pm_startup_ccs.d" "uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

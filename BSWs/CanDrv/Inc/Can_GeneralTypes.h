@@ -1,25 +1,29 @@
 /*************************************************************************************
 **
 
-FileName:                          Can_GeneralTypes.h                                        
+FileName:                   Can_GeneralTypes.h
 AUTOSAR Version:            4.2.2
-                                                                                                                     **
+                                                                                    **
 *************************************************************************************/
 #ifndef CAN_GENERALTYPES_H
 #define CAN_GENERALTYPES_H
 /*************************************************************************************
-**                                          Includes                                                          **
+**                                          Includes                                **
 *************************************************************************************/
 #include "ComStack_Types.h"
-#define  NUMBER_OF_BAUDRATES          2
-#define  NUMBER_OF_CONTROLLERS         2
-#define  NUMBER_OF_HOH				   2
-#define MAX_NUMBER_OF_HANDLERS          1
+/*************************************************************************************
+**                                          Defines                                 **
+*************************************************************************************/
+#define  NUMBER_OF_BAUDRATES          (uint8)2
+#define  NUMBER_OF_CONTROLLERS        (uint8)2
+#define  NUMBER_OF_HOH				  (uint8)2
+#define MAX_NUMBER_OF_HANDLERS        (uint8)1
+#define CONTROLLER_MODE_TIMEOUT       (uint32)5000
 #define POLLING 2U
 #define	INTERRUPT 0U
 #define EXTENDED (PduIdType)1U
 #define STANDARD (PduIdType)2U
-
+/*************************************************************************************/
 
 /************************************************************************************
 **                           Post-Build Configuration variables                    **

@@ -1,25 +1,26 @@
 /********************************************************************************************************************************
  **
-
- FileName:                          Can.c
+ FileName:                   Can.c
  AUTOSAR Version:            4.2.2
  **
  ********************************************************************************************************************************/
 /********************************************************************************************************************************
- **                                                                       includes                                                                                         **
+ **                                                          Includes                                                          **
  ********************************************************************************************************************************/
 #include "Can.h"
-
 /********************************************************************************************************************************
- **                                                                       Global Variables                                                                                         **
+ **                                                       Global Variables                                                     **
  ********************************************************************************************************************************/
-
 static uint8 InterruptDisableCount[NUMBER_OF_CONTROLLERS] = { 0, 0 };
 static uint8 InterruptEnableCount[NUMBER_OF_CONTROLLERS] = { 0, 0 };
 static CanDriverStateType CanDriverState = CAN_UNINIT;
 static MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUMBER_OF_HOH][MAX_NUMBER_OF_HANDLERS];
-static ControllerStateType ControllerState[NUMBER_OF_CONTROLLERS] = {
-        CAN_CS_UNINIT, CAN_CS_UNINIT };
+static ControllerStateType ControllerState[NUMBER_OF_CONTROLLERS] = { CAN_CS_UNINIT, CAN_CS_UNINIT };
+static boolean LogicalSleep[NUMBER_OF_CONTROLLERS];
+/********************************************************************************************************************************
+**                                                        Local Functions                                                      **
+*********************************************************************************************************************************/
+const CanHardwareObject* Can_GetHardwareObjectOfHTH(Can_HwHandleType HTH);
 
 const CanHardwareObject* Can_GetHardwareObjectOfHTH(Can_HwHandleType HTH)
 {
@@ -32,9 +33,16 @@ const CanHardwareObject* Can_GetHardwareObjectOfHTH(Can_HwHandleType HTH)
             ADDRESS = &Can.CanConfigSet.CanHardwareObject[HOI];
             break;
         }
+        else
+        {
+
+        }
     }
     return ADDRESS;
 }
+/********************************************************************************************************************************/
+
+
 
 /*********************************************************************************************************************************
  Service name:                                                Can_Write
@@ -404,7 +412,7 @@ void Can_EnableControllerInterrupts(uint8 Controller)
                     }
                     if (InterruptDisableCount[Controller] == INDEX_ZERO)
                     { //This function enables specific interrupt sources of the CAN controller. Only enabled sources cause a processor interrupt.
-                      //CANIntRegister(CAN0_BASE, Can0_InterruptHandler);
+                        //CANIntRegister(CAN0_BASE, Can0_InterruptHandler);
                         CANIntEnable(
                                 Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress,
                                 CAN_INT_MASTER | CAN_INT_ERROR | CAN_INT_STATUS);
@@ -474,7 +482,13 @@ void Can_EnableControllerInterrupts(uint8 Controller)
  Return value:                                  None
  Description:                      Can0 Interrupt service routine
  ***********************************************************************************************/
-#if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT))
+#if ((Can0TxProcessing==POLLING && Can0RxProcessing==POLLING && Can0BusoffProcessing==POLLING))
+    void Can0_InterruptHandler(void)
+    {
+
+    }
+
+#elif ((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT))
 void Can0_InterruptHandler(void)
 {
     uint32 ui32Status;
@@ -483,6 +497,7 @@ void Can0_InterruptHandler(void)
     uint32 ui32ErrorFlag = INDEX_ZERO;
 
     tCANMsgObject ReceivedMessage;
+    uint8 ReceivedMsgData[8U];
     Can_HwType ReceiverMailBox;
     PduInfoType ReceiverPduInfo;
     /*
@@ -593,6 +608,7 @@ void Can0_InterruptHandler(void)
                         if (MessageObject[CONTROLLER_ZERO][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
                                 == ui32Status) //check which MessageObjectNumber we need to receive in it
                         {
+                            ReceivedMessage.pui8MsgData = ReceivedMsgData;
                             CANMessageGet(
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerBaseAddress,
                                     MessageObject[CONTROLLER_ZERO][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber,
@@ -603,10 +619,8 @@ void Can0_InterruptHandler(void)
                             ReceiverMailBox.ControllerId =
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerId;
                             ReceiverMailBox.CanId = ReceivedMessage.ui32MsgID;
-                            ReceiverPduInfo.SduDataPtr =
-                                    ReceivedMessage.pui8MsgData;
-                            ReceiverPduInfo.SduLength =
-                                    ReceivedMessage.ui32MsgLen;
+                            ReceiverPduInfo.SduDataPtr = ReceivedMessage.pui8MsgData;
+                            ReceiverPduInfo.SduLength = ReceivedMessage.ui32MsgLen;
                             CanIf_RxIndication(&ReceiverMailBox,
                                                &ReceiverPduInfo);
                         }
@@ -644,7 +658,13 @@ void Can0_InterruptHandler(void)
  Return value:                                  None
  Description:                      Can1 Interrupt service routine
  ***********************************************************************************************/
-#if((Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
+#if((Can1TxProcessing==POLLING && Can1RxProcessing==POLLING && Can1BusoffProcessing==POLLING))
+    void Can1_InterruptHandler(void)
+    {
+
+    }
+
+#elif((Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
 void Can1_InterruptHandler(void)
 {
 
@@ -654,6 +674,7 @@ void Can1_InterruptHandler(void)
     uint32 ui32ErrorFlag = INDEX_ZERO;
 
     tCANMsgObject ReceivedMessage;
+    uint8 ReceivedMsgData[8U];
     Can_HwType ReceiverMailBox;
     PduInfoType ReceiverPduInfo;
     /*
@@ -759,6 +780,7 @@ void Can1_InterruptHandler(void)
                         if (MessageObject[CONTROLLER_ONE][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber
                                 == ui32Status) //check which MessageObjectNumber we need to receive in it
                         {
+                            ReceivedMessage.pui8MsgData = ReceivedMsgData;
                             CANMessageGet(
                                     Can.CanConfigSet.CanHardwareObject[ui8NumberOfObjectHandler].CanControllerRef->CanControllerBaseAddress,
                                     MessageObject[CONTROLLER_ONE][ui8NumberOfObjectHandler][ui8NumberOfObject].MessageObjectNumber,
@@ -808,28 +830,21 @@ void Can1_InterruptHandler(void)
  */
 
 /*********************************************************************************************************************************       
- Service name:                                       Can_MainFunction_Read0
- Service ID[hex]:                                                   0x08
+ Service name:                                       Can_MainFunction_Read
+ Service ID[hex]:                                           0x08
 
- Parameters (in):                                    				void
- Parameters (inout):                                               None
- Parameters (out):                                                  void
- Return value:                                                		void
- Description:
- This function performs the polling of RX indications when CAN_RX_PROCESSING is set to POLLING.
+ Parameters (in):                                           void
+ Parameters (inout):                                        None
+ Parameters (out):                                          void
+ Return value:                                              void
+ Description:          This function performs the polling of RX indications when CAN_RX_PROCESSING is set to POLLING.
  *******************************************************************************************************************************/
-
-#if ( Can0RxProcessing == POLLING )
-void Can_MainFunction_Read0(void)
+#if (Can0RxProcessing == POLLING || Can1RxProcessing == POLLING)
+void Can_MainFunction_Read(void)
 {
-
-    /*************************************************************************************
-     *                                    Local Variables                                *
-     *************************************************************************************/
-
     uint8 HOH_Num_Iterator = 0;
     uint8 HW_Obj_Counter = 0;
-    uint8 ReceivedMsgArray0[16U];
+    uint8 ReceivedMsgArray[8U];
     tCANMsgObject CanMsgReceived; /* The structure used for encapsulating all the items associated with
      a CAN message object in the CAN controller.*/
 
@@ -840,25 +855,14 @@ void Can_MainFunction_Read0(void)
      namely a pointer variable pointing to its SDU (Payload),
      and the corresponding length of the SDU in bytes.*/
 
-    CanMsgReceived.pui8MsgData=ReceivedMsgArray0; /*pointer of Data in a message is pointing to an Array where data will be stored*/
-    uint32 cancontrollerbaseadress =Can.CanConfigSet.CanController[0].CanControllerBaseAddress;
+    CanMsgReceived.pui8MsgData=ReceivedMsgArray; /*pointer of Data in a message is pointing to an Array where data will be stored*/
 
     /*
      *check if if the CAN controller 0 is used in the configuration.
      */
+#if (Can0RxProcessing == POLLING)
     if(Can.CanConfigSet.CanController[CONTROLLER_ZERO].CanControllerActivation)
     {
-
-        /*
-         * Reset 7th bit in CANIF1CMSK to Transfer the data in the CAN message object specified by
-         the MNUM field in the CANIFnCRQ register into the CANIFn registers.
-         */
-        CLEAR_BIT(cancontrollerbaseadress,CAN_O_IF1CMSK,WRNRD_Bit);
-        CLEAR_BIT(cancontrollerbaseadress,CAN_O_IF1CMSK,CANIF1CMSK_TXRQST_Bit);
-        /*
-         * loop for the number of hardware objects which are 32 in TIVA C
-         */
-
         for(HOH_Num_Iterator= 0U; HOH_Num_Iterator < NUMBER_OF_HOH; HOH_Num_Iterator++)
         {
             /*
@@ -880,44 +884,11 @@ void Can_MainFunction_Read0(void)
 
                     for(HW_Obj_Counter = 0U; HW_Obj_Counter < Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanHwObjectCount;HW_Obj_Counter++)
                     {
-                        /*
-                         *Selects one of the 32 message objects in the message RAM for data transfer. The message objects are numbered from 1 to 32.
-                         */
-                        (CAN0_IF1CRQ_R)= MessageObject[CONTROLLER_ZERO][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber;
-
-                        /*
-                         * check if NEWDAT bit may have two values :
-                         * bit == 0 :No new data has been written into the data portion of this message object by the message handler,
-                         *  since the last time this flag was cleared by the CPU.
-                         * bit == 1 :The message handler or the CPU has written new data into the data portion of this message object.
-                         */
-                        if(GetBit((CAN0_IF1MCTL_R),NEWDAT_Bit) == STD_LOW)
+                        CANMessageGet(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef ->CanControllerBaseAddress,
+                                                            MessageObject[CONTROLLER_ZERO][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber,
+                                                            &CanMsgReceived, STD_OFF);
+                        if((CanMsgReceived.ui32Flags) & MSG_OBJ_NEW_DATA)
                         {
-                            /*
-                             * [SWS_Can_00279] On L-PDU reception, the Can module shall call the RX indication
-                             * callback function CanIf_RxIndication with ID, HOH, abstract CanIf ControllerId in parameter Mailbox,
-                             * and the DLC and pointer to the L-SDU buffer in parameter PduInfoPtr.(SRS_Can_01045)
-                             */
-
-                            /*******************************************************************************************************|
-                             |* Name:                                 CanMessageGet                                                *|
-                             |* Description:                                                                                       *|
-                             |* Reads a CAN message from one of the message object buffers.                                        *|
-                             |* Prototype:                                                                                         *|
-                             |*                   void CANMessageGet(uint32_t ui32Base,uint32_t ui32ObjID,                         *|
-                             |*                   tCANMsgObject *psMsgObject,bool bClrPendingInt)                                  *|
-                             |*                                                                                                    *|
-                             |* INPUT Parameters:                                                                                  *|
-                             |*                  ui32Base:           is the base address of the CAN controller.                    *|
-                             |*                  ui32ObjID:          is the object number to read (1-32).                          *|
-                             |*                  psMsgObject:        points to a structure containing message object fields.       *|
-                             |*                  bClrPendingInt:     indicates whether an associated interrupt should be cleared.  *|
-                             |*                                                                                                    *|
-                             |******************************************************************************************************/
-                            CANMessageGet(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef ->CanControllerBaseAddress,
-                                    MessageObject[CONTROLLER_ZERO][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber,
-                                    &CanMsgReceived, STD_OFF);
-
                             ReceiverMailBox.CanId= CanMsgReceived.ui32MsgID;
                             ReceiverMailBox.ControllerId=Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef -> CanControllerId;
                             ReceiverMailBox.Hoh=Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanObjectId;
@@ -933,23 +904,59 @@ void Can_MainFunction_Read0(void)
                         }
                     }
                 }
-                else
-                {
-                    /*MISRA*/
-                }
-            }
-            else
-            {
-                /*MISRA*/
             }
         }
     }
-    else
-    {
-        /*MISRA*/
-    }
-}
+#endif
 
+#if (Can1RxProcessing == POLLING)
+    if(Can.CanConfigSet.CanController[CONTROLLER_ONE].CanControllerActivation)
+        {
+            for(HOH_Num_Iterator= 0U; HOH_Num_Iterator < NUMBER_OF_HOH; HOH_Num_Iterator++)
+            {
+                /*
+                 * check if status of the HardwareObject is used as Receive object.
+                 */
+
+                if(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanObjectType == RECEIVE)
+                {
+                    /*
+                     * check if the Reference of CAN Controller 0 to which the HOH is associated to is the same as
+                     * Configurations of can controller 0.
+                     */
+
+                    if(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef == & Can.CanConfigSet.CanController[CONTROLLER_ONE])
+                    {
+                        /*
+                         *iterate on number of Message objects  in each hardware object
+                         */
+
+                        for(HW_Obj_Counter = 0U; HW_Obj_Counter < Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanHwObjectCount;HW_Obj_Counter++)
+                        {
+                            CANMessageGet(Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef ->CanControllerBaseAddress,
+                                                                MessageObject[CONTROLLER_ONE][HOH_Num_Iterator][HW_Obj_Counter].MessageObjectNumber,
+                                                                &CanMsgReceived, STD_OFF);
+                            if((CanMsgReceived.ui32Flags) & MSG_OBJ_NEW_DATA)
+                            {
+                                ReceiverMailBox.CanId= CanMsgReceived.ui32MsgID;
+                                ReceiverMailBox.ControllerId=Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanControllerRef -> CanControllerId;
+                                ReceiverMailBox.Hoh=Can.CanConfigSet.CanHardwareObject[HOH_Num_Iterator].CanObjectId;
+                                ReceiverPduInfo.SduDataPtr=CanMsgReceived.pui8MsgData;
+                                ReceiverPduInfo.SduLength=CanMsgReceived.ui32MsgLen;
+
+                                CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);
+                            }
+                            else
+                            {
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+#endif
+}
 #endif
 
 /*
@@ -981,7 +988,7 @@ void Can_MainFunction_Read1(void)
 
     uint8 HOH_Num_Iterator = 0;
     uint8 HW_Obj_Counter = 0;
-    uint8 ReceivedMsgArray0[16U];
+    uint8 ReceivedMsgArray0[8U];
     tCANMsgObject CanMsgReceived; /* The structure used for encapsulating all the items associated with
      a CAN message object in the CAN controller.*/
 
@@ -1125,212 +1132,243 @@ Can_ReturnType Can_SetControllerMode(uint8 Controller,
     uint32 cancontrollerbaseadress;
     uint32 HardwareObjectIndex = 0;
     uint32 ObjectIndex = 0;
+    uint32 CanTimeoutDuration = CONTROLLER_MODE_TIMEOUT;
     cancontrollerbaseadress =
             Can.CanConfigSet.CanController[Controller].CanControllerBaseAddress;
+    /**[SWS_Can_00198] If default error detection for the Can module is enabled: if the
+        module is not yet initialized, the function Can_SetControllerMode shall raise default
+        error CAN_E_UNINIT and return CAN_NOT_OK.**/
     if (CanDriverState == CAN_UNINIT)
     {
         CanDevelopmentError = CAN_E_UNINIT;
         return CAN_NOT_OK;
 
     }
-    /**[SWS_Can_00261] [ The function Can_SetControllerMode(CAN_T_START) shall
-     set the hardware registers in a way that makes the CAN controller participating on
-     the network.]**/
-    else if (Transition == CAN_T_START)
+
+    else
     {
-        if (ControllerState[Controller] == CAN_CS_STOPPED)
-        {
-            /**[SWS_Can_00262] [ The function Can_SetControllerMode(CAN_T_START) shall
-             wait for limited time until the CAN controller is fully operational. Compare to
-             SWS_Can_00398.]**/
-            CANEnable(cancontrollerbaseadress);
-            while (CanTimeoutDuration && status_Initialization)
-            {
-                CanTimeoutDuration--;
-
-            }
-            if (CanTimeoutDuration == 0)
-            {
-                CanDevelopmentError = CAN_E_TRANSITION;
-                return CAN_NOT_OK;
-            }
-            else if (CanTimeoutDuration != 0)
-            {
-#if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
-                Can_EnableControllerInterrupts(Controller);
-#endif
-                ControllerState[Controller] = CAN_CS_STARTED;
-                return CAN_OK;
-            }
-        }
-        /**[SWS_Can_00409]  When the function Can_SetControllerMode(CAN_T_START)
-         is entered and the CAN controller is not in state STOPPED it shall detect a invalid
-         state transition (Compare to SWS_Can_00200).**/
-        else
-        {
-            CanDevelopmentError = CAN_E_TRANSITION;
-            return CAN_NOT_OK;
-        }
-    }
-
-    /**	[SWS_Can_00263] [ The function Can_SetControllerMode(CAN_T_STOP) shall set
-     the bits inside the CAN hardware such that the CAN controller stops participating on
-     the network.]**/
-    else if (Transition == CAN_T_STOP)
-    {
-        if (ControllerState[Controller] == CAN_CS_STARTED)
-        {
-            /**[SWS_Can_00264] [ The function Can_SetControllerMode(CAN_T_STOP) shall
-             wait for a limited time until the CAN controller is really switched off. Compare to
-             SWS_Can_00398.]**/
-            CANDisable(cancontrollerbaseadress);
-            while (CanTimeoutDuration && (!status_Initialization))
-            {
-                CanTimeoutDuration--;
-                /**[SWS_Can_00282] [ The function Can_SetControllerMode(CAN_T_STOP) shall
-                 cancel pending messages. ]*/
-            }
-
-            if (CanTimeoutDuration == 0)
-            {
-                CanDevelopmentError = CAN_E_TRANSITION;
-                return CAN_NOT_OK;
-            }
-            else if (CanTimeoutDuration != 0)
-            {
-
-                for (HardwareObjectIndex = 0;
-                        HardwareObjectIndex < NUMBER_OF_HOH;
-                        HardwareObjectIndex++)
-                {
-                    if (Can.CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanObjectType
-                            == TRANSMIT
-                            && Can.CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanControllerRef->CanControllerId
-                                    == Controller)
-                    {
-                        for (ObjectIndex = 0;
-                                ObjectIndex
-                                        < Can.CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHwObjectCount;
-                                ObjectIndex++)
-                        {
-                            CLEAR_BIT(cancontrollerbaseadress, CANIF1CMSK, 7);
-                            CLEAR_BIT(cancontrollerbaseadress, CANIF1CMSK, 2);
-                            CLEAR_BIT(cancontrollerbaseadress, CANIF1MCTL, 8);
-                            GET_ADDRESS_VAL(cancontrollerbaseadress,CANIF1CRQ) =
-                                    MessageObject[Controller][HardwareObjectIndex][ObjectIndex].MessageObjectNumber;
-                        }
-                    }
-                }
-#if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
-                Can_DisableControllerInterrupts(Controller);
-#endif
-                ControllerState[Controller] = CAN_CS_STOPPED;
-                return CAN_OK;
-            }
-
-        }
-        /**[SWS_Can_00410] [ When the function Can_SetControllerMode(CAN_T_STOP) is
-         entered and the CAN controller is neither in state STARTED nor in state STOPPED,
-         it shall detect a invalid state transition (Compare to SWS_Can_00200).] */
-        else
-        {
-            CanDevelopmentError = CAN_E_TRANSITION;
-            return CAN_NOT_OK;
-        }
-    }
-
-    /**[SWS_Can_00265] [ The function Can_SetControllerMode(CAN_T_SLEEP) shall
-     set the controller into sleep mode.]**/
-    else if (Transition == CAN_T_SLEEP)
-    {
-        /**[SWS_Can_00290] [ If the CAN HW does not support a sleep mode, the function
-         Can_SetControllerMode(CAN_T_SLEEP) shall set the CAN controller to the logical
-         sleep mode.]**/
-        if ((ControllerState[Controller] == CAN_CS_STOPPED))
-        {
-
-            CANDisable(cancontrollerbaseadress);
-            while (CanTimeoutDuration && (!status_Initialization)
-                    && (!LogicalSleep[Controller]))
-            {
-                CanTimeoutDuration--;
-            }
-            if (CanTimeoutDuration == 0)
-            {
-                CanDevelopmentError = CAN_E_TRANSITION;
-                return CAN_NOT_OK;
-            }
-            else if (CanTimeoutDuration != 0)
-            {
-#if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
-                Can_DisableControllerInterrupts(Controller);
-#endif
-                LogicalSleep[Controller] = true;
-                ControllerState[Controller] = CAN_CS_SLEEP;
-                return CAN_OK;
-            }
-            /**[SWS_Can_00411] [ When the function Can_SetControllerMode(CAN_T_SLEEP)
-             is entered and the CAN controller is neither in state STOPPED nor in state SLEEP, it
-             shall detect a invalid state transition]**/
-            else
-            {
-                CanDevelopmentError = CAN_E_TRANSITION;
-                return CAN_NOT_OK;
-            }
-        }
-
-        /**[SWS_Can_00267] [If the CAN HW does not support a sleep mode, the function
-         Can_SetControllerMode(CAN_T_WAKEUP) shall return from the logical sleep mode,but have no effect to the CAN controller state (as the controller is already in stopped
-         state).]**/
-        else if (Transition == CAN_T_WAKEUP)
-        {
-
-            if (ControllerState[Controller] == CAN_CS_SLEEP)
-            {
-                /**[SWS_Can_00268] [ The function Can_SetControllerMode(CAN_T_WAKEUP) shall
-                 wait for a limited time until the CAN controller is in STOPPED state. Compare to
-                 SWS_Can_00398.]**/
-                CANEnable(cancontrollerbaseadress);
-                while (CanTimeoutDuration && status_Initialization
-                        && LogicalSleep[Controller])
-                {
-                    CanTimeoutDuration--;
-
-                }
-                if (CanTimeoutDuration == 0)
-                {
-                    CanDevelopmentError = CAN_E_TRANSITION;
-                    return CAN_NOT_OK;
-                }
-                else if (CanTimeoutDuration != 0)
-                {
-#if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
-                    Can_EnableControllerInterrupts(Controller);
-#endif
-                    LogicalSleep[Controller] = false;
-                    ControllerState[Controller] = CAN_CS_STARTED;
-                    return CAN_OK;
-                }
-
-            }
-            /**[SWS_Can_00412]
-             [When the function Can_SetControllerMode(CAN_T_WAKEUP) is entered and the CAN controller is
-             neither in state SLEEP nor in state STOPPED, it shall detect a invalid state transition
-             (Compare to SWS_Can_00200).]**/
-            else
-            {
-                CanDevelopmentError = CAN_E_TRANSITION;
-                return CAN_NOT_OK;
-            }
-
-        }
-        else
+        /**[SWS_Can_00199] If default error detection for the Can module is enabled: if the
+        parameter Controller is out of range, the function Can_SetControllerMode shall
+        raise default error CAN_E_PARAM_CONTROLLER and return CAN_NOT_OK.**/
+        if(Controller >= NUMBER_OF_CONTROLLERS)
         {
             CanDevelopmentError = CAN_E_PARAM_CONTROLLER;
             return CAN_NOT_OK;
         }
+        else
+        {
+            /**[SWS_Can_00261] [ The function Can_SetControllerMode(CAN_T_START) shall
+             set the hardware registers in a way that makes the CAN controller participating on
+             the network.]**/
+            if (Transition == CAN_T_START)
+            {
+                if (ControllerState[Controller] == CAN_CS_STOPPED)
+                {
+                    /**[SWS_Can_00262] [ The function Can_SetControllerMode(CAN_T_START) shall
+                     wait for limited time until the CAN controller is fully operational. Compare to
+                     SWS_Can_00398.]**/
+                    CANEnable(cancontrollerbaseadress);
+                    while (CanTimeoutDuration && status_Initialization)
+                    {
+                        CanTimeoutDuration--;
 
+                    }
+                    if (CanTimeoutDuration == 0)
+                    {
+                        CanDevelopmentError = CAN_E_TRANSITION;
+                        return CAN_NOT_OK;
+                    }
+                    else if (CanTimeoutDuration != 0)
+                    {
+        #if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
+                        Can_EnableControllerInterrupts(Controller);
+        #endif
+                        ControllerState[Controller] = CAN_CS_STARTED;
+                        return CAN_OK;
+                    }
+                    else
+                    {
+
+                    }
+                }
+                /**[SWS_Can_00409]  When the function Can_SetControllerMode(CAN_T_START)
+                 is entered and the CAN controller is not in state STOPPED it shall detect a invalid
+                 state transition (Compare to SWS_Can_00200).**/
+                else
+                {
+                    CanDevelopmentError = CAN_E_TRANSITION;
+                    return CAN_NOT_OK;
+                }
+            }
+
+            /** [SWS_Can_00263] [ The function Can_SetControllerMode(CAN_T_STOP) shall set
+             the bits inside the CAN hardware such that the CAN controller stops participating on
+             the network.]**/
+            else if (Transition == CAN_T_STOP)
+            {
+                if (ControllerState[Controller] == CAN_CS_STARTED)
+                {
+                    /**[SWS_Can_00264] [ The function Can_SetControllerMode(CAN_T_STOP) shall
+                     wait for a limited time until the CAN controller is really switched off. Compare to
+                     SWS_Can_00398.]**/
+                    CANDisable(cancontrollerbaseadress);
+                    while (CanTimeoutDuration && (!status_Initialization))
+                    {
+                        CanTimeoutDuration--;
+                        /**[SWS_Can_00282] [ The function Can_SetControllerMode(CAN_T_STOP) shall
+                         cancel pending messages. ]*/
+                    }
+
+                    if (CanTimeoutDuration == 0)
+                    {
+                        CanDevelopmentError = CAN_E_TRANSITION;
+                        return CAN_NOT_OK;
+                    }
+                    else if (CanTimeoutDuration != 0)
+                    {
+
+                        for (HardwareObjectIndex = 0;
+                                HardwareObjectIndex < NUMBER_OF_HOH;
+                                HardwareObjectIndex++)
+                        {
+                            if (Can.CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanObjectType
+                                    == TRANSMIT
+                                    && Can.CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanControllerRef->CanControllerId
+                                            == Controller)
+                            {
+                                for (ObjectIndex = 0;
+                                        ObjectIndex
+                                                < Can.CanConfigSet.CanHardwareObject[HardwareObjectIndex].CanHwObjectCount;
+                                        ObjectIndex++)
+                                {
+                                    CLEAR_BIT(cancontrollerbaseadress, CANIF1CMSK, 7);
+                                    CLEAR_BIT(cancontrollerbaseadress, CANIF1CMSK, 2);
+                                    CLEAR_BIT(cancontrollerbaseadress, CANIF1MCTL, 8);
+                                    GET_ADDRESS_VAL(cancontrollerbaseadress,CANIF1CRQ) =
+                                            MessageObject[Controller][HardwareObjectIndex][ObjectIndex].MessageObjectNumber;
+                                }
+                            }
+                        }
+        #if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
+                        Can_DisableControllerInterrupts(Controller);
+        #endif
+                        ControllerState[Controller] = CAN_CS_STOPPED;
+                        return CAN_OK;
+                    }
+                    else
+                    {
+
+                    }
+
+                }
+                /**[SWS_Can_00410] [ When the function Can_SetControllerMode(CAN_T_STOP) is
+                 entered and the CAN controller is neither in state STARTED nor in state STOPPED,
+                 it shall detect a invalid state transition (Compare to SWS_Can_00200).] */
+                else
+                {
+                    CanDevelopmentError = CAN_E_TRANSITION;
+                    return CAN_NOT_OK;
+                }
+            }
+
+            /**[SWS_Can_00265] [ The function Can_SetControllerMode(CAN_T_SLEEP) shall
+             set the controller into sleep mode.]**/
+            else if (Transition == CAN_T_SLEEP)
+            {
+                /**[SWS_Can_00290] [ If the CAN HW does not support a sleep mode, the function
+                 Can_SetControllerMode(CAN_T_SLEEP) shall set the CAN controller to the logical
+                 sleep mode.]**/
+                if ((ControllerState[Controller] == CAN_CS_STOPPED))
+                {
+
+                    CANDisable(cancontrollerbaseadress);
+                    while (CanTimeoutDuration && (!status_Initialization)
+                            && (!LogicalSleep[Controller]))
+                    {
+                        CanTimeoutDuration--;
+                    }
+                    if (CanTimeoutDuration == 0)
+                    {
+                        CanDevelopmentError = CAN_E_TRANSITION;
+                        return CAN_NOT_OK;
+                    }
+                    else if (CanTimeoutDuration != 0)
+                    {
+        #if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
+                        Can_DisableControllerInterrupts(Controller);
+        #endif
+                        LogicalSleep[Controller] = true;
+                        ControllerState[Controller] = CAN_CS_SLEEP;
+                        return CAN_OK;
+                    }
+                    /**[SWS_Can_00411] [ When the function Can_SetControllerMode(CAN_T_SLEEP)
+                     is entered and the CAN controller is neither in state STOPPED nor in state SLEEP, it
+                     shall detect a invalid state transition]**/
+                    else
+                    {
+                        CanDevelopmentError = CAN_E_TRANSITION;
+                        return CAN_NOT_OK;
+                    }
+                }
+            }
+
+            /**[SWS_Can_00267] [If the CAN HW does not support a sleep mode, the function
+             Can_SetControllerMode(CAN_T_WAKEUP) shall return from the logical sleep mode,but have no effect to the CAN controller state (as the controller is already in stopped
+             state).]**/
+            else if (Transition == CAN_T_WAKEUP)
+            {
+
+                if (ControllerState[Controller] == CAN_CS_SLEEP)
+                {
+                    /**[SWS_Can_00268] [ The function Can_SetControllerMode(CAN_T_WAKEUP) shall
+                     wait for a limited time until the CAN controller is in STOPPED state. Compare to
+                     SWS_Can_00398.]**/
+                    CANEnable(cancontrollerbaseadress);
+                    while (CanTimeoutDuration && status_Initialization
+                            && LogicalSleep[Controller])
+                    {
+                        CanTimeoutDuration--;
+
+                    }
+                    if (CanTimeoutDuration == 0)
+                    {
+                        CanDevelopmentError = CAN_E_TRANSITION;
+                        return CAN_NOT_OK;
+                    }
+                    else if (CanTimeoutDuration != 0)
+                    {
+    #if((Can0TxProcessing==INTERRUPT || Can0RxProcessing==INTERRUPT || Can0BusoffProcessing==INTERRUPT)||(Can1TxProcessing==INTERRUPT || Can1RxProcessing==INTERRUPT || Can1BusoffProcessing==INTERRUPT))
+                        Can_EnableControllerInterrupts(Controller);
+    #endif
+                        LogicalSleep[Controller] = false;
+                        ControllerState[Controller] = CAN_CS_STARTED;
+                        return CAN_OK;
+                    }
+                    else
+                    {
+
+                    }
+
+                }
+                /**[SWS_Can_00412]
+                 [When the function Can_SetControllerMode(CAN_T_WAKEUP) is entered and the CAN controller is
+                 neither in state SLEEP nor in state STOPPED, it shall detect a invalid state transition
+                 (Compare to SWS_Can_00200).]**/
+                else
+                {
+                    CanDevelopmentError = CAN_E_TRANSITION;
+                    return CAN_NOT_OK;
+                }
+
+            }
+            else
+            {
+
+            }
+
+        }
     }
+
 
     return CAN_NOT_OK;
 }
@@ -1349,8 +1387,8 @@ Can_ReturnType Can_SetControllerMode(uint8 Controller,
 void Can_Init(const Can_ConfigType* Config)
 {
     uint32_t CanSysCtlPeripheral[2] = {
-    SYSCTL_PERIPH_CAN0,
-                                        SYSCTL_PERIPH_CAN1 };
+                                       SYSCTL_PERIPH_CAN0,
+                                       SYSCTL_PERIPH_CAN1 };
     uint8_t ControllerIndex, HardwareObjectIndex, ObjectIndex;
     uint8_t MessageObjectNumber[NUMBER_OF_CONTROLLERS] = { 1, 1 };
     bool UninitCheck = true;
@@ -1523,7 +1561,7 @@ void Can_Init(const Can_ConfigType* Config)
 
  **********************************************************************************************************************************************************/
 #if(Can0TxProcessing==INTERRUPT && Can1TxProcessing==INTERRUPT)
-void Can_MainFunction_Write()
+void Can_MainFunction_Write(void)
 {
     //empty define function in interrupt mode
 }
@@ -1531,6 +1569,11 @@ void Can_MainFunction_Write()
 
 void Can_MainFunction_Write()
 {
+if (CanDriverState != CAN_READY) //check if can driver is not ready
+{
+    CanDevelopmentError = CAN_E_UNINIT; // raise the error CAN_E_UNINIT if the driver not yet initialized
+}
+else{
 
     uint8 INDEX_HOH;
     uint8 INDEX_MESGOBJ;
@@ -1547,54 +1590,54 @@ void Can_MainFunction_Write()
                 {
                     for(INDEX_MESGOBJ=0;INDEX_MESGOBJ<=Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanHwObjectCount;INDEX_MESGOBJ++)
                     {
-						if(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation == false)
-						{
-							if(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber <= 16)
-							{
-								if(!(GetBit(CAN0_BASE+CAN_O_TXRQ1,(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber-1))))
-								{
+                        if(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation == false)
+                        {
+                            if(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber <= 16)
+                            {
+                                if(!(GetBit(CAN0_BASE+CAN_O_TXRQ1,(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber-1))))
+                                {
 
-									/*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
-									 successful transmission.It shall either called by the TX-interrupt service routine
-									 of the corresponding HW resource or inside the Can_MainFunction_Write in case of
-									 polling mode.*/
+                                    /*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
+                                     successful transmission.It shall either called by the TX-interrupt service routine
+                                     of the corresponding HW resource or inside the Can_MainFunction_Write in case of
+                                     polling mode.*/
 
-									MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
-									CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId);
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
+                                    CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId);
 
-								}
-								else
-								{
+                                }
+                                else
+                                {
 
-								}
+                                }
 
-							}
-							else
-							{
+                            }
+                            else
+                            {
 
-								if(!(GetBit(CAN0_BASE+CAN_O_TXRQ2,(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber)-1)))
-								{
+                                if(!(GetBit(CAN0_BASE+CAN_O_TXRQ2,(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber)-1)))
+                                {
 
-									/*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
-									 successful transmission.It shall either called by the TX-interrupt service routine
-									 of the corresponding HW resource or inside the Can_MainFunction_Write in case of
-									 polling mode.*/
+                                    /*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
+                                     successful transmission.It shall either called by the TX-interrupt service routine
+                                     of the corresponding HW resource or inside the Can_MainFunction_Write in case of
+                                     polling mode.*/
 
-									MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
-									CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId);
+                                    MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
+                                    CanIf_TxConfirmation(MessageObject[0][INDEX_HOH][INDEX_MESGOBJ].PduId);
 
-								}
-								else
-								{
+                                }
+                                else
+                                {
 
-								}
+                                }
 
-							}
-						}
-						else
-						{
-							
-						}
+                            }
+                        }
+                        else
+                        {
+
+                        }
 
                     }
 
@@ -1626,52 +1669,52 @@ void Can_MainFunction_Write()
                     for(INDEX_MESGOBJ=0;INDEX_MESGOBJ<=Can.CanConfigSet.CanHardwareObject[INDEX_HOH].CanHwObjectCount;INDEX_MESGOBJ++)
                     {
                         if(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].Confirmation == false)
-						{
-							if(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber <= 16)
-							{
-								if(!(GetBit(CAN1_BASE+CAN_O_TXRQ1,(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber-1))))
-								{
+                        {
+                            if(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber <= 16)
+                            {
+                                if(!(GetBit(CAN1_BASE+CAN_O_TXRQ1,(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber-1))))
+                                {
 
-									/*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
-									 successful transmission.It shall either called by the TX-interrupt service routine
-									 of the corresponding HW resource or inside the Can_MainFunction_Write in case of
-									 polling mode.*/
+                                    /*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
+                                     successful transmission.It shall either called by the TX-interrupt service routine
+                                     of the corresponding HW resource or inside the Can_MainFunction_Write in case of
+                                     polling mode.*/
 
-									MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
+                                    MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                     CanIf_TxConfirmation(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].PduId);
 
-								}
-								else
-								{
+                                }
+                                else
+                                {
 
-								}
+                                }
 
-							}
-							else
-							{
+                            }
+                            else
+                            {
 
-								if(!(GetBit(CAN1_BASE+CAN_O_TXRQ2,(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber)-1)))
-								{
+                                if(!(GetBit(CAN1_BASE+CAN_O_TXRQ2,(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].MessageObjectNumber)-1)))
+                                {
 
-									/*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
-									 successful transmission.It shall either called by the TX-interrupt service routine
-									 of the corresponding HW resource or inside the Can_MainFunction_Write in case of
-									 polling mode.*/
+                                    /*[SWS_Can_00016] ⌈The Can module shall call CanIf_TxConfirmation to indicate a
+                                     successful transmission.It shall either called by the TX-interrupt service routine
+                                     of the corresponding HW resource or inside the Can_MainFunction_Write in case of
+                                     polling mode.*/
 
-									MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
+                                    MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].Confirmation=true;
                                     CanIf_TxConfirmation(MessageObject[1][INDEX_HOH][INDEX_MESGOBJ].PduId);
 
-								}
-								else
-								{
+                                }
+                                else
+                                {
 
-								}
-							}
-						}
-						else
-						{
-							
-						}
+                                }
+                            }
+                        }
+                        else
+                        {
+
+                        }
                     }
 
                 }
@@ -1690,28 +1733,31 @@ void Can_MainFunction_Write()
 
 }
 
+}
+
 #else //misra error
 #endif
 
-Std_ReturnType Can_SetBaudrate(uint8 Controller, uint16 BaudRateConfigID)
-{ /* comment!*********************************************[SWS_CAN_00491]*********************************************************
+/*****************************************************************************************************************************
+ Service name:                                       Can_SetBaudrate
+ Service ID[hex]:                                          0x0f
+ Sync/Async:                                            Synchronous
+ Reentrancy:                  Reentrant for different Controllers. Non reentrant for the same Controller.
 
- Sync/Async:         Synchronous
- Reentrancy:         Reentrant for different Controllers. Non reentrant for the same Controller.
+ Parameters (in):                   Controller CAN controller, whose baud rate shall be set.
+                                    BaudRateConfigID references a baud rate configuration by ID (see CanControllerBaudRateConfigID)
 
- Parameters (in):    Controller CAN controller, whose baud rate shall be set.
- BaudRateConfigID references a baud rate configuration by ID (see CanControllerBaudRateConfigID)
+ Parameters (out):                                          None
 
- Parameters (out):   None
+ Return value:                  Std_ReturnType E_OK: Service request accepted, setting of (new) baud rate started
+                                               E_NOT_OK: Service request not accepted
 
- Return value:       Std_ReturnType E_OK: Service request accepted, setting of (new) baud rate started
- E_NOT_OK: Service request not accepted
-
- Description:        This service shall set the baud rate configuration of the CAN controller.
- Depending on necessary baud rate modifications the controller might have to reset.
+ Description:                       This service shall set the baud rate configuration of the CAN controller.
+                                    Depending on necessary baud rate modifications the controller might have to reset.
 
  *******************************************************************************************************************************/
-
+Std_ReturnType Can_SetBaudrate(uint8 Controller, uint16 BaudRateConfigID)
+{
     uint8 BaudRateIndex;
     tCANBitClkParms CanBitTimingParameters;
 
@@ -2008,6 +2054,7 @@ void Can_MainFunctionBusoff(void)
     return;
 }
 
-void main()
+
+void main(void)
 {
 }
