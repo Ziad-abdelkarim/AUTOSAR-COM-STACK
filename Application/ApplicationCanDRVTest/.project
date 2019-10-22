@@ -36,14 +36,34 @@
 			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanDrv/Inc/Can.h</locationURI>
 		</link>
 		<link>
-			<name>CanIf_stub.c</name>
+			<name>CanIf.c</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanIf/src/CanIf_stub.c</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanIf/Src/CanIf.c</locationURI>
 		</link>
 		<link>
-			<name>CanIf_stub.h</name>
+			<name>CanIf.h</name>
 			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanIf/inc/CanIf_stub.h</locationURI>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanIf/Inc/CanIf.h</locationURI>
+		</link>
+		<link>
+			<name>CanIf_Cbk.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanIf/Inc/CanIf_Cbk.h</locationURI>
+		</link>
+		<link>
+			<name>CanIf_Cfg.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanIf/Gen/CanIf_Cfg.c</locationURI>
+		</link>
+		<link>
+			<name>CanIf_Cfg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanIf/Gen/CanIf_Cfg.h</locationURI>
+		</link>
+		<link>
+			<name>CanIf_Types.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanIf/Inc/CanIf_Types.h</locationURI>
 		</link>
 		<link>
 			<name>Can_Cfg.h</name>
@@ -59,11 +79,6 @@
 			<name>Can_PBcfg.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanDrv/Gen/Can_PBcfg.c</locationURI>
-		</link>
-		<link>
-			<name>Canif_CLBK_STUB.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanIf/inc/Canif_CLBK_STUB.h</locationURI>
 		</link>
 		<link>
 			<name>ComStack_Types.h</name>

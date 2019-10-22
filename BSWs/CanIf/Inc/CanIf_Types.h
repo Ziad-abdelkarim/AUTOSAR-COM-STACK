@@ -37,7 +37,10 @@ Description:
 																																**
 **************************************************************************************************/
 
+typedef struct {
 
+
+}CanIf_ConfigType;
 
 
 
@@ -55,7 +58,7 @@ typedef enum {
     CANIF_CS_SLEEP,
     CANIF_CS_STARTED,
     CANIF_CS_STOPPED,
-    CANIF_CS_UNINIT,
+    CANIF_CS_UNINIT
 
 }CanIf_ControllerModeType;
 
@@ -75,7 +78,7 @@ typedef enum {
     CANIF_OFFLINE,
     CANIF_TX_OFFLINE,
     CANIF_TX_OFFLINE_ACTIVE,
-    CANIF_ONLINE,
+    CANIF_ONLINE
 
 }CanIf_PduModeType;
 
@@ -91,7 +94,7 @@ Description:
 
 typedef enum {
     CANIF_TX_RX_NOTIFICATION,
-    CANIF_NO_NOTIFICATION,
+    CANIF_NO_NOTIFICATION
 
 }CanIf_NotifStatusType;
 
