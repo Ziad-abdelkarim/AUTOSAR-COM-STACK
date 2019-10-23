@@ -835,7 +835,7 @@ Description:
 
 void CanIf_ControllerBusOff(uint8 ControllerId)
 {
-  int Pdu_i
+  uint8 PduIndex
   /*
   [SWS_CANIF_00432] Caveats of CanIf_ControllerBusOff():
       • The call context is either on interrupt level (interrupt mode) or on task level (polling
@@ -849,7 +849,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
   CanIf shall not execute BusOff notification, when CanIf_ControllerBusOff(), is called. */
 
   //lo can if kan msh initialized fa msh ha execute
-  if(CanIfState==true)
+  if(CanIfState==CanIf_Init)
   {
     /*[SWS_CANIF_00429]  If parameter ControllerId of CanIf_ControllerBusOff()
     has an invalid value, CanIf shall report development error code CANIF_E_PARAM_CONTROLLER
@@ -875,7 +875,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
 
         #if CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT
         // what to do here
-        /*for(Pdu_i=0;Pdu_i<CanIfMaxPduCfg;i++){
+        /*for(PduIndex=0;PduIndex<=CanIfMaxPduCfg;i++){
           PduTxconfirmationState[Pdu_i]=false;
         }*/
         #endif
