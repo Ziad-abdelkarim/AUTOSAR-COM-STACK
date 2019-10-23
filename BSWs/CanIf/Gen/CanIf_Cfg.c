@@ -6,6 +6,7 @@ AUTOSAR Version:          								  4.2.2
  **                                                     Includes                                                             **
  ******************************************************************************************************************************/
 #include "CanIf.h"
+#include "Can_Cfg.h"
 /*#include "PduR_Cfg.h"
 #include "CanTp_Cfg.h"*/
 /*****************************************************************************************************************************
@@ -19,7 +20,7 @@ AUTOSAR Version:          								  4.2.2
 		 
 		 .CanIfCtrlCfg = {
 			{
-				.CanIfCtrlCanCtrlRef = &Can.CanConfigSet.CanController[0],
+				.CanIfCtrlCanCtrlRef = Can.CanConfigSet.CanController,
 				.CanIfCtrlId = 0x0,
 				.CanIfCtrlWakeupSupport = false
 			}
@@ -29,8 +30,8 @@ AUTOSAR Version:          								  4.2.2
 	 .CanIfInitCfg = {
 		 .CanIfBufferCfg = {
 			 {
-				 .CanIfBufferHthRef = &CanIf.CanIfInitHohCfg[0U].CanIfHthCfg[0U],
-				 .CanIfBufferSize = 1;
+				 .CanIfBufferHthRef = &CanIf.CanIfInitCfg.CanIfInitHohCfg[0U].CanIfHthCfg[0U],
+				 .CanIfBufferSize = 1
 			 }
 		 },
 		 
@@ -39,14 +40,14 @@ AUTOSAR Version:          								  4.2.2
 				 				 
 				 .CanIfHthCfg = {
 					 {
-						 .CanIfHthCanCtrlIdRef = &CanIf.CanIfCtrlDrvCfg.CanIfCrlCfg[0U],
+						 .CanIfHthCanCtrlIdRef = &CanIf.CanIfCtrlDrvCfg.CanIfCtrlCfg[0U],
 						 .CanIfHthIdSymRef = &Can.CanConfigSet.CanHardwareObject[0U]
 					 }
 				 },
 				 
 				 .CanIfHrhCfg = {
 					 {
-						.CanIfHrhCanCtrlIdRef = &CanIf.CanIfCtrlDrvCfg.CanIfCrlCfg[0U],
+						.CanIfHrhCanCtrlIdRef = &CanIf.CanIfCtrlDrvCfg.CanIfCtrlCfg[0U],
 						.CanIfHrhIdSymRef = &Can.CanConfigSet.CanHardwareObject[1U]
 					 }
 				 }
