@@ -16,6 +16,58 @@ AUTOSAR Version:          								  4.2.2
 
 
 
+/*********************************************************************************************************************************
+**                                                                  Development Errors                                                                           **
+*********************************************************************************************************************************/
+
+/*Development Errors*/
+
+#define CANIF_E_PARAM_CANID		       (uint8)10  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_HOH	           (uint8)12  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_LPDU  		   (uint8)13  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_CONTROLLER	   (uint8)14  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_CONTROLLERID	   (uint8)15  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_WAKEUPSOURCE	   (uint8)16  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_TRCV             (uint8)17  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_TRCVMODE         (uint8)18  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_TRCVWAKEUPMODE   (uint8)19  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_CTRLMODE         (uint8)21  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_PDU_MODE         (uint8)22  /*API service called with invalid parameter*/
+
+#define CANIF_E_PARAM_POINTER 	       (uint8)20  /*API service called with invalid pointer*/
+
+#define CANIF_E_UNINIT 		           (uint8)30  /*API service used without module initialization*/
+
+#define CANIF_E_INVALID_TXPDUID	       (uint8)50  /*Transmit PDU ID invalid*/
+
+#define CANIF_E_INVALID_RXPDUID        (uint8)60  /*Receive PDU ID invalid */
+
+#define CANIF_E_INVALID_DLC            (uint8)61  /*Failed DLC Check */
+
+#define CANIF_E_DATA_LENGTH_MISMATCH   (uint8)62  /*Data Length */ 
+
+#define CANIF_E_STOPPED                (uint8)70  /*CAN Interface controller mode state machine is in mode CANIF_CS_STOPPED*/
+
+#define CANIF_E_NOT_SLEEP		       (uint8)71  /*CAN Interface controller mode state machine is not in mode CANIF_CS_SLEEP */
+
+#define CANIF_E_INIT_FAILED 	       (uint8)80  /*CAN Interface initialisation failed*/
+
+
+/******************************************************************************************************************************/
+
+
+
+
 /*******************************************************************************************************************************
 **                                               						   Variables                                                                             **
 ********************************************************************************************************************************/

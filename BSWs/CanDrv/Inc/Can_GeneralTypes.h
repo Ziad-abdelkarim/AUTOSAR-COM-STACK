@@ -23,6 +23,34 @@ AUTOSAR Version:            4.2.2
 #define	INTERRUPT 0U
 #define EXTENDED (PduIdType)1U
 #define STANDARD (PduIdType)2U
+
+/**************************************************************************************
+**                                  Development Errors                                              **
+**************************************************************************************/
+
+/*Development Errors*/
+
+#define CAN_E_PARAM_POINTER		       (uint8)1  /*API service called with invalid parameter*/
+
+#define CAN_E_PARAM_HANDLE	           (uint8)2  /*API service called with invalid parameter*/
+
+#define CAN_E_PARAM_DLC 		       (uint8)3  /*API service called with invalid parameter*/
+
+#define CAN_E_PARAM_CONTROLLER	       (uint8)4  /*API service called with invalid parameter*/
+
+#define CAN_E_UNINIT	               (uint8)5  /*API Service used without initialization*/
+
+#define CAN_E_TRANSITION	           (uint8)6  /*Invalid transition for the current mode*/
+
+#define CAN_E_DATALOST                 (uint8)7  /*Received CAN message is lost*/
+
+#define CAN_E_PARAM_BAUDRATE           (uint8)8  /*Parameter Baudrate has an invalid value*/
+
+#define CAN_E_ICOM_CONFIG_INVALID      (uint8)9  /*nvalid ICOM Configuration Id*/
+
+#define CAN_E_INIT_FAILED              (uint8)10 /*Invalid configuration set selection*/
+
+
 /*************************************************************************************/
 
 /************************************************************************************
@@ -279,19 +307,6 @@ typedef enum {
 	CAN_BUSY
 }Can_ReturnType;
 
-enum
-{  //Development Errors
-    CAN_E_PARAM_POINTER = 0x01, //API Service called with wrong parameter
-    CAN_E_PARAM_HANDLE = 0x02, //API Service called with wrong parameter
-    CAN_E_PARAM_DLC = 0x03, //API Service called with wrong parameter
-    CAN_E_PARAM_CONTROLLER = 0x04, //API Service called with wrong parameter
-    CAN_E_UNINIT = 0x05, //API Service used without initialization
-    CAN_E_TRANSITION = 0x06, //Invalid transition for the current mode
-    CAN_E_DATALOST = 0x07, //Received CAN message is lost
-    CAN_E_PARAM_BAUDRATE = 0x08, //Parameter Baudrate has an invalid value
-    CAN_E_ICOM_CONFIG_INVALID = 0x09, //Invalid ICOM Configuration Id
-    CAN_E_INIT_FAILED = 0x0A  //Invalid configuration set selection
-}CanDevelopmentError;
 
 /**************************************************************************************************
 **
