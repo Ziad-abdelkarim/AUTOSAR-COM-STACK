@@ -20,7 +20,7 @@ AUTOSAR Version:          								  4.2.2
 		 
 		 .CanIfCtrlCfg = {
 			{
-				.CanIfCtrlCanCtrlRef = Can.CanConfigSet.CanController,
+				.CanIfCtrlCanCtrlRef = &Can.CanConfigSet.CanController[0U],
 				.CanIfCtrlId = 0x0,
 				.CanIfCtrlWakeupSupport = false
 			}
