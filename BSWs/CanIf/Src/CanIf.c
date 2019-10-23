@@ -903,8 +903,76 @@ Description:
 					CAN controller with the abstract CanIf ControllerId.
  *******************************************************************************************************************************/
 
-void CanIf_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType ControllerMode){
+void CanIf_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType ControllerMode)
+{
 	
+    uint16 ModuleId=0x12;                                     /*Module ID of calling module.*/
+    uint8 ApiId=0x17;                                         /*ID of API service in which error is detected (defined in SWS of calling module)*/
+    uint8 InstanceId=0;                                       /*The identifier of the index based instance of a module, starting from 0,
+                                                                If the module is a single instance module it shall pass 0 as the InstanceId.*/
+
+    /*
+     * [SWS_CANIF_00661] d If the switch CANIF_PUBLIC_DEV_ERROR_DETECT is enabled,
+       all CanIf API services shall:
+       - not execute their normal operation
+       - report to the DET (using CANIF_E_UNINIT)
+       unless the CanIf has been initialized with a preceding call of CanIf_Init().
+     */
+
+        #if (CANIF_PUBLIC_DEV_ERROR_DETECT==1)            /*Development Error in case of UN_INT of CanIf or invalid parameters*/
+
+
+        /*
+         * [SWS_CANIF_00702] d If CanIf was not initialized before calling CanIf_ControllerModeIndication(),
+           CanIf shall not execute state transition notification, when CanIf_ControllerModeIndication()
+           is called. c()
+         */
+           if(CanIfState == CANIF_UNINIT)
+            {
+              // Det_ReportError(ModuleId,InstanceId,ApiId,CANIF_E_UNINIT);
+
+            }
+
+         /*
+          * [SWS_CANIF_00700] d If parameter ControllerId of CanIf_ControllerModeIndication()
+            has an invalid value, CanIf shall report development error code CANIF_E_PARAM_CONTROLLER
+            to the Det_ReportError service of the DET module, when CanIf_ControllerModeIndication()
+            is called. c
+          */
+           if(ControllerId >=NUMBER_OF_CONTROLLERS)
+             {
+               //Det_ReportError(ModuleId,InstanceId,ApiId,CANIF_E_PARAM_CONTROLLERID);
+             }
+
+
+        #else
+
+                 switch (ControllerMode)
+                    {
+                        /*
+                         * Indication to the new state setted by CanDrv
+                         */
+
+                     case CANIF_CS_SLEEP:
+                         CanIfControllerMode[ControllerId] =CANIF_CS_SLEEP;
+                            break;
+
+                     case CANIF_CS_STARTED:
+                         CanIfControllerMode[ControllerId] =CANIF_CS_STARTED;
+                            break;
+
+                     case CANIF_CS_STOPPED:
+                         CanIfControllerMode[ControllerId] =CANIF_CS_STOPPED;
+                            break;
+
+                     default:
+                         //Det_ReportError(ModuleId,InstanceId,ApiId,CANIF_E_PARAM_CTRLMODE);
+                            break;
+                    }
+
+
+    #endif
+
 	
 	
 	
