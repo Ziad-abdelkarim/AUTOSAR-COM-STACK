@@ -14,7 +14,7 @@
  ********************************************************************************************************************************/
  #define NUMBER_OF_CHANNELS   2
     
-CanIf_ControllerModeType  CanIfControllerMode[NUMBER_OF_CHANNELS]={CANIF_CS_UNINIT,CANIF_CS_UNINIT};
+CanIf_ControllerModeType  CanIfControllerMode[NUMBER_OF_CONTROLLERS]={CANIF_CS_UNINIT,CANIF_CS_UNINIT};
 CanIf_PduModeType         CanIfPduMode[NUMBER_OF_CHANNELS];
  
  
