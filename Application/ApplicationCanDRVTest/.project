@@ -99,7 +99,7 @@
 	<variableList>
 		<variable>
 			<name>TIVAWARE_INSTALL</name>
-			<value>file:/home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178</value>
+			<value>file:/home/minanabil/ti</value>
 		</variable>
 	</variableList>
 </projectDescription>
