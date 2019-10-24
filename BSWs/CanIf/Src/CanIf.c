@@ -1400,7 +1400,7 @@ Description:
 void CanIf_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType ControllerMode)
 {
 	
-    uint16 ModuleId=0x12;                                     /*Module ID of calling module.*/
+   
     uint8 ApiId=0x17;                                         /*ID of API service in which error is detected (defined in SWS of calling module)*/
     uint8 InstanceId=0;                                       /*The identifier of the index based instance of a module, starting from 0,
                                                                 If the module is a single instance module it shall pass 0 as the InstanceId.*/
