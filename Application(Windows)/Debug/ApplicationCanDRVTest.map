@@ -1,33 +1,33 @@
 ******************************************************************************
                   TI ARM Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Fri Oct 18 00:47:23 2019
+>> Linked Thu Oct 24 18:44:30 2019
 
 OUTPUT FILE NAME:   <ApplicationCanDRVTest.out>
-ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 000020e9
+ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 00001ec1
 
 
 MEMORY CONFIGURATION
 
          name            origin    length      used     unused   attr    fill
 ----------------------  --------  ---------  --------  --------  ----  --------
-  FLASH                 00000000   00040000  000023ec  0003dc14  R  X
-  SRAM                  20000000   00008000  000002b6  00007d4a  RW X
+  FLASH                 00000000   00040000  0000217e  0003de82  R  X
+  SRAM                  20000000   00008000  00000366  00007c9a  RW X
 
 
 SEGMENT ALLOCATION MAP
 
 run origin  load origin   length   init length attrs members
 ----------  ----------- ---------- ----------- ----- -------
-00000000    00000000    000023f0   000023f0    r-x
+00000000    00000000    00002180   00002180    r-x
   00000000    00000000    0000026c   0000026c    r-- .intvecs
-  0000026c    0000026c    00001fec   00001fec    r-x .text
-  00002258    00002258    00000114   00000114    r-- .const
-  00002370    00002370    00000080   00000080    r-- .cinit
-20000000    20000000    000002b6   00000000    rw-
+  0000026c    0000026c    00001d7c   00001d7c    r-x .text
+  00001fe8    00001fe8    000000e6   000000e6    r-- .const
+  000020d0    000020d0    000000b0   000000b0    r-- .cinit
+20000000    20000000    00000366   00000000    rw-
   20000000    20000000    00000200   00000000    rw- .stack
-  20000200    20000200    000000a1   00000000    rw- .data
-  200002a1    200002a1    00000015   00000000    rw- .bss
+  20000200    20000200    0000014c   00000000    rw- .data
+  2000034c    2000034c    0000001a   00000000    rw- .bss
 
 
 SECTION ALLOCATION MAP
@@ -38,85 +38,75 @@ section   page    origin      length       input sections
 .intvecs   0    00000000    0000026c     
                   00000000    0000026c     tm4c123gh6pm_startup_ccs.obj (.intvecs)
 
-.text      0    0000026c    00001fec     
-                  0000026c    0000116c     Can.obj (.text)
-                  000013d8    0000049c     uartstdio.obj (.text)
-                  00001874    00000136     driverlib.lib : can.obj (.text:CANMessageSet)
-                  000019aa    00000002     rtsv7M4_T_le_v4SPD16_eabi.lib : div0.asm.obj (.text)
-                  000019ac    00000110     driverlib.lib : sysctl.obj (.text:SysCtlClockGet)
-                  00001abc    0000010e                   : can.obj (.text:CANMessageGet)
-                  00001bca    00000002     --HOLE-- [fill = 0]
-                  00001bcc    000000a0     CanIf_stub.obj (.text)
-                  00001c6c    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.asm.obj (.text)
-                  00001d08    00000068     driverlib.lib : interrupt.obj (.text:IntDisable)
-                  00001d70    00000068                   : interrupt.obj (.text:IntEnable)
-                  00001dd8    00000068     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
-                  00001e40    00000064     driverlib.lib : interrupt.obj (.text:IntIsEnabled)
-                  00001ea4    00000058                   : can.obj (.text:CANBitTimingSet)
-                  00001efc    00000046                   : uart.obj (.text:UARTConfigSetExpClk)
-                  00001f42    00000002     --HOLE-- [fill = 0]
-                  00001f44    00000044     rtsv7M4_T_le_v4SPD16_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit:__TI_auto_init_nobinit_nopinit)
-                  00001f88    00000040     driverlib.lib : can.obj (.text:CANStatusGet)
-                  00001fc8    00000040     rtsv7M4_T_le_v4SPD16_eabi.lib : u_divt2.asm.obj (.text)
-                  00002008    0000003a     driverlib.lib : can.obj (.text:CANInit)
-                  00002042    00000002     --HOLE-- [fill = 0]
-                  00002044    00000038                   : sysctl.obj (.text:SysCtlPeripheralPresent)
-                  0000207c    00000038                   : sysctl.obj (.text:SysCtlPeripheralReady)
-                  000020b4    00000034                   : sysctl.obj (.text:SysCtlPeripheralEnable)
-                  000020e8    00000034     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.text:_c_int00_noargs:_c_int00_noargs)
-                  0000211c    0000002a     driverlib.lib : can.obj (.text:_CANDataRegRead)
-                  00002146    00000024                   : can.obj (.text:_CANDataRegWrite)
-                  0000216a    00000022                   : can.obj (.text:CANIntClear)
-                  0000218c    00000020                   : can.obj (.text:CANIntStatus)
-                  000021ac    00000020                   : uart.obj (.text:UARTDisable)
-                  000021cc    0000001c     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset:__TI_zero_init_nomemset)
-                  000021e8    00000014     driverlib.lib : uart.obj (.text:UARTEnable)
-                  000021fc    0000000e     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
-                  0000220a    0000000c     tm4c123gh6pm_startup_ccs.obj (.text)
-                  00002216    0000000a     driverlib.lib : can.obj (.text:CANDisable)
-                  00002220    0000000a                   : can.obj (.text:CANEnable)
-                  0000222a    0000000a                   : can.obj (.text:CANIntDisable)
-                  00002234    0000000a                   : uart.obj (.text:UARTCharGet)
-                  0000223e    0000000a                   : uart.obj (.text:UARTCharPut)
-                  00002248    00000008                   : can.obj (.text:CANIntEnable)
-                  00002250    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : pre_init.c.obj (.text:_system_pre_init)
-                  00002254    00000004                                   : exit.c.obj (.text:abort:abort)
+.text      0    0000026c    00001d7c     
+                  0000026c    00001158     Can.obj (.text)
+                  000013c4    000003e8     CanIf.obj (.text)
+                  000017ac    00000136     driverlib.lib : can.obj (.text:CANMessageSet)
+                  000018e2    00000002     --HOLE-- [fill = 0]
+                  000018e4    00000110                   : sysctl.obj (.text:SysCtlClockGet)
+                  000019f4    0000010e                   : can.obj (.text:CANMessageGet)
+                  00001b02    0000009c     rtsv7M4_T_le_v4SPD16_eabi.lib : memcpy_t2.asm.obj (.text)
+                  00001b9e    00000002     --HOLE-- [fill = 0]
+                  00001ba0    00000068     driverlib.lib : interrupt.obj (.text:IntDisable)
+                  00001c08    00000068                   : interrupt.obj (.text:IntEnable)
+                  00001c70    00000068     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_decompress_lzss.c.obj (.text:decompress:lzss:__TI_decompress_lzss)
+                  00001cd8    00000064     driverlib.lib : interrupt.obj (.text:IntIsEnabled)
+                  00001d3c    00000058                   : can.obj (.text:CANBitTimingSet)
+                  00001d94    00000044     rtsv7M4_T_le_v4SPD16_eabi.lib : autoinit.c.obj (.text:__TI_auto_init_nobinit_nopinit:__TI_auto_init_nobinit_nopinit)
+                  00001dd8    00000040     driverlib.lib : can.obj (.text:CANStatusGet)
+                  00001e18    0000003a                   : can.obj (.text:CANInit)
+                  00001e52    00000002     --HOLE-- [fill = 0]
+                  00001e54    00000038                   : sysctl.obj (.text:SysCtlPeripheralReady)
+                  00001e8c    00000034                   : sysctl.obj (.text:SysCtlPeripheralEnable)
+                  00001ec0    00000034     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.text:_c_int00_noargs:_c_int00_noargs)
+                  00001ef4    0000002a     driverlib.lib : can.obj (.text:_CANDataRegRead)
+                  00001f1e    00000024                   : can.obj (.text:_CANDataRegWrite)
+                  00001f42    00000022                   : can.obj (.text:CANIntClear)
+                  00001f64    00000020                   : can.obj (.text:CANIntStatus)
+                  00001f84    0000001c     rtsv7M4_T_le_v4SPD16_eabi.lib : copy_zero_init.c.obj (.text:decompress:ZI:__TI_zero_init_nomemset:__TI_zero_init_nomemset)
+                  00001fa0    0000000e                                   : copy_decompress_none.c.obj (.text:decompress:none:__TI_decompress_none)
+                  00001fae    0000000c     tm4c123gh6pm_startup_ccs.obj (.text)
+                  00001fba    0000000a     driverlib.lib : can.obj (.text:CANDisable)
+                  00001fc4    0000000a                   : can.obj (.text:CANEnable)
+                  00001fce    0000000a                   : can.obj (.text:CANIntDisable)
+                  00001fd8    00000008                   : can.obj (.text:CANIntEnable)
+                  00001fe0    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : pre_init.c.obj (.text:_system_pre_init)
+                  00001fe4    00000004                                   : exit.c.obj (.text:abort:abort)
 
-.const     0    00002258    00000114     
-                  00002258    00000070     driverlib.lib : interrupt.obj (.const)
-                  000022c8    0000006c                   : sysctl.obj (.const:g_pui32Xtals)
-                  00002334    00000012     uartstdio.obj (.const:.string)
-                  00002346    00000002     Can.obj (.const:.string:$P$T1$2)
-                  00002348    0000000c     uartstdio.obj (.const:g_ui32UARTBase)
-                  00002354    0000000c     uartstdio.obj (.const:g_ui32UARTPeriph)
-                  00002360    00000008     Can.obj (.const:$P$T0$1)
-                  00002368    00000004     uartstdio.obj (.const)
+.const     0    00001fe8    000000e6     
+                  00001fe8    00000070     driverlib.lib : interrupt.obj (.const)
+                  00002058    0000006c                   : sysctl.obj (.const:g_pui32Xtals)
+                  000020c4    00000008     Can.obj (.const:$P$T0$1)
+                  000020cc    00000002     Can.obj (.const:.string:$P$T1$2)
 
-.cinit     0    00002370    00000080     
-                  00002370    00000057     (.cinit..data.load) [load image, compression = lzss]
-                  000023c7    00000001     --HOLE-- [fill = 0]
-                  000023c8    0000000c     (__TI_handler_table)
-                  000023d4    00000004     --HOLE-- [fill = 0]
-                  000023d8    00000008     (.cinit..bss.load) [load image, compression = zero_init]
-                  000023e0    00000010     (__TI_cinit_table)
+.cinit     0    000020d0    000000b0     
+                  000020d0    00000085     (.cinit..data.load) [load image, compression = lzss]
+                  00002155    00000003     --HOLE-- [fill = 0]
+                  00002158    0000000c     (__TI_handler_table)
+                  00002164    00000004     --HOLE-- [fill = 0]
+                  00002168    00000008     (.cinit..bss.load) [load image, compression = zero_init]
+                  00002170    00000010     (__TI_cinit_table)
 
 .init_array 
 *          0    00000000    00000000     UNINITIALIZED
 
-.data      0    20000200    000000a1     UNINITIALIZED
+.data      0    20000200    0000014c     UNINITIALIZED
                   20000200    00000090     Can_PBcfg.obj (.data:Can)
-                  20000290    00000005     Can.obj (.data)
-                  20000295    00000002     Can.obj (.data:ControllerState)
-                  20000297    00000001     --HOLE--
-                  20000298    00000005     uartstdio.obj (.data)
-                  2000029d    00000002     Can.obj (.data:InterruptDisableCount)
-                  2000029f    00000002     Can.obj (.data:InterruptEnableCount)
+                  20000290    0000005c     CanIf_Cfg.obj (.data:CanIf)
+                  200002ec    00000058     CanIf.obj (.data:CanIfTxBuffer)
+                  20000344    00000002     Can.obj (.data:ControllerState)
+                  20000346    00000002     Can.obj (.data:InterruptDisableCount)
+                  20000348    00000002     Can.obj (.data:InterruptEnableCount)
+                  2000034a    00000001     Can.obj (.data)
+                  2000034b    00000001     CanIf.obj (.data)
 
-.bss       0    200002a1    00000015     UNINITIALIZED
-                  200002a1    0000000c     Can.obj (.bss:MessageObject)
-                  200002ad    00000004     (.common:CurrentCanState)
-                  200002b1    00000004     (.common:LogicalSleep)
-                  200002b5    00000001     (.common:CanDevelopmentError)
+.bss       0    2000034c    0000001a     UNINITIALIZED
+                  2000034c    0000000c     Can.obj (.bss:MessageObject)
+                  20000358    00000004     CanIf.obj (.bss:CanIfPduMode)
+                  2000035c    00000004     Can.obj (.bss:LogicalSleep)
+                  20000360    00000004     (.common:CurrentCanState)
+                  20000364    00000001     (.common:CanDevelopmentError)
+                  20000365    00000001     (.common:CanIfDevelopmentError)
 
 .stack     0    20000000    00000200     UNINITIALIZED
                   20000000    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.stack)
@@ -127,52 +117,49 @@ MODULE SUMMARY
        Module                         code   ro data   rw data
        ------                         ----   -------   -------
     .\
-       Can.obj                        4460   10        32     
-       uartstdio.obj                  1180   46        5      
+       Can.obj                        4440   10        28     
+       CanIf.obj                      1000   0         94     
        tm4c123gh6pm_startup_ccs.obj   12     620       0      
-       CanIf_stub.obj                 160    0         0      
        Can_PBcfg.obj                  0      0         144    
+       CanIf_Cfg.obj                  0      0         92     
     +--+------------------------------+------+---------+---------+
-       Total:                         5812   676       181    
+       Total:                         5452   630       358    
                                                               
     C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/ccs/Debug/driverlib.lib
        can.obj                        972    0         0      
-       sysctl.obj                     436    108       0      
+       sysctl.obj                     380    108       0      
        interrupt.obj                  308    112       0      
-       uart.obj                       142    0         0      
     +--+------------------------------+------+---------+---------+
-       Total:                         1858   220       0      
+       Total:                         1660   220       0      
                                                               
     C:\ti\ccs910\ccs\tools\compiler\ti-cgt-arm_18.12.3.LTS\lib\rtsv7M4_T_le_v4SPD16_eabi.lib
        memcpy_t2.asm.obj              156    0         0      
        copy_decompress_lzss.c.obj     104    0         0      
        autoinit.c.obj                 68     0         0      
-       u_divt2.asm.obj                64     0         0      
        boot_cortex_m.c.obj            52     0         0      
        copy_zero_init.c.obj           28     0         0      
        copy_decompress_none.c.obj     14     0         0      
        exit.c.obj                     4      0         0      
        pre_init.c.obj                 4      0         0      
-       div0.asm.obj                   2      0         0      
     +--+------------------------------+------+---------+---------+
-       Total:                         496    0         0      
+       Total:                         430    0         0      
                                                               
        Stack:                         0      0         512    
-       Linker Generated:              0      123       0      
+       Linker Generated:              0      169       0      
     +--+------------------------------+------+---------+---------+
-       Grand Total:                   8166   1019      693    
+       Grand Total:                   7542   1019      870    
 
 
 LINKER GENERATED COPY TABLES
 
-__TI_cinit_table @ 000023e0 records: 2, size/record: 8, table size: 16
-	.data: load addr=00002370, load size=00000057 bytes, run addr=20000200, run size=000000a1 bytes, compression=lzss
-	.bss: load addr=000023d8, load size=00000008 bytes, run addr=200002a1, run size=00000015 bytes, compression=zero_init
+__TI_cinit_table @ 00002170 records: 2, size/record: 8, table size: 16
+	.data: load addr=000020d0, load size=00000085 bytes, run addr=20000200, run size=0000014c bytes, compression=lzss
+	.bss: load addr=00002168, load size=00000008 bytes, run addr=2000034c, run size=0000001a bytes, compression=zero_init
 
 
 LINKER GENERATED HANDLER TABLE
 
-__TI_handler_table @ 000023c8 records: 3, size/record: 4, table size: 12
+__TI_handler_table @ 00002158 records: 3, size/record: 4, table size: 12
 	index: 0, handler: __TI_decompress_lzss
 	index: 1, handler: __TI_decompress_none
 	index: 2, handler: __TI_zero_init
@@ -182,92 +169,86 @@ GLOBAL SYMBOLS: SORTED ALPHABETICALLY BY Name
 
 address   name                           
 -------   ----                           
-00002255  C$$EXIT                        
-00001ea5  CANBitTimingSet                
-00002217  CANDisable                     
-00002221  CANEnable                      
-00002009  CANInit                        
-0000216b  CANIntClear                    
-0000222b  CANIntDisable                  
-00002249  CANIntEnable                   
-0000218d  CANIntStatus                   
-00001abd  CANMessageGet                  
-00001875  CANMessageSet                  
-00001f89  CANStatusGet                   
+00001fe5  C$$EXIT                        
+00001d3d  CANBitTimingSet                
+00001fbb  CANDisable                     
+00001fc5  CANEnable                      
+00001e19  CANInit                        
+00001f43  CANIntClear                    
+00001fcf  CANIntDisable                  
+00001fd9  CANIntEnable                   
+00001f65  CANIntStatus                   
+000019f5  CANMessageGet                  
+000017ad  CANMessageSet                  
+00001dd9  CANStatusGet                   
 20000200  Can                            
 00000679  Can0_InterruptHandler          
-00000885  Can1_InterruptHandler          
-200002b5  CanDevelopmentError            
-00001c01  CanIf_ControllerBusOff         
-00001bcd  CanIf_ControllerModeIndication 
-00001c19  CanIf_RxIndication             
-00001c0d  CanIf_TxConfirmation           
-20000290  CanTimeoutDuration             
+0000088d  Can1_InterruptHandler          
+20000364  CanDevelopmentError            
+20000290  CanIf                          
+20000365  CanIfDevelopmentError          
+00001779  CanIf_ControllerBusOff         
+00001785  CanIf_ControllerModeIndication 
+000015a9  CanIf_GetControllerMode        
+0000170b  CanIf_GetPduMode               
+0000158f  CanIf_Init                     
+000016ef  CanIf_ReadRxNotifStatus        
+000016d5  CanIf_ReadRxPduData            
+000016e3  CanIf_ReadTxNotifStatus        
+0000176d  CanIf_RxIndication             
+00001751  CanIf_SetBaudrate              
+00001599  CanIf_SetControllerMode        
+000016fb  CanIf_SetPduMode               
+000015bd  CanIf_Transmit                 
+00001761  CanIf_TxConfirmation           
 000004c1  Can_DisableControllerInterrupts
 00000599  Can_EnableControllerInterrupts 
 0000026d  Can_GetHardwareObjectOfHTH     
-00000da1  Can_Init                       
-0000135b  Can_MainFunctionBusoff         
-00001215  Can_MainFunction_Mode          
-0000108f  Can_MainFunction_Write         
-00001099  Can_SetBaudrate                
-00000ab9  Can_SetControllerMode          
+00000d8d  Can_Init                       
+00001347  Can_MainFunctionBusoff         
+00001201  Can_MainFunction_Mode          
+0000107b  Can_MainFunction_Write         
+00001085  Can_SetBaudrate                
+00000abd  Can_SetControllerMode          
 000002c3  Can_Write                      
-200002ad  CurrentCanState                
-00001d09  IntDisable                     
-00001d71  IntEnable                      
-00001e41  IntIsEnabled                   
-200002b1  LogicalSleep                   
-0000220b  ResetISR                       
-000019ad  SysCtlClockGet                 
-000020b5  SysCtlPeripheralEnable         
-00002045  SysCtlPeripheralPresent        
-0000207d  SysCtlPeripheralReady          
-00002235  UARTCharGet                    
-0000223f  UARTCharPut                    
-00001efd  UARTConfigSetExpClk            
-000021ad  UARTDisable                    
-000021e9  UARTEnable                     
-000013d9  UARTStdioConfig                
-0000151f  UARTgetc                       
-00001465  UARTgets                       
-0000183f  UARTprintf                     
-00001545  UARTvprintf                    
-0000141f  UARTwrite                      
+20000360  CurrentCanState                
+00001ba1  IntDisable                     
+00001c09  IntEnable                      
+00001cd9  IntIsEnabled                   
+00001faf  ResetISR                       
+000018e5  SysCtlClockGet                 
+00001e8d  SysCtlPeripheralEnable         
+00001e55  SysCtlPeripheralReady          
 20000200  __STACK_END                    
 00000200  __STACK_SIZE                   
 20000200  __STACK_TOP                    
-000023e0  __TI_CINIT_Base                
-000023f0  __TI_CINIT_Limit               
-000023c8  __TI_Handler_Table_Base        
-000023d4  __TI_Handler_Table_Limit       
-00001f45  __TI_auto_init_nobinit_nopinit 
-00001dd9  __TI_decompress_lzss           
-000021fd  __TI_decompress_none           
+00002170  __TI_CINIT_Base                
+00002180  __TI_CINIT_Limit               
+00002158  __TI_Handler_Table_Base        
+00002164  __TI_Handler_Table_Limit       
+00001d95  __TI_auto_init_nobinit_nopinit 
+00001c71  __TI_decompress_lzss           
+00001fa1  __TI_decompress_none           
 ffffffff  __TI_pprof_out_hndl            
 ffffffff  __TI_prof_data_size            
 ffffffff  __TI_prof_data_start           
 00000000  __TI_static_base__             
-000021cd  __TI_zero_init_nomemset        
-000019ab  __aeabi_idiv0                  
-000019ab  __aeabi_ldiv0                  
-00001c6d  __aeabi_memcpy                 
-00001c6d  __aeabi_memcpy4                
-00001c6d  __aeabi_memcpy8                
-00001fc9  __aeabi_uidiv                  
-00001fc9  __aeabi_uidivmod               
+00001f85  __TI_zero_init_nomemset        
+00001b03  __aeabi_memcpy                 
+00001b03  __aeabi_memcpy4                
+00001b03  __aeabi_memcpy8                
 ffffffff  __binit__                      
 ffffffff  __c_args__                     
 UNDEFED   __mpu_init                     
 20000000  __stack                        
-000020e9  _c_int00_noargs                
+00001ec1  _c_int00_noargs                
 UNDEFED   _system_post_cinit             
-00002251  _system_pre_init               
-00002255  abort                          
+00001fe1  _system_pre_init               
+00001fe5  abort                          
 ffffffff  binit                          
 00000000  g_pfnVectors                   
-000013b7  main                           
-00001c6d  memcpy                         
+00001795  main                           
+00001b03  memcpy                         
 
 
 GLOBAL SYMBOLS: SORTED BY Symbol Address 
@@ -282,76 +263,70 @@ address   name
 000004c1  Can_DisableControllerInterrupts
 00000599  Can_EnableControllerInterrupts 
 00000679  Can0_InterruptHandler          
-00000885  Can1_InterruptHandler          
-00000ab9  Can_SetControllerMode          
-00000da1  Can_Init                       
-0000108f  Can_MainFunction_Write         
-00001099  Can_SetBaudrate                
-00001215  Can_MainFunction_Mode          
-0000135b  Can_MainFunctionBusoff         
-000013b7  main                           
-000013d9  UARTStdioConfig                
-0000141f  UARTwrite                      
-00001465  UARTgets                       
-0000151f  UARTgetc                       
-00001545  UARTvprintf                    
-0000183f  UARTprintf                     
-00001875  CANMessageSet                  
-000019ab  __aeabi_idiv0                  
-000019ab  __aeabi_ldiv0                  
-000019ad  SysCtlClockGet                 
-00001abd  CANMessageGet                  
-00001bcd  CanIf_ControllerModeIndication 
-00001c01  CanIf_ControllerBusOff         
-00001c0d  CanIf_TxConfirmation           
-00001c19  CanIf_RxIndication             
-00001c6d  __aeabi_memcpy                 
-00001c6d  __aeabi_memcpy4                
-00001c6d  __aeabi_memcpy8                
-00001c6d  memcpy                         
-00001d09  IntDisable                     
-00001d71  IntEnable                      
-00001dd9  __TI_decompress_lzss           
-00001e41  IntIsEnabled                   
-00001ea5  CANBitTimingSet                
-00001efd  UARTConfigSetExpClk            
-00001f45  __TI_auto_init_nobinit_nopinit 
-00001f89  CANStatusGet                   
-00001fc9  __aeabi_uidiv                  
-00001fc9  __aeabi_uidivmod               
-00002009  CANInit                        
-00002045  SysCtlPeripheralPresent        
-0000207d  SysCtlPeripheralReady          
-000020b5  SysCtlPeripheralEnable         
-000020e9  _c_int00_noargs                
-0000216b  CANIntClear                    
-0000218d  CANIntStatus                   
-000021ad  UARTDisable                    
-000021cd  __TI_zero_init_nomemset        
-000021e9  UARTEnable                     
-000021fd  __TI_decompress_none           
-0000220b  ResetISR                       
-00002217  CANDisable                     
-00002221  CANEnable                      
-0000222b  CANIntDisable                  
-00002235  UARTCharGet                    
-0000223f  UARTCharPut                    
-00002249  CANIntEnable                   
-00002251  _system_pre_init               
-00002255  C$$EXIT                        
-00002255  abort                          
-000023c8  __TI_Handler_Table_Base        
-000023d4  __TI_Handler_Table_Limit       
-000023e0  __TI_CINIT_Base                
-000023f0  __TI_CINIT_Limit               
+0000088d  Can1_InterruptHandler          
+00000abd  Can_SetControllerMode          
+00000d8d  Can_Init                       
+0000107b  Can_MainFunction_Write         
+00001085  Can_SetBaudrate                
+00001201  Can_MainFunction_Mode          
+00001347  Can_MainFunctionBusoff         
+0000158f  CanIf_Init                     
+00001599  CanIf_SetControllerMode        
+000015a9  CanIf_GetControllerMode        
+000015bd  CanIf_Transmit                 
+000016d5  CanIf_ReadRxPduData            
+000016e3  CanIf_ReadTxNotifStatus        
+000016ef  CanIf_ReadRxNotifStatus        
+000016fb  CanIf_SetPduMode               
+0000170b  CanIf_GetPduMode               
+00001751  CanIf_SetBaudrate              
+00001761  CanIf_TxConfirmation           
+0000176d  CanIf_RxIndication             
+00001779  CanIf_ControllerBusOff         
+00001785  CanIf_ControllerModeIndication 
+00001795  main                           
+000017ad  CANMessageSet                  
+000018e5  SysCtlClockGet                 
+000019f5  CANMessageGet                  
+00001b03  __aeabi_memcpy                 
+00001b03  __aeabi_memcpy4                
+00001b03  __aeabi_memcpy8                
+00001b03  memcpy                         
+00001ba1  IntDisable                     
+00001c09  IntEnable                      
+00001c71  __TI_decompress_lzss           
+00001cd9  IntIsEnabled                   
+00001d3d  CANBitTimingSet                
+00001d95  __TI_auto_init_nobinit_nopinit 
+00001dd9  CANStatusGet                   
+00001e19  CANInit                        
+00001e55  SysCtlPeripheralReady          
+00001e8d  SysCtlPeripheralEnable         
+00001ec1  _c_int00_noargs                
+00001f43  CANIntClear                    
+00001f65  CANIntStatus                   
+00001f85  __TI_zero_init_nomemset        
+00001fa1  __TI_decompress_none           
+00001faf  ResetISR                       
+00001fbb  CANDisable                     
+00001fc5  CANEnable                      
+00001fcf  CANIntDisable                  
+00001fd9  CANIntEnable                   
+00001fe1  _system_pre_init               
+00001fe5  C$$EXIT                        
+00001fe5  abort                          
+00002158  __TI_Handler_Table_Base        
+00002164  __TI_Handler_Table_Limit       
+00002170  __TI_CINIT_Base                
+00002180  __TI_CINIT_Limit               
 20000000  __stack                        
 20000200  Can                            
 20000200  __STACK_END                    
 20000200  __STACK_TOP                    
-20000290  CanTimeoutDuration             
-200002ad  CurrentCanState                
-200002b1  LogicalSleep                   
-200002b5  CanDevelopmentError            
+20000290  CanIf                          
+20000360  CurrentCanState                
+20000364  CanDevelopmentError            
+20000365  CanIfDevelopmentError          
 ffffffff  __TI_pprof_out_hndl            
 ffffffff  __TI_prof_data_size            
 ffffffff  __TI_prof_data_start           
@@ -361,4 +336,4 @@ ffffffff  binit
 UNDEFED   __mpu_init                     
 UNDEFED   _system_post_cinit             
 
-[86 symbols]
+[80 symbols]

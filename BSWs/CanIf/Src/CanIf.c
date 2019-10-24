@@ -14,6 +14,8 @@
 extern CanIf_ConfigType CanIf;
 
 static enum CanIfStateType{CANIF_UNINIT, CANIF_READY}CanIfState = CANIF_UNINIT;
+static CanIf_ControllerModeType  CanIfControllerMode[NUMBER_OF_CONTROLLERS]={CANIF_CS_UNINIT,CANIF_CS_UNINIT};
+static CanIf_PduModeType         CanIfPduMode[NUMBER_OF_CONTROLLERS];
 
 #if(CanIfPublicTxBuffering == true)
 static CanIf_TxBufferType CanIfTxBuffer[NUMBER_OF_BUFFERS] = {
@@ -1121,7 +1123,7 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePt
 {
 
 	/*  CanIf must be initialized after Power ON */
-	if(CanIfState != CANIF_UNINIT)
+	if(CanIfState == CANIF_UNINIT)
 	{
 		return E_NOT_OK;
 	}
@@ -1150,7 +1152,7 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePt
 			}
 			else
 			{
-				*PduModePtr = PduMode[ControllerId];
+				*PduModePtr = CanIfPduMode[ControllerId];
 			}
 		}
 	}

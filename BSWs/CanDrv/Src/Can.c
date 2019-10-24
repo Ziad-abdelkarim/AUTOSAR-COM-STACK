@@ -18,7 +18,7 @@ static CanDriverStateType CanDriverState = CAN_UNINIT;
 static MessageObjectType MessageObject[NUMBER_OF_CONTROLLERS][NUMBER_OF_HOH][MAX_NUMBER_OF_HANDLERS];
 static ControllerStateType ControllerState[NUMBER_OF_CONTROLLERS] = { CAN_CS_UNINIT, CAN_CS_UNINIT };
 static boolean LogicalSleep[NUMBER_OF_CONTROLLERS];
-static  uint8  CanDevelopmentError;
+uint8  CanDevelopmentError;
 /********************************************************************************************************************************
 **                                                        Local Functions                                                      **
 *********************************************************************************************************************************/
@@ -2054,9 +2054,4 @@ void Can_MainFunctionBusoff(void)
 #endif
 
     return;
-}
-
-
-void main(void)
-{
 }
