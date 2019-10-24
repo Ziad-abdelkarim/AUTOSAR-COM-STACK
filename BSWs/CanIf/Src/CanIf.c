@@ -12,20 +12,41 @@
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
+extern CanIf_ConfigType CanIf ;
+
+ static enum CanIfStateType{CANIF_UNINIT, CANIF_INIT} CanIfState = CANIF_UNINIT;
+ uint16 ModuleId=0x12;
+#if(CanIfPublicTxConfirmPollingSupport == true)
+
+ CanIf_TxConfirmationInfoType  CanIf_TxConfirmationInfo[CanIfMaxTxPduCfg]={false};
+
  
- 
- 
- 
- 
- 
- 
+#endif
+
  
  
  
  /********************************************************************************************************************************
 **                                                        Local Functions                                                                                        **
 *********************************************************************************************************************************/
+#if(CanIfPublicTxConfirmPollingSupport == true)
 
+static void CanIf_SetTxConfirmationInfoBuffer(PduIdType pduid){
+    CanIf_TxConfirmationInfo[pduid]= true;
+}
+static CanIf_TxConfirmationInfoType CanIf_GetTxConfirmationInfoBuffer(PduIdType pduid){
+    return CanIf_TxConfirmationInfo[pduid];
+}
+
+static void CanIf_ClearTxConfirmationInfoBuffer(void){
+    uint32  pduidndex;
+    for(pduidndex=0 ; pduidndex <= CanIfMaxTxPduCfg ; pduidndex ++){
+        CanIf_TxConfirmationInfo[pduidndex]= false;
+    }
+}
+
+
+#endif
 
 
 
@@ -690,9 +711,9 @@ Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId,uint16 BaudRateConfigID) {
  Sync/Async:                                                 Synchronous
  Reentrancy:                                                 Reentrant
  Parameters (in):                                           CanTxPduId      -->L-PDU handle of CAN L-PDU successfully transmitted.
-																								This ID specifies the corresponding CAN L-PDU ID
-																								and implicitly the CAN Driver instance as well as the 
-																								corresponding CAN controller device.					
+																				This ID specifies the corresponding CAN L-PDU ID
+																				and implicitly the CAN Driver instance as well as the
+																				corresponding CAN controller device.
 Parameters (inout):                                          None
 Parameters (out):                                             None
 Return value:                                                   None
@@ -701,23 +722,58 @@ Description:
  *******************************************************************************************************************************/
 
 void CanIf_TxConfirmation(PduIdType CanTxPduId){
+#if(CanIfPublicDevErrorDetect == true)
+    uint8 InstanceId=0x00;
+    uint8 ApiId=0x13;
+    if(CanIfState == UNINIT){
+        Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_UNINIT);
+    }
+
+   if(CanTxPduId != CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduId ) {
+       Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_INVALID_TXPDUID);
+   }
+
+#else
+   if(CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduUserTxConfirmationUL == PDUR ){
+
+
+
+   }
+   else if (CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduUserTxConfirmationUL == CAN_TP){
+
+
+
+
+   }
+   else {
+       /* misra */
+   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif
+
+
+
+
 	
 	
 	
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	
 	

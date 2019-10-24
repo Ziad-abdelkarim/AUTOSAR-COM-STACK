@@ -5,6 +5,7 @@ AUTOSAR Version:          								  4.2.2
 #ifndef CANIF_CFG_H
 #define CANIF_CFG_H
 
+
 /**************************************************************************************************
 **
 Name:                                   CanIfPrivateCfg
@@ -58,7 +59,7 @@ Description: 				Switches the Default Error Tracer (Det) detection and notificat
 										• true: enabled (ON).
 										• false: disabled (OFF).								**
 **************************************************************************************************/
-#define CanIfPublicDevErrorDetect (boolean)true
+#define CanIfPublicDevErrorDetect   false
 /**************************************************************************************************
 **
 Name:                                   CanIfPublicHandleTypeEnum
@@ -114,7 +115,7 @@ Description: 				Enables and disables the buffering of transmit L-PDUs (rejected
 								CanDrv) within the CAN Interface module.	
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicTxBuffering	(boolean)true
+#define CanIfPublicTxBuffering	   true
 /**************************************************************************************************
 **
 Name:                              CanIfPublicTxConfirmPollingSupport
@@ -124,7 +125,7 @@ Type:                                    EcucBooleanParamDef
 Description: 				Configuration parameter to enable/disable the API to poll for Tx
 										Confirmation state.										**
 **************************************************************************************************/
-#define CanIfPublicTxConfirmPollingSupport (boolean)true
+#define CanIfPublicTxConfirmPollingSupport true
 /**************************************************************************************************
 **
 Name:                              		CanIfSetBaudrateApi
@@ -186,6 +187,8 @@ Type:                                   EcucIntegerParamDef
 Description:  							Maximum number of Pdus.		          					**
 **************************************************************************************************/
 #define CANIF_NUMBER_OF_PDU (CanIfMaxRxPduCfg+CanIfMaxTxPduCfg)
+
+
 
 
 #endif /*CANIF_CFG_H*/
