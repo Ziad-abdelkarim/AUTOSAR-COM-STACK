@@ -48,8 +48,361 @@ static void CanIf_ClearTxConfirmationInfoBuffer(void){
 
 #endif
 
+#if(CanIfPublicTxBuffering == true)
+static Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg* CanIfTxPduBufferRefLocal, CanIf_TxBufferType *CanIfTxBufferLocal);
+static Std_ReturnType CanIf_TxBufferEmpty(CanIf_TxBufferType *CanIfTxBufferLocal);
+static Std_ReturnType CanIf_TxBufferFull(CanIf_TxBufferType *CanIfTxBufferLocal);
+static Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu, const Can_PduType* PduInfoPtr);
+static Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu, const Can_PduType* PduInfoPtr);
+static Std_ReturnType CanIf_TxBufferClear(uint8 ControllerId);
+#endif
+static Std_ReturnType CanIf_GetTxPdu(PduIdType CanIfTxSduId, CanIfTxPduCfg* TxPduPtr);
+static Std_ReturnType CanIf_GetRxPdu(PduIdType CanIfRxSduId, CanIfRxPduCfg* RxPduPtr);
+
+/*********************************************************************************************************************************
+ Service name:                                       CanIf_TxBufferGet
+Parameters (in):                      CanIfTxPduBufferRefLocal-->Tx PDU reference to a CanIf buffer configuration.
+                                           CanIfTxBufferLocal -->Reference to the Tx Buffer
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                           This service searches for the CanIf buffer referenced by the available
+                                        CanIf buffers and the Tx Pdu
+ *******************************************************************************************************************************/
+#if(CanIfPublicTxBuffering == true)
+Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg* CanIfTxPduBufferRefLocal, CanIf_TxBufferType *CanIfBufferRefLocal)
+{
+    uint8 BufferIndex;
+
+    /* Check if the reference to the buffer configurations is a valid reference */
+    if(CanIfTxPduBufferRefLocal == NULL)
+    {
+        return E_NOT_OK;
+    }
+    else
+    {
+        /* Loop over the available buffers and return the one with the same buffer configuration reference as the Tx PDU */
+        for(BufferIndex = 0; BufferIndex < NUMBER_OF_BUFFERS ; BufferIndex ++)
+        {
+            if(CanIfTxBuffer[BufferIndex].CanIfBufferCfgRef == CanIfTxPduBufferRefLocal)
+            {
+                CanIfBufferRefLocal = &CanIfTxBuffer[BufferIndex];
+                return E_OK;
+            }
+            else
+            {
+
+            }
+        }
+    }
+
+    return E_NOT_OK;
+}
+#endif
+
+/*********************************************************************************************************************************
+ Service name:                                       CanIf_TxBufferEmpty
+Parameters (in):                        CanIfTxBufferLocal -->Reference to the Tx Buffer
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                           This service checks if the buffer is empty
+ *******************************************************************************************************************************/
+#if(CanIfPublicTxBuffering == true)
+Std_ReturnType CanIf_TxBufferEmpty(CanIf_TxBufferType *CanIfTxBufferRefLocal)
+{
+    /* Check if the reference to the buffer is a valid reference */
+    if(CanIfTxBufferRefLocal == NULL)
+    {
+        return E_NOT_OK;
+    }
+    else
+    {
+        if(CanIfTxBufferRefLocal->CanIfTxBufferSize < 0)
+        {
+            return E_NOT_OK;
+        }
+        else
+        {
+            return E_OK;
+        }
+    }
+
+}
+#endif
+
+/*********************************************************************************************************************************
+ Service name:                                       CanIf_TxBufferFull
+Parameters (in):                        CanIfTxBufferRefLocal -->Reference to the Tx Buffer
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                           This service checks if the buffer is full
+ *******************************************************************************************************************************/
+#if(CanIfPublicTxBuffering == true)
+Std_ReturnType CanIf_TxBufferFull(CanIf_TxBufferType *CanIfTxBufferRefLocal)
+{
+    /* Check if the reference to the buffer is a valid reference */
+    if(CanIfTxBufferRefLocal == NULL)
+    {
+        return E_NOT_OK;
+    }
+    else
+    {
+        if(CanIfTxBufferRefLocal->CanIfTxBufferSize < CanIfTxBufferRefLocal->CanIfBufferCfgRef->CanIfBufferSize)
+        {
+            return E_OK;
+        }
+        else
+        {
+            return E_NOT_OK;
+        }
+    }
+
+}
+#endif
+
+/*********************************************************************************************************************************
+ Service name:                                       CanIf_TxBufferDequeue
+ Parameters (in):                               TxPdu -->Reference to the Tx PDU
+                                                PduInfoPtr --> Reference to the PDU
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                           This service returns the next PDU in the FIFO buffer
+ *******************************************************************************************************************************/
+#if(CanIfPublicTxBuffering == true)
+Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu, const Can_PduType* PduInfoPtr)
+{
+    CanIf_TxBufferType* CanIfTxBufferRefLocal = NULL;
+
+    /* Check if the reference to the TxPdu is a valid reference */
+    if(TxPdu == NULL)
+    {
+        return E_NOT_OK;
+    }
+    else
+    {
+        /* Get the buffer of the Tx PDU */
+        if(CanIf_TxBufferGet(TxPdu->CanIfTxPduBufferRef, CanIfTxBufferRefLocal) == E_NOT_OK)
+        {
+            return E_NOT_OK;
+        }
+        else
+        {
+            /* Check if the buffer is empty */
+            if(CanIf_TxBufferEmpty(CanIfTxBufferRefLocal) == E_NOT_OK)
+            {
+                return E_NOT_OK;
+            }
+            else
+            {
+                /* Set the PDU pointer to the next PDU in the buffer */
+                PduInfoPtr = &CanIfTxBufferRefLocal->CanIfTxBufferPduData[CanIfTxBufferRefLocal->CanIfTxBufferFront];
+                /* Set the PDU state as not available in the buffer */
+                CanIfTxBufferRefLocal->CanIfTxBufferPduAvailable[TxPdu->CanIfTxPduId] = false;
+                /* Decrease the current avaiable PDUs */
+                CanIfTxBufferRefLocal->CanIfTxBufferSize --;
+                CanIfTxBufferRefLocal->CanIfTxBufferFront ++;
+                return E_OK;
+            }
+        }
+    }
+
+}
+#endif
+
+/*********************************************************************************************************************************
+ Service name:                                       CanIf_TxBufferEnqueue
+ Parameters (in):                               TxPdu -->Reference to the Tx PDU
+                                                PduInfoPtr --> Reference to the PDU
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                               This service adds a PDU to the FIFO buffer
+ *******************************************************************************************************************************/
+#if(CanIfPublicTxBuffering == true)
+Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu, const Can_PduType* PduInfoPtr)
+{
+    CanIf_TxBufferType* CanIfTxBufferRefLocal = NULL;
+
+    /* Check if the reference to the PDUs is a valid reference */
+    if(TxPdu == NULL || PduInfoPtr == NULL)
+    {
+        return E_NOT_OK;
+    }
+    else
+    {
+        /* Get the buffer of the Tx PDU */
+        if(CanIf_TxBufferGet(TxPdu->CanIfTxPduBufferRef, CanIfTxBufferRefLocal) == E_NOT_OK)
+        {
+            return E_NOT_OK;
+        }
+        else
+        {
+            /* Check if the buffer is full */
+            if(CanIf_TxBufferFull(CanIfTxBufferRefLocal) == E_NOT_OK)
+            {
+                return E_NOT_OK;
+            }
+            else
+            {
+                /* Check if the PDU is already stored in the buffer */
+                if(CanIfTxBufferRefLocal->CanIfTxBufferPduAvailable[TxPdu->CanIfTxPduId] == true)
+                {
+                    return E_NOT_OK;
+                }
+                else
+                {
+                    /* The buffer is not initialized yet. We will initialize the buffer by making both front and rear 0 and size 1
+                    and give a value to the first PDU */
+                    if(CanIfTxBufferRefLocal->CanIfTxBufferSize < 0)
+                    {
+                        CanIfTxBufferRefLocal->CanIfTxBufferPduData[0] = *PduInfoPtr;
+                        CanIfTxBufferRefLocal->CanIfTxBufferRear = 0;
+                        CanIfTxBufferRefLocal->CanIfTxBufferFront = 0;
+                        CanIfTxBufferRefLocal->CanIfTxBufferSize = 1;
+                    }
+                    /* This is the case when the rear is the last PDU in the buffer. We will add a new PDU at the index 0 */
+                    else if(CanIfTxBufferRefLocal->CanIfTxBufferRear == CanIfTxBufferRefLocal->CanIfBufferCfgRef->CanIfBufferSize - 1)
+                    {
+                        CanIfTxBufferRefLocal->CanIfTxBufferPduData[0] = *PduInfoPtr;
+                        CanIfTxBufferRefLocal->CanIfTxBufferRear = 0;
+                        CanIfTxBufferRefLocal->CanIfTxBufferSize ++;
+                    }
+                    /* This is the normal case*/
+                    else
+                    {
+                        CanIfTxBufferRefLocal->CanIfTxBufferPduData[CanIfTxBufferRefLocal->CanIfTxBufferRear + 1] = *PduInfoPtr;
+                        CanIfTxBufferRefLocal->CanIfTxBufferRear ++;
+                        CanIfTxBufferRefLocal->CanIfTxBufferSize ++;
+                    }
+
+                    /* Set the PDU as currently available in the buffer */
+                    CanIfTxBufferRefLocal->CanIfTxBufferPduAvailable[TxPdu->CanIfTxPduId] = true;
+                    return E_OK;
+                }
+            }
+        }
+    }
+
+}
+#endif
+
+/*********************************************************************************************************************************
+ Service name:                                       CanIf_TxBufferClear
+ Parameters (in):                             ControllerId -->Controller Id
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                               This service clear the FIFO buffer
+ *******************************************************************************************************************************/
+Std_ReturnType CanIf_TxBufferClear(uint8 ControllerId)
+{
+    uint8 BufferIndex;
+    uint8 PduIndex;
+    if(ControllerId < NUMBER_OF_CONTROLLERS)
+    {
+        for(BufferIndex = (uint8)0; BufferIndex < NUMBER_OF_BUFFERS; BufferIndex++)
+        {
+            if(CanIfTxBuffer[BufferIndex].CanIfBufferCfgRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId == ControllerId)
+            {
+                CanIfTxBuffer[BufferIndex].CanIfTxBufferFront = -1;
+                CanIfTxBuffer[BufferIndex].CanIfTxBufferRear = -1;
+                CanIfTxBuffer[BufferIndex].CanIfTxBufferSize = -1;
+
+                for(PduIndex = 0; PduIndex < CanIfMaxTxPduCfg ; PduIndex++)
+                {
+                    CanIfTxBuffer[BufferIndex].CanIfTxBufferPduAvailable[PduIndex] = false;
+                }
+            }
+            else
+            {
+
+            }
+        }
+    }
+    else
+    {
+        return E_NOT_OK;
+    }
+
+    return E_OK;
+
+}
+
+/*********************************************************************************************************************************
+ Service name:                                       CanIf_GetTxPdu
+ Parameters (in):                               CanIfTxSduId -->Id of the Tx PDU
+                                                TxPduPtr --> Reference to the Tx PDU
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                               This service returns the Tx PDU with the desired ID
+ *******************************************************************************************************************************/
+Std_ReturnType CanIf_GetTxPdu(PduIdType CanIfTxSduId, CanIfTxPduCfg* TxPduPtr)
+{
+    uint32 TxPduIndex;
+    if(CanIfTxSduId < CanIfMaxTxPduCfg)
+    {
+        for(TxPduIndex = 0; TxPduIndex < CanIfMaxTxPduCfg ; TxPduIndex++)
+        {
+            if(CanIf.CanIfInitCfg.CanIfTxPduCfg[TxPduIndex].CanIfTxPduId == CanIfTxSduId)
+            {
+                TxPduPtr = &CanIf.CanIfInitCfg.CanIfTxPduCfg[TxPduIndex];
+                return E_OK;
+            }
+            else
+            {
+
+            }
+        }
+    }
+    else
+    {
+        return E_NOT_OK;
+    }
+
+    return E_NOT_OK;
+}
 
 
+
+
+/*********************************************************************************************************************************
+ Service name:                                       CanIf_GetRxPdu
+ Parameters (in):                               CanIfRxSduId -->Id of the Rx PDU
+                                                RxPduPtr --> Reference to the Rx PDU
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                               This service returns the Rx PDU with the desired ID
+ *******************************************************************************************************************************/
+Std_ReturnType CanIf_GetRxPdu(PduIdType CanIfRxSduId, CanIfRxPduCfg* RxPduPtr)
+{
+    uint32 RxPduIndex;
+    if(CanIfRxSduId < CanIfMaxRxPduCfg)
+    {
+        for(RxPduIndex = 0; RxPduIndex < CanIfMaxRxPduCfg ; RxPduIndex++)
+        {
+            if(CanIf.CanIfInitCfg.CanIfRxPduCfg[RxPduIndex].CanIfRxPduId == CanIfRxSduId)
+            {
+                RxPduPtr = &CanIf.CanIfInitCfg.CanIfRxPduCfg[RxPduIndex];
+                return E_OK;
+            }
+            else
+            {
+
+            }
+        }
+    }
+    else
+    {
+        return E_NOT_OK;
+    }
+
+    return E_NOT_OK;
+}
 
 
 
