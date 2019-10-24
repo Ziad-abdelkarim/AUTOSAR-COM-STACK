@@ -8,11 +8,13 @@
  **                                                          Includes                                                                                                **
  ********************************************************************************************************************************/
 #include <CanIf.h>
+#include <CanSM_Stub.h>
+
 
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
-
+static enum CanIfStateType{CANIF_UNINIT, CANIF_READY}CanIfState = CANIF_UNINIT;
 
 
 
@@ -890,7 +892,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
         be changed to CANIF_CS_STOPPED.
         */
 
-        if(CanIf_GetControllerMode(ControllerId,ControllerModePtrBusOff)==E_OK)
+       /* if(CanIf_GetControllerMode(ControllerId,ControllerModePtrBusOff)==E_OK)
         {
           if (*ControllerModePtrBusOff==CANIF_CS_INIT)
           {
@@ -900,7 +902,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
         }else
         {
           //nothing
-        }
+        }*/
 
         /*
         [SWS_CANIF_00488] d If a CCMSM is in state CANIF_CS_STARTED when CanIf_ControllerBusO
