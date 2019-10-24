@@ -894,7 +894,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
         {
           if (*ControllerModePtrBusOff==CANIF_CS_INIT)
           {
-            CanIf_ControllerModeIndication(ControllerId,CANIF_CS_STOPPED);
+            CanIf_SetControllerMode(ControllerId,CANIF_CS_STOPPED);
           }
 
         }else
@@ -911,7 +911,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
         {
           if(*ControllerModePtrBusOff==CANIF_CS_STARTED)
           {
-            CanIf_ControllerModeIndication(ControllerId,CANIF_CS_STOPPED);
+            CanIf_SetControllerMode(ControllerId,CANIF_CS_STOPPED);
           }
 
         }else
