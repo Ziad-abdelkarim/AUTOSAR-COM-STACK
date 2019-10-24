@@ -11,6 +11,8 @@
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
+extern CanIf_ConfigType CanIf;
+
 static enum CanIfStateType{CANIF_UNINIT, CANIF_READY}CanIfState = CANIF_UNINIT;
 
 #if(CanIfPublicTxBuffering == true)
@@ -25,11 +27,11 @@ static CanIf_TxBufferType CanIfTxBuffer[NUMBER_OF_BUFFERS] = {
 };
 #endif
 uint8 CanIfDevelopmentError;
- 
- 
- 
- 
- 
+
+
+
+
+
 
 
  /********************************************************************************************************************************
@@ -60,7 +62,7 @@ Parameters (in):                      CanIfTxPduBufferRefLocal-->Tx PDU referenc
 Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg* CanIfTxPduBufferRefLocal, CanIf_TxBufferType *CanIfBufferRefLocal)
 {
 	uint8 BufferIndex;
-	
+
 	/* Check if the reference to the buffer configurations is a valid reference */
 	if(CanIfTxPduBufferRefLocal == NULL)
 	{
@@ -78,11 +80,11 @@ Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg* CanIfTxPduBufferRefLocal, CanIf
 			}
 			else
 			{
-				
+
 			}
 		}
 	}
-	
+
 	return E_NOT_OK;
 }
 #endif
@@ -114,7 +116,7 @@ Std_ReturnType CanIf_TxBufferEmpty(CanIf_TxBufferType *CanIfTxBufferRefLocal)
 			return E_OK;
 		}
 	}
-	
+
 }
 #endif
 
@@ -162,7 +164,7 @@ Std_ReturnType CanIf_TxBufferFull(CanIf_TxBufferType *CanIfTxBufferRefLocal)
 Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu, const Can_PduType* PduInfoPtr)
 {
     CanIf_TxBufferType* CanIfTxBufferRefLocal = NULL;
-	
+
 	/* Check if the reference to the TxPdu is a valid reference */
 	if(TxPdu == NULL)
 	{
@@ -195,7 +197,7 @@ Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu, const Can_PduType* Pd
 			}
 		}
 	}
-	
+
 }
 #endif
 
@@ -212,7 +214,7 @@ Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu, const Can_PduType* Pd
 Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu, const Can_PduType* PduInfoPtr)
 {
 	CanIf_TxBufferType* CanIfTxBufferRefLocal = NULL;
-	
+
 	/* Check if the reference to the PDUs is a valid reference */
 	if(TxPdu == NULL || PduInfoPtr == NULL)
 	{
@@ -264,7 +266,7 @@ Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu, const Can_PduType* Pd
 					    CanIfTxBufferRefLocal->CanIfTxBufferRear ++;
 					    CanIfTxBufferRefLocal->CanIfTxBufferSize ++;
 					}
-					
+
 					/* Set the PDU as currently available in the buffer */
 					CanIfTxBufferRefLocal->CanIfTxBufferPduAvailable[TxPdu->CanIfTxPduId] = true;
 					return E_OK;
@@ -272,7 +274,7 @@ Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu, const Can_PduType* Pd
 			}
 		}
 	}
-	
+
 }
 #endif
 
@@ -341,7 +343,7 @@ Std_ReturnType CanIf_GetTxPdu(PduIdType CanIfTxSduId, CanIfTxPduCfg* TxPduPtr)
 			}
 			else
 			{
-				
+
 			}
 		}
 	}
@@ -349,7 +351,7 @@ Std_ReturnType CanIf_GetTxPdu(PduIdType CanIfTxSduId, CanIfTxPduCfg* TxPduPtr)
 	{
 		return E_NOT_OK;
 	}
-	
+
 	return E_NOT_OK;
 }
 
@@ -414,55 +416,55 @@ Std_ReturnType CanIf_GetRxPdu(PduIdType CanIfRxSduId, CanIfRxPduCfg* RxPduPtr)
 face for the further processing.
  *******************************************************************************************************************************/
 void CanIf_Init(const CanIf_ConfigType* ConfigPtr){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 /*********************************************************************************************************************************
@@ -482,55 +484,55 @@ void CanIf_Init(const CanIf_ConfigType* ConfigPtr){
  *******************************************************************************************************************************/
 
 Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeType ControllerMode){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -549,55 +551,55 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
 					This service reports about the current status of the requested CAN controller.
  *******************************************************************************************************************************/
 Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeType* ControllerModePtr){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 /*********************************************************************************************************************************
@@ -606,16 +608,16 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
  Sync/Async:                                               Synchronous
  Reentrancy:                                                 Reentrant
  Parameters (in):                                           CanIfTxSduId    -->L-SDU handle to be transmitted.This handle specifies the corresponding CAN L-
-																								SDU ID and implicitly the CAN Driver instance as 
+																								SDU ID and implicitly the CAN Driver instance as
 																								well as the corresponding CAN controller device.
-																	CanIfTxInfoPtr   -->Pointer to a structure with CAN L-SDU related data: 
+																	CanIfTxInfoPtr   -->Pointer to a structure with CAN L-SDU related data:
 																								DLC and pointer to CAN L-SDU buffer including the
 																								MetaData of dynamic L-PDUs.
 Parameters (inout):                                          None
  Parameters (out):                                            None
  Return value:                                              Std_ReturnType
  Description:
-					This service initiates a request for transmission of the CAN L-PDU specified by 	
+					This service initiates a request for transmission of the CAN L-PDU specified by
 					 the CanTxSduId and CAN related data in the L-SDU structure.
  *******************************************************************************************************************************/
 
@@ -625,7 +627,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
 	CanIf_PduModeType CanIf_GetPduModeReturn;
 	Can_ReturnType	Can_WriteReturn;
 	CanIfTxPduCfg *TxPduPtr = NULL;
-	
+
 	/*  CanIf must be initialized after Power ON */
 	if(CanIfState == CANIF_UNINIT)
 	{
@@ -695,7 +697,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
 									>SduLength exceeding the maximum length of the PDU referenced by CanIfTxSduId:
 									• SduLength > 8 if the Can_IdType indicates a classic CAN frame
 									• SduLength > 64 if the Can_IdType indicates a CAN FD frame
-									
+
 									CanIf shall report development error code CANIF_E_DATA_LENGTH_MISMATCH to
 									the Det_ReportError service of the DET. */
 									if(CanIfTxInfoPtr->SduLength > 8)
@@ -715,13 +717,13 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
 										Note: CanIfTxInfoPtr is a pointer to a L-SDU user memory, CAN Identifier, L-SDU
 										handle and DLC */
 										Can_HwHandleType Hth = TxPduPtr->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId;
-										
+
 										const Can_PduType* PduInfoPtr = &(Can_PduType){
 											.swPduHandle = CanIfTxSduId,
 											.length = CanIfTxInfoPtr->SduLength,
 											.id = TxPduPtr->CanIfTxPduId,
 											.sdu = CanIfTxInfoPtr->SduDataPtr};
-											
+
 										/* [SWS_CANIF_00162] d If the call of Can_Write() returns E_OK the transmit request
 										service CanIf_Transmit() shall return E_OK. c()
 										Note: If the call of Can_Write() returns CAN_NOT_OK, then the transmit request
@@ -729,7 +731,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
 										CanIf_Transmit() returns E_NOT_OK, then the upper layer module is responsible
 										to repeat the transmit request. */
 										Can_WriteReturn = Can_Write(Hth, PduInfoPtr);
-											
+
 										if(Can_WriteReturn == CAN_OK)
 										{
 											return E_OK;
@@ -764,55 +766,55 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
 	}
 }
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*********************************************************************************************************************************
@@ -821,7 +823,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
  Sync/Async:                                               Synchronous
  Reentrancy:                                                 Non Reentrant
  Parameters (in):                                           CanIfRxSduId    -->Receive L-SDU handle specifying the corresponding 
-																								CAN L-SDU ID and implicitly the CAN Driver instance 
+																								CAN L-SDU ID and implicitly the CAN Driver instance
 																								as well as the corresponding CAN controller device.
 Parameters (inout):                                          None
  Parameters (out):                                       CanIfRxInfoPtr   -->Pointer to a structure with CAN L-SDU related data:
@@ -833,56 +835,56 @@ Parameters (inout):                                          None
 					CanIfRxSduId to the calling upper layer.
  *******************************************************************************************************************************/
 Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,PduInfoType* CanIfRxInfoPtr){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -905,25 +907,25 @@ Parameters (inout):                                          None
  *******************************************************************************************************************************/
 
 CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -963,7 +965,7 @@ CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId){
  Sync/Async:                                                 Synchronous
  Reentrancy:                                                 Non Reentrant
  Parameters (in):                                            CanIfRxSduId    -->Receive L-SDU handle specifying the corresponding 
-																								CAN L-SDU ID and implicitly the CAN Driver instance 
+																								CAN L-SDU ID and implicitly the CAN Driver instance
 																								as well as the corresponding CAN controller device.
 Parameters (inout):                                          None
  Parameters (out):                                            None
@@ -974,61 +976,61 @@ Parameters (inout):                                          None
  *******************************************************************************************************************************/
 
 CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 /*********************************************************************************************************************************
@@ -1047,57 +1049,57 @@ Parameters (inout):                                          None
  *******************************************************************************************************************************/
 
 Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 /*********************************************************************************************************************************
@@ -1117,7 +1119,7 @@ Parameters (inout):                                          None
 
 Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePtr)
 {
-	
+
 	/*  CanIf must be initialized after Power ON */
 	if(CanIfState != CANIF_UNINIT)
 	{
@@ -1165,7 +1167,7 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePt
  Parameters (in):                                           ControllerId      -->Abstracted CanIf ControllerId which is assigned to a
                                                                                                 CAN controller, which is requested for mode transition.
 																	BaudRateConfigID-->references a baud rate configuration by ID (see Can-
-																									ControllerBaudRateConfigID)							
+																									ControllerBaudRateConfigID)
 Parameters (inout):                                          None
  Parameters (out):                                            PduModePtr  -->Pointer to a memory location, where the current
 																								mode of the logical PDU channel will be stored.
@@ -1177,51 +1179,51 @@ Parameters (inout):                                          None
  *******************************************************************************************************************************/
 
 Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId,uint16 BaudRateConfigID) {
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -1233,8 +1235,8 @@ Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId,uint16 BaudRateConfigID) {
  Reentrancy:                                                 Reentrant
  Parameters (in):                                           CanTxPduId      -->L-PDU handle of CAN L-PDU successfully transmitted.
 																								This ID specifies the corresponding CAN L-PDU ID
-																								and implicitly the CAN Driver instance as well as the 
-																								corresponding CAN controller device.					
+																								and implicitly the CAN Driver instance as well as the
+																								corresponding CAN controller device.
 Parameters (inout):                                          None
 Parameters (out):                                             None
 Return value:                                                   None
@@ -1243,53 +1245,53 @@ Description:
  *******************************************************************************************************************************/
 
 void CanIf_TxConfirmation(PduIdType CanTxPduId){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -1309,54 +1311,54 @@ Description:
  *******************************************************************************************************************************/
 
 void CanIf_RxIndication(const Can_HwType* Mailbox,const PduInfoType* PduInfoPtr){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -1371,61 +1373,61 @@ Parameters (inout):                                          None
 Parameters (out):                                             None
 Return value:                                                   None
 Description:
-					This service indicates a Controller BusOff event referring to the corresponding 
+					This service indicates a Controller BusOff event referring to the corresponding
 					CAN Controller with the abstract CanIf ControllerId.
  *******************************************************************************************************************************/
 
 void CanIf_ControllerBusOff(uint8 ControllerId){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -1446,74 +1448,74 @@ Description:
  *******************************************************************************************************************************/
 
 void CanIf_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType ControllerMode){
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

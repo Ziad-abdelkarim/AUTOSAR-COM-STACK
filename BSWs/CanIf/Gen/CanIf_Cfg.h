@@ -177,5 +177,4 @@ Description:  			Maximum number of Pdus. This parameter is needed only in case o
 **************************************************************************************************/
 #define CanIfMaxTxPduCfg	(uint32)1
 
-
 #endif /*CANIF_CFG_H*/

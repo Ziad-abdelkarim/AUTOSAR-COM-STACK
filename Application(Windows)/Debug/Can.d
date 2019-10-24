@@ -29,8 +29,8 @@ Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/sysctl.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h
 Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h
-Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h
 Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h
+Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h
 Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h
 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Src/Can.c: 
@@ -62,6 +62,6 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/sysctl.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h: 
-E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h: 

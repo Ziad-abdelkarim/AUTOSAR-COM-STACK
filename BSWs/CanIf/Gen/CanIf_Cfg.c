@@ -13,7 +13,7 @@ AUTOSAR Version:          								  4.2.2
  **                      					Post-Build Configuration variables values                                       **
  *****************************************************************************************************************************/
  
- CanIf_ConfigType CanIf = {
+CanIf_ConfigType CanIf = {
 	 
 	 .CanIfCtrlDrvCfg = {
 		 .CanIfCtrlDrvInitHohConfigRef = &CanIf.CanIfInitCfg.CanIfInitHohCfg[0U],
