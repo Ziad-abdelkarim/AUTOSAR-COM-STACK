@@ -838,6 +838,7 @@ Description:
 void CanIf_ControllerBusOff(uint8 ControllerId)
 {
   CanIf_ControllerModeType* ControllerModePtrBusOff;
+  Std_ReturnType ControllerState_bus = E_NOT_OK;
   /*
   [SWS_CANIF_00432] Caveats of CanIf_ControllerBusOff():
       • The call context is either on interrupt level (interrupt mode) or on task level (polling
@@ -891,8 +892,8 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
         is called with parameter ControllerId referencing that CCMSM, then the CCMSM shall
         be changed to CANIF_CS_STOPPED.
         */
-
-       /* if(CanIf_GetControllerMode(ControllerId,ControllerModePtrBusOff)==E_OK)
+        ControllerState_bus=CanIf_GetControllerMode(ControllerId,ControllerModePtrBusOff);
+       /* if(ControllerState_bus==E_OK)
         {
           if (*ControllerModePtrBusOff==CANIF_CS_INIT)
           {
@@ -909,7 +910,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
         is called with parameter ControllerId referencing that CCMSM, then the CCMSM shall
         be changed to CANIF_CS_STOPPED.
         */
-        if(CanIf_GetControllerMode(ControllerId,ControllerModePtrBusOff)==E_OK)
+        if(ControllerState_bus==E_OK)
         {
           if(*ControllerModePtrBusOff==CANIF_CS_STARTED)
           {
