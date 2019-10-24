@@ -1413,7 +1413,7 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType 
        unless the CanIf has been initialized with a preceding call of CanIf_Init().
      */
 
-        #if (CANIF_PUBLIC_DEV_ERROR_DETECT==1)            /*Development Error in case of UN_INT of CanIf or invalid parameters*/
+        #if (CanIfDevelopmentError==1)            /*Development Error in case of UN_INT of CanIf or invalid parameters*/
 
 
         /*
