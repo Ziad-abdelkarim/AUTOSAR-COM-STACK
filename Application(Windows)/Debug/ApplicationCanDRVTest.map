@@ -1,7 +1,7 @@
 ******************************************************************************
                   TI ARM Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Thu Oct 24 18:44:30 2019
+>> Linked Thu Oct 24 19:41:04 2019
 
 OUTPUT FILE NAME:   <ApplicationCanDRVTest.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 00001ec1
