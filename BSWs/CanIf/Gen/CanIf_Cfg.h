@@ -58,7 +58,7 @@ Description: 				Switches the Default Error Tracer (Det) detection and notificat
 										• true: enabled (ON).
 										• false: disabled (OFF).								**
 **************************************************************************************************/
-#define CanIfPublicDevErrorDetect (boolean)true
+#define CanIfPublicDevErrorDetect true
 /**************************************************************************************************
 **
 Name:                                   CanIfPublicHandleTypeEnum
@@ -114,7 +114,7 @@ Description: 				Enables and disables the buffering of transmit L-PDUs (rejected
 								CanDrv) within the CAN Interface module.	
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicTxBuffering	(boolean)true
+#define CanIfPublicTxBuffering	true
 /**************************************************************************************************
 **
 Name:                              CanIfPublicTxConfirmPollingSupport
@@ -124,7 +124,7 @@ Type:                                    EcucBooleanParamDef
 Description: 				Configuration parameter to enable/disable the API to poll for Tx
 										Confirmation state.										**
 **************************************************************************************************/
-#define CanIfPublicTxConfirmPollingSupport (boolean)true
+#define CanIfPublicTxConfirmPollingSupport true
 /**************************************************************************************************
 **
 Name:                              		CanIfSetBaudrateApi
@@ -136,7 +136,7 @@ Description: 				Configuration parameter to enable/disable the CanIf_SetBaudrate
 							true the CanIf_SetBaudrate API shall be supported. Otherwise the API
 							is not supported.													**
 **************************************************************************************************/
-#define CanIfSetBaudrateApi (boolean)true
+#define CanIfSetBaudrateApi true
 /*************************************************************************************************/
 
 /**************************************************************************************************
