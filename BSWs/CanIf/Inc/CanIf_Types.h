@@ -224,7 +224,7 @@ typedef struct{
 	refer via the CanIfBufferCfg and this parameter to the HTHs if
 	TxBuffering is enabled, or not.
 	Each HTH shall not be assigned to more than one buffer.*/
-	CanIfHthCfg* CanIfBufferHthRef[CanIfMaxTxPduCfg];
+	CanIfHthCfg* CanIfBufferHthRef;
 	
 	/* This parameter defines the number of CanIf Tx L-PDUs which can be
 	buffered in one Txbuffer. If this value equals 0, the CanIf does not
