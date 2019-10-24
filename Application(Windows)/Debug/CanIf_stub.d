@@ -28,8 +28,6 @@ CanIf_stub.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
 CanIf_stub.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/sysctl.h
 CanIf_stub.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h
 CanIf_stub.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h
-CanIf_stub.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
-CanIf_stub.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
 CanIf_stub.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/inc/Canif_CLBK_STUB.h
 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/src/CanIf_stub.c: 
@@ -60,6 +58,4 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/sysctl.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h: 
-C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h: 
-C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/inc/Canif_CLBK_STUB.h: 
