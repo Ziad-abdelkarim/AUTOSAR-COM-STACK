@@ -835,7 +835,7 @@ Description:
 
 void CanIf_ControllerBusOff(uint8 ControllerId)
 {
-  uint8 PduIndex
+  CanIf_ControllerModeType* ControllerModePtrBusOff;
   /*
   [SWS_CANIF_00432] Caveats of CanIf_ControllerBusOff():
       • The call context is either on interrupt level (interrupt mode) or on task level (polling
@@ -843,12 +843,10 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
       • The CanIf must be initialized after Power ON.
 
   */
-  //5ali balk ma tt8abash hna 3lshan anta gai mn interrupt aw polling fa mtstuckish hna abos dam8k
 
   /* [SWS_CANIF_00431] If CanIf was not initialized before calling CanIf_ControllerBusOff(),
   CanIf shall not execute BusOff notification, when CanIf_ControllerBusOff(), is called. */
 
-  //lo can if kan msh initialized fa msh ha execute
   if(CanIfState==CanIf_Init)
   {
     /*[SWS_CANIF_00429]  If parameter ControllerId of CanIf_ControllerBusOff()
@@ -857,7 +855,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
     is called. (SRS_BSW_00323)*/
 
 
-    if(ControllerId>NUMBER_OF_CONTROLLERS)
+    if(ControllerId >= NUMBER_OF_CONTROLLERS)
     {
       CanIfDevelopmentError = CANIF_E_PARAM_CONTROLLER;
 
@@ -874,24 +872,50 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
         */
 
         #if CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT
-        // what to do here
-        /*for(PduIndex=0;PduIndex<=CanIfMaxPduCfg;i++){
-          PduTxconfirmationState[Pdu_i]=false;
-        }*/
-        #endif
         /*
-        [SWS_CANIF_00740] If CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT (see ECUC_CanIf_00
-        is enabled, CanIf shall buffer the information about a received TxConfirmation per
-        CAN Controller, if the CCMSM of that controller is in state CANIF_CS_STARTED. c()
+        call ziad function to clear
         */
+        #endif
+      /*
+       [SWS_CANIF_00298] d If a CCMSM is in state CANIF_CS_INIT when CanIf_ControllerBusOff(
+        is called with parameter ControllerId referencing that CCMSM, then the CCMSM shall
+        be changed to CANIF_CS_STOPPED.
+      */
+        if(CanIf_GetControllerMode(ControllerId,ControllerModePtrBusOff)==E_OK)
+        {
+          if (*ControllerModePtrBusOff==CANIF_CS_INIT)
+          {
+            CanIf_ControllerModeIndication(ControllerId,CANIF_CS_STOPPED);
+          }
+
+        }else
+        {
+          //nothing
+        }
+
+        /*
+        [SWS_CANIF_00488] d If a CCMSM is in state CANIF_CS_STARTED when CanIf_ControllerBusO
+        is called with parameter ControllerId referencing that CCMSM, then the CCMSM shall
+        be changed to CANIF_CS_STOPPED.
+        */
+        if(CanIf_GetControllerMode(ControllerId,ControllerModePtrBusOff)==E_OK)
+        {
+          if(*ControllerModePtrBusOff==CANIF_CS_STARTED)
+          {
+            CanIf_ControllerModeIndication(ControllerId,CANIF_CS_STOPPED);
+          }
+
+        }else
+        {
+          //nothing
+        }
         /*
         [SWS_CANIF_00724] When callback CanIf_ControllerBusOff( ControllerId)
         is called, the CanIf shall call CanSM_ControllerBusOff(ControllerId) of the
         CanSm (see subsubsection 8.6.3.9 or a CDD (see [SWS_CANIF_00559], [SWS_CANIF_00560]).
         */
+
         CanSM_ControllerBusOff(ControllerId);
-
-
     }
   }
   else
@@ -901,55 +925,6 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
 
 
   //
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }
