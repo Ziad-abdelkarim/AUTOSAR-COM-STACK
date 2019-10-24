@@ -819,14 +819,14 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,const PduInfoType* PduInfoPtr)
 
 
 /*********************************************************************************************************************************
- Service name:                                         CanIf_ControllerBusOff
- Service ID[hex]:                                               0x14
- Sync/Async:                                                 Synchronous
- Reentrancy:                                                 Reentrant
- Parameters (in):                                            ControllerId      -->Abstracted CanIf ControllerId which is assigned to a
-                                                                                                CAN controller, which is requested for mode transition.
-Parameters (inout):                                          None
-Parameters (out):                                             None
+ Service name:                                                  CanIf_ControllerBusOff
+ Service ID[hex]:                                               0x16
+ Sync/Async:                                                    Synchronous
+ Reentrancy:                                                    Reentrant
+ Parameters (in):                                               ControllerId      --> Abstracted CanIf ControllerId which is assigned to a
+                                                                                      CAN controller, which is requested for mode transition.
+Parameters (inout):                                             None
+Parameters (out):                                               None
 Return value:                                                   None
 Description:
 					This service indicates a Controller BusOff event referring to the corresponding
@@ -857,7 +857,14 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
 
     if(ControllerId >= NUMBER_OF_CONTROLLERS)
     {
-      CanIfDevelopmentError = CANIF_E_PARAM_CONTROLLER;
+       if(E_OK==Det_ReportError(0x12,0,0x16,CANIF_E_PARAM_CONTROLLER))
+       {
+
+       }else
+       {
+
+       }
+
 
     }
     else
@@ -872,15 +879,17 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
         */
 
         #if CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT
-        /*
-        call ziad function to clear
-        */
+
+        CanIf_ClearTxConfirmationInfoBuffer();
+
         #endif
-      /*
-       [SWS_CANIF_00298] d If a CCMSM is in state CANIF_CS_INIT when CanIf_ControllerBusOff(
+
+        /*
+        [SWS_CANIF_00298] d If a CCMSM is in state CANIF_CS_INIT when CanIf_ControllerBusOff(
         is called with parameter ControllerId referencing that CCMSM, then the CCMSM shall
         be changed to CANIF_CS_STOPPED.
-      */
+        */
+
         if(CanIf_GetControllerMode(ControllerId,ControllerModePtrBusOff)==E_OK)
         {
           if (*ControllerModePtrBusOff==CANIF_CS_INIT)
