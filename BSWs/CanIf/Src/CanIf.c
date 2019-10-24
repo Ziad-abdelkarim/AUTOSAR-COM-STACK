@@ -7,6 +7,7 @@
 /********************************************************************************************************************************
  **                                                          Includes                                                                                                **
  ********************************************************************************************************************************/
+#include "Can.h"
 #include "CanIf.h"
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
@@ -534,7 +535,7 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
 
 
 
-
+    return E_OK;
 }
 
 
@@ -601,7 +602,7 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
 
 
 
-
+    return E_OK;
 }
 
 /*********************************************************************************************************************************
@@ -886,7 +887,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,PduInfoType* CanIfRxIn
 
 
 
-
+    return E_OK;
 }
 
 
@@ -957,7 +958,7 @@ CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId){
 
 
 
-
+    return CANIF_TX_RX_NOTIFICATION;
 }
 
 
@@ -1031,7 +1032,7 @@ CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId){
 
 
 
-
+    return CANIF_TX_RX_NOTIFICATION;
 
 }
 
@@ -1100,7 +1101,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeReq
 
 
 
-
+    return E_OK;
 
 }
 
@@ -1224,7 +1225,7 @@ Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId,uint16 BaudRateConfigID) {
 
 
 
-
+    return E_OK;
 
 }
 
