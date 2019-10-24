@@ -12,8 +12,10 @@
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
- 
- 
+ #define NUMBER_OF_CHANNELS   2
+    
+CanIf_ControllerModeType  CanIfControllerMode[NUMBER_OF_CHANNELS]={CANIF_CS_UNINIT,CANIF_CS_UNINIT};
+CanIf_PduModeType         CanIfPduMode[NUMBER_OF_CHANNELS];
  
  
  
@@ -56,7 +58,27 @@ face for the further processing.
  *******************************************************************************************************************************/
 void CanIf_Init(const CanIf_ConfigType* ConfigPtr){
 	
-	
+	 uint8 Iterator_1 = (uint8)0;
+
+  if (CanIfState== CANIF_UNINIT )
+  {
+	  /*
+	    The CanIf expects that the CAN Controller remains in STOPPED mode like after poweron
+        reset after the initialization process has been completed. In this mode the CanIf and
+        CanDrv are neither able to transmit nor receive CAN L-PDUs (see [SWS_CANIF_00001]).
+	  */
+    for ( Iterator_1 = (uint8)0; Iterator_1 < NUMBER_OF_ CHANNELS ; Iterator_1++)
+    {
+        CanIfControllerMode[Iterator_1]. ControllerMode = CAN_CS_STOPPED;
+        CanIfPduMode[Iterator_1].PduMode = CANIF_OFFLINE;
+    }
+
+   CanIfState = CANIF_READY;/*Initializtion is done*/
+  }
+  else 
+  {
+      /* MISRA */	    
+  }	
 	
 	
 	
