@@ -544,6 +544,28 @@ typedef struct{
 	
 }CanIf_ConfigType;
 
+/**************************************************************************************************
+**
+Name:                                   CanIf_TxBufferType
+Type:                                      Structure
+Description:   This type defines a data structure for the transmit buffer of the CAN interface	**
+**************************************************************************************************/
+typedef struct{
+	/* Configurable reference to a CanIf buffer configuration. */
+	CanIfBufferCfg* CanIfBufferCfgRef;
+	/* Pdu data array of the buffer*/
+	Can_PduType CanIfTxBufferPduData[CanIfMaxBufferSize];
+	/* CanIf Tx queue buffer front index */
+	sint8 CanIfTxBufferFront;
+	/* CanIf Tx Queue buffer rear index */
+	sint8 CanIfTxBufferRear;
+	/* CanIf Tx Queue buffer current available PDUs */
+	sint8 CanIfTxBufferSize;
+	/* States if the PDU is already currently stored in the buffer
+	False: Not stored
+	True: Stored*/
+	boolean CanIfTxBufferPduAvailable[CanIfMaxTxPduCfg];
+}CanIf_TxBufferType;
 
 
 #endif /*CANIF_TYPES_H*/

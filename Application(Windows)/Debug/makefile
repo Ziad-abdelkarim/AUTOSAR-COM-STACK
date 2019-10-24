@@ -11,7 +11,8 @@ GEN_CMDS__FLAG :=
 
 ORDERED_OBJS += \
 "./Can.obj" \
-"./CanIf_stub.obj" \
+"./CanIf.obj" \
+"./CanIf_Cfg.obj" \
 "./Can_PBcfg.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./uartstdio.obj" \
@@ -159,8 +160,8 @@ ApplicationCanDRVTest.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Can.obj" "CanIf_stub.obj" "Can_PBcfg.obj" "tm4c123gh6pm_startup_ccs.obj" "uartstdio.obj" 
-	-$(RM) "Can.d" "CanIf_stub.d" "Can_PBcfg.d" "tm4c123gh6pm_startup_ccs.d" "uartstdio.d" 
+	-$(RM) "Can.obj" "CanIf.obj" "CanIf_Cfg.obj" "Can_PBcfg.obj" "tm4c123gh6pm_startup_ccs.obj" "uartstdio.obj" 
+	-$(RM) "Can.d" "CanIf.d" "CanIf_Cfg.d" "Can_PBcfg.d" "tm4c123gh6pm_startup_ccs.d" "uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

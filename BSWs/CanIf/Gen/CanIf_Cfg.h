@@ -177,15 +177,5 @@ Description:  			Maximum number of Pdus. This parameter is needed only in case o
 **************************************************************************************************/
 #define CanIfMaxTxPduCfg	(uint32)1
 
-/**************************************************************************************************
-**
-Name:                                    CANIF_NUMBER_OF_PDU
-
-Type:                                   EcucIntegerParamDef
-
-Description:  							Maximum number of Pdus.		          					**
-**************************************************************************************************/
-#define CANIF_NUMBER_OF_PDU (CanIfMaxRxPduCfg+CanIfMaxTxPduCfg)
-
 
 #endif /*CANIF_CFG_H*/
