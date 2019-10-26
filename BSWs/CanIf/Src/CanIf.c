@@ -17,6 +17,8 @@ extern CanIf_ConfigType CanIf ;
 
  static enum CanIfStateType{CANIF_UNINIT, CANIF_INIT} CanIfState = CANIF_UNINIT;
  uint16 ModuleId=0x12;
+ CanIf_ControllerModeType CanIfControllerMode[NUMBER_OF_CONTROLLERS]={CANIF_CS_UNINIT,CANIF_CS_UNINIT};
+ CanIf_PduModeType  CanIfPduMode[NUMBER_OF_CHANNELS]={CANIF_OFFLINE,CANIF_OFFLINE};
 #if(CanIfPublicTxConfirmPollingSupport == true)
 
  CanIf_TxConfirmationInfoType  CanIf_TxConfirmationInfo[CanIfMaxTxPduCfg]={false};
@@ -929,13 +931,60 @@ Parameters (inout):                                          None
 
 Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest){
 	
-	
-	
-	/*chgcfhdhhgd*/
-	
-	
-	
-	
+#if(CanIfPublicDevErrorDetect == true)
+
+    uint8 InstanceId=0x00;
+    uint8 ApiId=0x09;
+    /*
+       [SWS_CANIF_00344] d Caveats of CanIf_SetPduMode(): CanIf must be initialized after Power ON.
+    */
+    if(CanIfState == CANIF_UNINIT){
+        Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_UNINIT);
+    }
+    /*
+     * [SWS_CANIF_00341] d If CanIf_SetPduMode() is called with invalid ControllerId
+       , CanIf shall report development error code CANIF_E_PARAM_CONTROLLERID
+        to the Det_ReportError service of the DET module. c(SRS_BSW_00323)
+     */
+    if(ControllerId > NUMBER_OF_CONTROLLERS){
+        Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_PARAM_CONTROLLERID);
+    }
+#endif
+    /*
+     * [SWS_CANIF_00874] d The service CanIf_SetPduMode() shall not accept any request and shall return E_NOT_OK,
+     *  if the CCMSM referenced by ControllerId is notin state CANIF_CS_STARTED.
+     */
+    CanIf_GetControllerMode(ControllerId, &CanIfControllerMode[ControllerId]);
+    if(CanIfControllerMode[ControllerId] != CANIF_CS_STARTED)
+    {
+        return E_NOT_OK;
+    }
+
+    else
+    {
+        /*
+         * [SWS_CANIF_00860] d If CanIf_SetPduMode() is called with invalid PduModeRequest,
+           CanIf shall report development error code CANIF_E_PARAM_PDU_MODE to the Det_ReportError service of the DET module.
+         */
+        if(PduModeRequest != CANIF_OFFLINE || PduModeRequest != CANIF_TX_OFFLINE || PduModeRequest != CANIF_TX_OFFLINE_ACTIVE || PduModeRequest != CANIF_ONLINE )
+        {
+#if(CanIfPublicDevErrorDetect == true)
+            uint8 InstanceId=0x00;
+            uint8 ApiId=0x09;
+            Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_PARAM_PDU_MODE);
+#endif
+            return E_NOT_OK;
+
+        }
+        else
+        {
+            CanIfPduMode[ControllerId]=PduModeRequest;
+            return  E_OK ;
+        }
+    }
+
+
+
 	
 	
 	
@@ -1135,75 +1184,123 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId){
 #if(CanIfPublicDevErrorDetect == true)
     uint8 InstanceId=0x00;
     uint8 ApiId=0x13;
-    if(CanIfState == UNINIT){
-        Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_UNINIT);
+    /*
+     * [SWS_CANIF_00410] d If parameter CanTxPduId of CanIf_TxConfirmation()
+       has an invalid value, CanIf shall report development error code CANIF_E_PARAM_LPDU
+       to the Det_ReportError service of the DET module, when CanIf_TxConfirmation()
+       is called.
+     */
+    if(CanTxPduId != txpduptr_0x13->CanIfTxPduId ) {
+        Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_INVALID_TXPDUID);
     }
-
-   if(CanTxPduId != txpduptr_0x13->CanIfTxPduId ) {
-       Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_INVALID_TXPDUID);
-   }
-   //CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduId
-#else
+#endif
+    /*
+     * The CanIf must be initialized after Power ON.
+     */
+    if(CanIfState == UNINIT){
+#if(CanIfPublicDevErrorDetect == true)
+        Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_UNINIT);
+#endif
+    }
+    else{
 #if(CanIfPublicTxConfirmPollingSupport == true)
-     CanIf_TxConfirmationInfo[txpduptr_0x13->CanIfTxPduId]= true;
+        /*
+         * [SWS_CANIF_00740] d If CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT (see ECUC_CanIf_00
+            is enabled, CanIf shall buffer the information about a received TxConfirmation per
+            CAN Controller, if the CCMSM of that controller is in state CANIF_CS_STARTED.
+         */
+        CanIf_GetControllerMode(ControllerId, &CanIfControllerMode[ControllerId]);
+           if(CanIfControllerMode[ControllerId] == CANIF_CS_STARTED)
+           {
+               CanIf_TxConfirmationInfo[txpduptr_0x13->CanIfTxPduId]= true;
+           }
+
+
 #endif
 #if(CanIfPublicTxBuffering == true)
-     if(CanIf_TxBufferNotEmpty(CanIfTxBuffer)== E_OK){
-         CanIf_TxBufferGet(CanIf.CanIfInitCfg.CanIfTxPduCfg->CanIfTxPduBufferRef, CanIfTxBuffer);
-         transmitcheck_0x13 = Can_Write(txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId, CanIfTxBuffer->CanIfTxBufferPduData);
-         if(transmitcheck_0x13 == CAN_OK){
-             CanIf_TxBufferDequeue(txpduptr_0x13, CanIfTxBuffer->CanIfTxBufferPduData);
-         }
-         else if(transmitcheck_0x13 == CAN_BUSY){
-           /*do nothing*/
-         }
-         else{
-             /*misra*/
-         }
-     }
-     else if(CanIf_TxBufferNotEmpty(CanIfTxBuffer)== E_NOT_OK){
-      /*do nothing*/
-     }
-     else{
-         /*misra*/
-     }
+           /*
+            * The transmit buffers of CanIf checked, whether a pending L-PDU is stored or not.
+            */
+        if(CanIf_TxBufferNotEmpty(CanIfTxBuffer)== E_OK){
+            /*
+             * In case of pending L-PDUs in the transmit buffers the highest
+               priority order the latest L-PDU is requested for transmission by Can_Write().
+             */
+            CanIf_TxBufferGet(CanIf.CanIfInitCfg.CanIfTxPduCfg->CanIfTxPduBufferRef, CanIfTxBuffer);
+            transmitcheck_0x13 = Can_Write(txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId, CanIfTxBuffer->CanIfTxBufferPduData);
+            if(transmitcheck_0x13 == CAN_OK){
+              /*
+               * The L-PDU pending for transmission is removed from the
+                 transmission buffers by CanIf.
+               */
+                CanIf_TxBufferDequeue(txpduptr_0x13, CanIfTxBuffer->CanIfTxBufferPduData);
+            }
+            else if(transmitcheck_0x13 == CAN_BUSY){
+                /*do nothing*/
+            }
+            else{
+                /*misra*/
+            }
+        }
+        else if(CanIf_TxBufferNotEmpty(CanIfTxBuffer)== E_NOT_OK){
+            /*do nothing*/
+        }
+        else{
+            /*misra*/
+        }
 
 #endif
-   if(CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduUserTxConfirmationUL == PDUR ){
+#if(CanIfPublicReadTxPduNotifyStatusApi == true)
 
-      /* PDUR_TxConfirmation(CanTxPduId);*/
-
-
-
-   }
-   else if (CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduUserTxConfirmationUL == CAN_TP){
-
-      /*CAN_TP_TxConfirmation(CanTxPduId);*/
-
-
-
-   }
-   else {
-       /* misra */
-   }
-
-
-
-
-
-
-
-
-
-
-
+        /*
+         * [SWS_CANIF_00391] d If configuration parameters CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS
+        (ECUC_CanIf_00609) and CANIF_TXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00589)
+        for the Transmitted L-PDU are set to TRUE, and if CanIf_TxConfirmation() is
+        called, CanIf shall set the notification status for the Transmitted L-PDU.
+         */
 
 
 #endif
+        /*
+         * [SWS_CANIF_00414] d Configuration of CanIf_TxConfirmation(): Each Tx L-
+        PDU (see ECUC_CanIf_00248) has to be configured with a corresponding transmit
+        confirmation service of an upper layer module (see [SWS_CANIF_00011]) which is
+        called in CanIf_TxConfirmation().
+         */
+
+        if(CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduUserTxConfirmationUL == PDUR ){
+
+            /* PDUR_TxConfirmation(CanTxPduId);*/
+
+
+
+        }
+        else if (CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduUserTxConfirmationUL == CAN_TP){
+
+            /*CAN_TP_TxConfirmation(CanTxPduId);*/
+
+
+
+        }
+        else {
+            /* misra */
+        }
+
+    }
 
 
 
 
+
+
+
+
+
+
+
+
+
+
 	
 	
 	
@@ -1211,6 +1308,8 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId){
 	
 	
 
+	
+	
 	
 	
 	
