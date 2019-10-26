@@ -8,6 +8,7 @@
  **                                                          Includes                                                                                                **
  ********************************************************************************************************************************/
 #include <CanIf.h>
+#include "Can.h"
 
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
@@ -22,9 +23,18 @@ extern CanIf_ConfigType CanIf ;
 
  
 #endif
+#if(CanIfPublicTxBuffering == true)
+static CanIf_TxBufferType CanIfTxBuffer[NUMBER_OF_BUFFERS] = {
+    {
+        .CanIfBufferCfgRef = &CanIf.CanIfInitCfg.CanIfBufferCfg[0U],
+        .CanIfTxBufferFront = -1,
+        .CanIfTxBufferRear = -1,
+        .CanIfTxBufferSize = -1,
+        .CanIfTxBufferPduAvailable = {false}
+    }
+};
+#endif
 
- 
- 
  
  /********************************************************************************************************************************
 **                                                        Local Functions                                                                                        **
@@ -50,8 +60,8 @@ static void CanIf_ClearTxConfirmationInfoBuffer(void){
 
 #if(CanIfPublicTxBuffering == true)
 static Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg* CanIfTxPduBufferRefLocal, CanIf_TxBufferType *CanIfTxBufferLocal);
-static Std_ReturnType CanIf_TxBufferEmpty(CanIf_TxBufferType *CanIfTxBufferLocal);
-static Std_ReturnType CanIf_TxBufferFull(CanIf_TxBufferType *CanIfTxBufferLocal);
+static Std_ReturnType CanIf_TxBufferNotEmpty(CanIf_TxBufferType *CanIfTxBufferLocal);
+static Std_ReturnType CanIf_TxBufferNotFull(CanIf_TxBufferType *CanIfTxBufferLocal);
 static Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu, const Can_PduType* PduInfoPtr);
 static Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu, const Can_PduType* PduInfoPtr);
 static Std_ReturnType CanIf_TxBufferClear(uint8 ControllerId);
@@ -62,7 +72,7 @@ static Std_ReturnType CanIf_GetRxPdu(PduIdType CanIfRxSduId, CanIfRxPduCfg* RxPd
 /*********************************************************************************************************************************
  Service name:                                       CanIf_TxBufferGet
 Parameters (in):                      CanIfTxPduBufferRefLocal-->Tx PDU reference to a CanIf buffer configuration.
-                                           CanIfTxBufferLocal -->Reference to the Tx Buffer
+                                           CanIfBufferRefLocal -->Reference to the Tx Buffer
  Parameters (inout):                                          None
  Parameters (out):                                            None
  Return value:                                            Std_ReturnType
@@ -70,7 +80,7 @@ Parameters (in):                      CanIfTxPduBufferRefLocal-->Tx PDU referenc
                                         CanIf buffers and the Tx Pdu
  *******************************************************************************************************************************/
 #if(CanIfPublicTxBuffering == true)
-Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg* CanIfTxPduBufferRefLocal, CanIf_TxBufferType *CanIfBufferRefLocal)
+Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg *CanIfTxPduBufferRefLocal, CanIf_TxBufferType *CanIfBufferRefLocal)
 {
     uint8 BufferIndex;
 
@@ -101,15 +111,15 @@ Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg* CanIfTxPduBufferRefLocal, CanIf
 #endif
 
 /*********************************************************************************************************************************
- Service name:                                       CanIf_TxBufferEmpty
-Parameters (in):                        CanIfTxBufferLocal -->Reference to the Tx Buffer
+ Service name:                                       CanIf_TxBufferNotEmpty
+Parameters (in):                        CanIfTxBufferRefLocal -->Reference to the Tx Buffer
  Parameters (inout):                                          None
  Parameters (out):                                            None
  Return value:                                            Std_ReturnType
  Description:                           This service checks if the buffer is empty
  *******************************************************************************************************************************/
 #if(CanIfPublicTxBuffering == true)
-Std_ReturnType CanIf_TxBufferEmpty(CanIf_TxBufferType *CanIfTxBufferRefLocal)
+Std_ReturnType CanIf_TxBufferNotEmpty(CanIf_TxBufferType *CanIfTxBufferRefLocal)
 {
     /* Check if the reference to the buffer is a valid reference */
     if(CanIfTxBufferRefLocal == NULL)
@@ -132,7 +142,7 @@ Std_ReturnType CanIf_TxBufferEmpty(CanIf_TxBufferType *CanIfTxBufferRefLocal)
 #endif
 
 /*********************************************************************************************************************************
- Service name:                                       CanIf_TxBufferFull
+ Service name:                                       CanIf_TxBufferNotFull
 Parameters (in):                        CanIfTxBufferRefLocal -->Reference to the Tx Buffer
  Parameters (inout):                                          None
  Parameters (out):                                            None
@@ -140,7 +150,7 @@ Parameters (in):                        CanIfTxBufferRefLocal -->Reference to th
  Description:                           This service checks if the buffer is full
  *******************************************************************************************************************************/
 #if(CanIfPublicTxBuffering == true)
-Std_ReturnType CanIf_TxBufferFull(CanIf_TxBufferType *CanIfTxBufferRefLocal)
+Std_ReturnType CanIf_TxBufferNotFull(CanIf_TxBufferType *CanIfTxBufferRefLocal)
 {
     /* Check if the reference to the buffer is a valid reference */
     if(CanIfTxBufferRefLocal == NULL)
@@ -191,7 +201,7 @@ Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu, const Can_PduType* Pd
         else
         {
             /* Check if the buffer is empty */
-            if(CanIf_TxBufferEmpty(CanIfTxBufferRefLocal) == E_NOT_OK)
+            if(CanIf_TxBufferNotEmpty(CanIfTxBufferRefLocal) == E_NOT_OK)
             {
                 return E_NOT_OK;
             }
@@ -241,7 +251,7 @@ Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu, const Can_PduType* Pd
         else
         {
             /* Check if the buffer is full */
-            if(CanIf_TxBufferFull(CanIfTxBufferRefLocal) == E_NOT_OK)
+            if(CanIf_TxBufferNotFull(CanIfTxBufferRefLocal) == E_NOT_OK)
             {
                 return E_NOT_OK;
             }
@@ -986,7 +996,49 @@ Parameters (inout):                                          None
 					This service reports the current mode of a requested PDU channel.
  *******************************************************************************************************************************/
 
-Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,CanIf_PduModeType* PduModePtr);
+Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,CanIf_PduModeType* PduModePtr){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
 
 
 /*********************************************************************************************************************************
@@ -1075,6 +1127,11 @@ Description:
  *******************************************************************************************************************************/
 
 void CanIf_TxConfirmation(PduIdType CanTxPduId){
+    CanIfTxPduCfg* txpduptr_0x13=0;
+    Can_ReturnType transmitcheck_0x13;
+    CanIf_GetTxPdu(CanTxPduId, txpduptr_0x13);
+
+
 #if(CanIfPublicDevErrorDetect == true)
     uint8 InstanceId=0x00;
     uint8 ApiId=0x13;
@@ -1082,18 +1139,46 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId){
         Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_UNINIT);
     }
 
-   if(CanTxPduId != CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduId ) {
+   if(CanTxPduId != txpduptr_0x13->CanIfTxPduId ) {
        Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_INVALID_TXPDUID);
    }
-
+   //CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduId
 #else
+#if(CanIfPublicTxConfirmPollingSupport == true)
+     CanIf_TxConfirmationInfo[txpduptr_0x13->CanIfTxPduId]= true;
+#endif
+#if(CanIfPublicTxBuffering == true)
+     if(CanIf_TxBufferNotEmpty(CanIfTxBuffer)== E_OK){
+         CanIf_TxBufferGet(CanIf.CanIfInitCfg.CanIfTxPduCfg->CanIfTxPduBufferRef, CanIfTxBuffer);
+         transmitcheck_0x13 = Can_Write(txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId, CanIfTxBuffer->CanIfTxBufferPduData);
+         if(transmitcheck_0x13 == CAN_OK){
+             CanIf_TxBufferDequeue(txpduptr_0x13, CanIfTxBuffer->CanIfTxBufferPduData);
+         }
+         else if(transmitcheck_0x13 == CAN_BUSY){
+           /*do nothing*/
+         }
+         else{
+             /*misra*/
+         }
+     }
+     else if(CanIf_TxBufferNotEmpty(CanIfTxBuffer)== E_NOT_OK){
+      /*do nothing*/
+     }
+     else{
+         /*misra*/
+     }
+
+#endif
    if(CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduUserTxConfirmationUL == PDUR ){
+
+      /* PDUR_TxConfirmation(CanTxPduId);*/
 
 
 
    }
    else if (CanIf.CanIfInitCfg.CanIfTxPduCfg[CanTxPduId].CanIfTxPduUserTxConfirmationUL == CAN_TP){
 
+      /*CAN_TP_TxConfirmation(CanTxPduId);*/
 
 
 
@@ -1101,7 +1186,6 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId){
    else {
        /* misra */
    }
-
 
 
 
@@ -1158,6 +1242,7 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId){
 	
 	
 }
+
 
 
 /*********************************************************************************************************************************
