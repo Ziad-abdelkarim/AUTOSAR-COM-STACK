@@ -58,7 +58,7 @@ Description: 				Switches the Default Error Tracer (Det) detection and notificat
 										• true: enabled (ON).
 										• false: disabled (OFF).								**
 **************************************************************************************************/
-#define CanIfPublicDevErrorDetect true
+#define CanIfPublicDevErrorDetect false
 /**************************************************************************************************
 **
 Name:                                   CanIfPublicHandleTypeEnum
@@ -81,7 +81,7 @@ Description: 				Enables / Disables the API CanIf_ReadRxPduData() for reading
 										received L-SDU data.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadRxPduDataApi	(boolean)true
+#define CanIfPublicReadRxPduDataApi	true
 /**************************************************************************************************
 **
 Name:                              CanIfPublicReadRxPduNotifyStatusApi
@@ -92,7 +92,7 @@ Description: 				Enables and disables the API for reading the notification statu
 											receive L-PDUs.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadRxPduNotifyStatusApi	(boolean)true
+#define CanIfPublicReadRxPduNotifyStatusApi	true
 /**************************************************************************************************
 **
 Name:                              CanIfPublicReadTxPduNotifyStatusApi
@@ -103,7 +103,7 @@ Description: 				Enables and disables the API for reading the notification statu
 											transmit L-PDUs.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadTxPduNotifyStatusApi	(boolean)true
+#define CanIfPublicReadTxPduNotifyStatusApi	true
 /**************************************************************************************************
 **
 Name:                              		CanIfPublicTxBuffering

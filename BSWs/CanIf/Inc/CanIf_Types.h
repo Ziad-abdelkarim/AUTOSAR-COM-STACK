@@ -15,6 +15,8 @@ AUTOSAR Version:          								  4.2.2
 ********************************************************************************************************************************/
 #define NUMBER_OF_CANDRIVERS 1
 #define NUMBER_OF_BUFFERS    1
+#define MODULE_ID            1
+#define INSTANCE_ID          1
 /*********************************************************************************************************************************
 **                                                                  Development Errors                                                                           **
 *********************************************************************************************************************************/
@@ -321,6 +323,21 @@ typedef enum{
 	XCP
 }CanIfPduUserUL;
 
+/**************************************************************************************************
+**
+Name:                                     CanIfRxPduCanIdRange
+Type:                                      Structure
+Description:            Optional container that allows to map a range of CAN Ids to one PduId.  **
+**************************************************************************************************/
+typedef struct{
+    /* Lower CAN Identifier of a receive CAN L-PDU for identifier range
+    definition, in which all CAN Ids are mapped to one PduId. */
+    uint32 CanIfRxPduCanIdRangeLowerCanId;
+
+    /*Upper CAN Identifier of a receive CAN L-PDU for identifier range
+    definition, in which all CAN Ids are mapped to one PduId.*/
+    uint32 CanIfRxPduCanIdRangeUpperCanId;
+}CanIfRxPduCanIdRange;
 
 /**************************************************************************************************
 **
@@ -390,6 +407,9 @@ typedef struct{
 	CAN Driver module. */
 	CanIfPduUserUL CanIfRxPduUserRxIndicationUL ;
 	
+	/* Optional container that allows to map a range of CAN Ids to one PduId. */
+	CanIfRxPduCanIdRange CanIfRxPduCanIdRange;
+
 }CanIfRxPduCfg;
 
 

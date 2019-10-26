@@ -15,7 +15,7 @@
 extern CanIf_ConfigType CanIf;
 
 static enum CanIfStateType{CANIF_UNINIT, CANIF_READY}CanIfState = CANIF_UNINIT;
-//static CanIf_ControllerModeType  CanIfControllerMode[NUMBER_OF_CONTROLLERS]={CANIF_CS_UNINIT,CANIF_CS_UNINIT};
+static CanIf_ControllerModeType  CanIfControllerMode[NUMBER_OF_CONTROLLERS]={CANIF_CS_UNINIT, CANIF_CS_UNINIT};
 static CanIf_PduModeType         CanIfPduMode[NUMBER_OF_CONTROLLERS];
 
 #if(CanIfPublicTxBuffering == true)
@@ -678,7 +678,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
 							if(CanIfTxInfoPtr == NULL)
 							{
 								#if(CanIfPublicDevErrorDetect == true)
-								CanIfDevelopmentError = CANIF_E_PARAM_POINTER;
+								Det_ReportError(MODULE_ID, INSTANCE_ID, 0x05, CANIF_E_PARAM_POINTER);
 								#endif
 								return E_NOT_OK;
 							}
@@ -690,7 +690,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
 								if(CanIfTxSduId >= CanIfMaxTxPduCfg)
 								{
 									#if(CanIfPublicDevErrorDetect == true)
-									CanIfDevelopmentError = CANIF_E_INVALID_TXPDUID;
+									Det_ReportError(MODULE_ID, INSTANCE_ID, 0x05, CANIF_E_INVALID_TXPDUID);
 									#endif
 									return E_NOT_OK;
 								}
@@ -706,7 +706,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
 									if(CanIfTxInfoPtr->SduLength > 8)
 									{
 										#if(CanIfPublicDevErrorDetect == true)
-										CanIfDevelopmentError = CANIF_E_DATA_LENGTH_MISMATCH;
+	                                    Det_ReportError(MODULE_ID, INSTANCE_ID, 0x05, CANIF_E_DATA_LENGTH_MISMATCH);
 										#endif
 										return E_NOT_OK;
 									}
@@ -724,7 +724,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId, const PduInfoType* CanIfTx
 										const Can_PduType* PduInfoPtr = &(Can_PduType){
 											.swPduHandle = CanIfTxSduId,
 											.length = CanIfTxInfoPtr->SduLength,
-											.id = TxPduPtr->CanIfTxPduId,
+											.id = TxPduPtr->CanIfTxPduCanId,
 											.sdu = CanIfTxInfoPtr->SduDataPtr};
 
 										/* [SWS_CANIF_00162] d If the call of Can_Write() returns E_OK the transmit request
@@ -1135,7 +1135,8 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePt
 		if(ControllerId >= NUMBER_OF_CONTROLLERS)
 		{
 			#if(CanIfPublicDevErrorDetect == true)
-			CanIfDevelopmentError = CANIF_E_PARAM_CONTROLLERID;
+            Det_ReportError(MODULE_ID, INSTANCE_ID, 0x0A, CANIF_E_PARAM_CONTROLLERID);
+
 			#endif
 			return E_NOT_OK;
 		}
@@ -1147,7 +1148,7 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId, CanIf_PduModeType* PduModePt
 			if(PduModePtr == NULL)
 			{
 				#if(CanIfPublicDevErrorDetect == true)
-				CanIfDevelopmentError = CANIF_E_PARAM_POINTER;
+	            Det_ReportError(MODULE_ID, INSTANCE_ID, 0x0A, CANIF_E_PARAM_POINTER);
 				#endif
 				return E_NOT_OK;
 			}
