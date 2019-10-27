@@ -431,63 +431,16 @@ void CanIf_Init(const CanIf_ConfigType* ConfigPtr){
 	  */
     for ( Iterator_1 = (uint8)0; Iterator_1 < NUMBER_OF_CONTROLLERS ; Iterator_1++)
     {
-        CanIfControllerMode[Iterator_1] = CAN_CS_STOPPED;
+        CanIfControllerMode[Iterator_1] = CANIF_CS_STOPPED;
         CanIfPduMode[Iterator_1] = CANIF_OFFLINE;
     }
 
-   CanIfState = CANIF_READY;/*Initializtion is done*/
+   CanIfState = CANIF_READY;/*Initialization is done*/
   }
   else 
   {
       /* MISRA */	    
   }	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
 
 /*********************************************************************************************************************************
