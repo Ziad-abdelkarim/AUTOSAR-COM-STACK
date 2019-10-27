@@ -1154,56 +1154,79 @@ Parameters (inout):                                          None
 					Depending on necessary baud rate modifications the controller might
 					have to reset.
  *******************************************************************************************************************************/
-
+#if(CanIfSetBaudrateApi==TRUE)
 Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId,uint16 BaudRateConfigID) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return E_OK;
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 
+   if (ControllerId >= NUMBER_OF_CONTROLLERS)
+   {
+
+        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_PARAM_CONTROLLERID);
+
+
+       /*[SWS_CANIF_00869] If CanIf_SetBaudrate() is called with invalid
+       ControllerId, CanIf shall report development error codeCANIF_E_PARAM_CONTROLLERID
+       to the Det_ReportError service of the
+       DET module */
+
+       return E_NOT_OK;
+
+   }
+
+   else
+
+   {
+       Can_SetBaudrate(ControllerId, BaudRateConfigID);
+   }
+
+}
+#endif
 
 /*********************************************************************************************************************************
  Service name:                                         CanIf_TxConfirmation
