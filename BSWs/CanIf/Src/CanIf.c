@@ -827,7 +827,69 @@ CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId)
 Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
                                 CanIf_PduModeType PduModeRequest)
 {
+    CanIf_ControllerModeType CanIfControllerModeLocal;
+    /*
+       [SWS_CANIF_00344] d Caveats of CanIf_SetPduMode(): CanIf must be initialized after Power ON.
+    */
+    if(CanIfState == CANIF_UNINIT)
+    {
+        #if(CanIfPublicDevErrorDetect == true)
+        Det_ReportError(MODULE_ID, INSTACE_ID, 0x09, CANIF_E_UNINIT);
+        #endif
+        return E_NOT_OK;
+    }
+    else
+    {
+        /* [SWS_CANIF_00341] d If CanIf_SetPduMode() is called with invalid ControllerId
+           , CanIf shall report development error code CANIF_E_PARAM_CONTROLLERID
+            to the Det_ReportError service of the DET module. c(SRS_BSW_00323)
+         */
+        if(ControllerId >= NUMBER_OF_CONTROLLERS)
+        {
+            #if(CanIfPublicDevErrorDetect == true)
+            Det_ReportError(MODULE_ID, INSTACE_ID, 0x09, CANIF_E_PARAM_CONTROLLERID);
+            #endif
+            return E_NOT_OK;
+        }
+        else
+        {
+            /*
+             * [SWS_CANIF_00874] The service CanIf_SetPduMode() shall not accept any request and shall return E_NOT_OK,
+             *  if the CCMSM referenced by ControllerId is notin state CANIF_CS_STARTED.
+             */
+            if(CanIf_GetControllerMode(ControllerId, &CanIfControllerModeLocal) == E_NOT_OK)
+            {
+                return E_NOT_OK;
+            }
+            else
+            {
+                if(CanIfControllerModeLocal != CANIF_CS_STARTED)
+                {
+                    return E_NOT_OK;
+                }
+                else
+                {
+                    /*
+                     * [SWS_CANIF_00860] If CanIf_SetPduMode() is called with invalid PduModeRequest,
+                       CanIf shall report development error code CANIF_E_PARAM_PDU_MODE to the Det_ReportError service of the DET module.
+                     */
+                    if(PduModeRequest != CANIF_OFFLINE && PduModeRequest != CANIF_TX_OFFLINE && PduModeRequest != CANIF_TX_OFFLINE_ACTIVE && PduModeRequest != CANIF_ONLINE )
+                    {
+                        #if(CanIfPublicDevErrorDetect == true)
+                        Det_ReportError(MODULE_ID, INSTACE_ID, 0x09, CANIF_E_PARAM_PDU_MODE);
+                        #endif
+                        return E_NOT_OK;
 
+                    }
+                    else
+                    {
+                        CanIfPduMode[ControllerId]=PduModeRequest;
+                        return  E_OK ;
+                    }
+                }
+            }
+        }
+    }
 }
 
 /*********************************************************************************************************************************
@@ -945,7 +1007,119 @@ Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId, uint16 BaudRateConfigID)
 
 void CanIf_TxConfirmation(PduIdType CanTxPduId)
 {
+    CanIfTxPduCfg* txpduptr_0x13=0;
+    Can_ReturnType transmitcheck_0x13;
+    CanIf_ControllerModeType CanIfControllerModeLocal;
+    Can_PduType PduInfoPtr;
 
+    /* The CanIf must be initialized after Power ON. */
+    if(CanIfState == CANIF_UNINIT)
+    {
+        #if(CanIfPublicDevErrorDetect == true)
+        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x13, CANIF_E_UNINIT);
+        #endif
+    }
+    else
+    {
+        /*[SWS_CANIF_00410] d If parameter CanTxPduId of CanIf_TxConfirmation()
+       has an invalid value, CanIf shall report development error code CANIF_E_PARAM_LPDU
+       to the Det_ReportError service of the DET module, when CanIf_TxConfirmation()
+       is called.*/
+        if(CanTxPduId > CanIfMaxTxPduCfg)
+        {
+            #if(CanIfPublicDevErrorDetect == true)
+            Det_ReportError(MODULE_ID, INSTANCE_ID, 0x13, CANIF_E_INVALID_TXPDUID);
+            #endif
+        }
+        else
+        {
+            if(CanIf_GetTxPdu(CanTxPduId, txpduptr_0x13) == E_NOT_OK)
+            {
+
+            }
+            else
+            {
+                /*[SWS_CANIF_00740] d If CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT (see ECUC_CanIf_00
+                is enabled, CanIf shall buffer the information about a received TxConfirmation per
+                CAN Controller, if the CCMSM of that controller is in state CANIF_CS_STARTED.*/
+                #if(CanIfPublicTxConfirmPollingSupport == true)
+                if(CanIf_GetControllerMode(txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId, &CanIfControllerModeLocal) == E_NOT_OK)
+                {
+
+                }
+                else
+                {
+                    if(CanIfControllerModeLocal != CANIF_CS_STARTED)
+                    {
+
+                    }
+                    else
+                    {
+                        CanIf_TxConfirmationInfo[CanTxPduId]= true;
+                    }
+                }
+                #endif
+                #if(CanIfPublicTxBuffering == true)
+                if(CanIf_TxBufferDequeue(txpduptr_0x13, &PduInfoPtr) == E_NOT_OK)
+                {
+
+                }
+                else
+                {
+                    /* Attempt to transmit a PDU from the buffer */
+                    transmitcheck_0x13 = Can_Write(txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId, &PduInfoPtr);
+                    if(transmitcheck_0x13 == CAN_OK)
+                    {
+
+                    }
+                    /* If Can_Write returned BUSY return the PDU to the buffer again */
+                    else if(transmitcheck_0x13 == CAN_BUSY)
+                    {
+                        if(CanIf_TxBufferEnqueue(txpduptr_0x13, &PduInfoPtr) == E_NOT_OK)
+                        {
+
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    else
+                    {
+
+                    }
+                }
+                #endif
+                #if(CanIfPublicReadTxPduNotifyStatusApi == true)
+                /*
+                 * [SWS_CANIF_00391] d If configuration parameters CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS
+                (ECUC_CanIf_00609) and CANIF_TXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00589)
+                for the Transmitted L-PDU are set to TRUE, and if CanIf_TxConfirmation() is
+                called, CanIf shall set the notification status for the Transmitted L-PDU.
+                 */
+                #endif
+                /*
+                 * [SWS_CANIF_00414] d Configuration of CanIf_TxConfirmation(): Each Tx L-
+                PDU (see ECUC_CanIf_00248) has to be configured with a corresponding transmit
+                confirmation service of an upper layer module (see [SWS_CANIF_00011]) which is
+                called in CanIf_TxConfirmation().
+                 */
+
+                if(txpduptr_0x13->CanIfTxPduUserTxConfirmationUL == PDUR )
+                {
+                    /* PDUR_TxConfirmation(CanTxPduId);*/
+                }
+                else if(txpduptr_0x13->CanIfTxPduUserTxConfirmationUL == CAN_TP)
+                {
+                    /*CAN_TP_TxConfirmation(CanTxPduId);*/
+                }
+                else
+                {
+                    /* misra */
+                }
+            }
+        }
+    }
 }
 
 /*********************************************************************************************************************************
@@ -1086,7 +1260,47 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
 void CanIf_ControllerModeIndication(uint8 ControllerId,
                                     CanIf_ControllerModeType ControllerMode)
 {
-
+    /*[SWS_CANIF_00702] d If CanIf was not initialized before calling CanIf_ControllerModeIndication(),
+    CanIf shall not execute state transition notification, when CanIf_ControllerModeIndication()
+    is called.()*/
+    if(CanIfState == CANIF_UNINIT)
+    {
+        #if (CanIfPublicDevErrorDetect == true)
+        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, CANIF_E_UNINIT);
+        #endif
+    }
+    else
+    {
+        /*[SWS_CANIF_00700] d If parameter ControllerId of CanIf_ControllerModeIndication()
+        has an invalid value, CanIf shall report development error code CANIF_E_PARAM_CONTROLLER
+        to the Det_ReportError service of the DET module, when CanIf_ControllerModeIndication()
+        is called. */
+        if(ControllerId >=NUMBER_OF_CONTROLLERS)
+        {
+            #if (CanIfPublicDevErrorDetect == true)
+            Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, CANIF_E_PARAM_CONTROLLERID);
+            #endif
+        }
+        else
+        {
+            /* Note: The CanIf calls this callback service. It is implemented by the configured upper
+            layer module. It is called in case of a state transition notification via CanIf_ControllerModeIndic
+            of the CanDrv. The delivered parameter ControllerId of the service CanIf_ControllerModeIn
+            is passed to the upper layer module. The delivered parameter ControllerMode of
+            the service CanIf_ControllerModeIndication() is mapped to the appropriate
+            parameter ControllerMode of <User_ControllerModeIndication>(). */
+            if(ControllerMode != CANIF_CS_SLEEP && ControllerMode!= CANIF_CS_STARTED && ControllerMode!= CANIF_CS_STOPPED)
+            {
+                #if (CanIfPublicDevErrorDetect == true)
+                Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, CANIF_E_PARAM_CTRLMODE);
+                #endif
+            }
+            else
+            {
+                /*CanSM_ControllerModeIndication(ControllerId, ControllerMode);*/
+            }
+        }
+    }
 }
 
 void main(void)

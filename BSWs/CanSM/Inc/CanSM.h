@@ -26,5 +26,6 @@ AUTOSAR Version:          								  4.2.2
 **                                               				    Function prototypes                                                                       **
 ********************************************************************************************************************************/
 void CanSM_ControllerBusOff(uint8 ControllerId);
+/*void CanSM_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType ControllerMode);*/
 
 #endif /*CANSM_H*/

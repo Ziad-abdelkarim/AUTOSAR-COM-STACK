@@ -37,7 +37,7 @@
 
 
 /********************************************************************************************************************************
-**                                                      Functions  defination                                                                        **
+**                                                      Functions  definition                                                                        **
 *********************************************************************************************************************************/
 /*********************************************************************************************************************************
  Service name:                                                  CanSM_ControllerBusOff
@@ -57,3 +57,20 @@ void CanSM_ControllerBusOff(uint8 ControllerId)
 {
 
 }
+
+/*********************************************************************************************************************************
+ Service name:                                                  CanSM_ControllerModeIndication
+ Service ID[hex]:                                               0x07
+ Sync/Async:                                                    Synchronous
+ Reentrancy:                                                    Reentrant
+ Parameters (in):                                               ControllerId CAN controller, whose mode has changed
+                                                                ControllerMode Notified CAN controller mode
+ Parameters (out):                                              None
+ Return value:                                                  None
+ Description:                                                   This callback shall notify the CanSM module about a CAN
+                                                                controller mode change.
+ *******************************************************************************************************************************/
+/*void CanSM_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType ControllerMode)
+{
+
+}*/
