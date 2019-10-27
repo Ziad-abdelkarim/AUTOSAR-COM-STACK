@@ -12,10 +12,10 @@
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
- #define NUMBER_OF_CHANNELS   2
+
     
 CanIf_ControllerModeType  CanIfControllerMode[NUMBER_OF_CONTROLLERS]={CANIF_CS_UNINIT,CANIF_CS_UNINIT};
-CanIf_PduModeType         CanIfPduMode[NUMBER_OF_CHANNELS];
+CanIf_PduModeType         CanIfPduMode[NUMBER_OF_CONTROLLERS];
  
  
  
@@ -67,10 +67,10 @@ void CanIf_Init(const CanIf_ConfigType* ConfigPtr){
         reset after the initialization process has been completed. In this mode the CanIf and
         CanDrv are neither able to transmit nor receive CAN L-PDUs (see [SWS_CANIF_00001]).
 	  */
-    for ( Iterator_1 = (uint8)0; Iterator_1 < NUMBER_OF_ CHANNELS ; Iterator_1++)
+    for ( Iterator_1 = (uint8)0; Iterator_1 < NUMBER_OF_CONTROLLERS ; Iterator_1++)
     {
-        CanIfControllerMode[Iterator_1]. ControllerMode = CAN_CS_STOPPED;
-        CanIfPduMode[Iterator_1].PduMode = CANIF_OFFLINE;
+        CanIfControllerMode[Iterator_1] = CAN_CS_STOPPED;
+        CanIfPduMode[Iterator_1] = CANIF_OFFLINE;
     }
 
    CanIfState = CANIF_READY;/*Initializtion is done*/
