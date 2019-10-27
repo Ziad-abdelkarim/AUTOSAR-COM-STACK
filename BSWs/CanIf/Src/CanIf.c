@@ -1197,7 +1197,7 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId){
     /*
      * The CanIf must be initialized after Power ON.
      */
-    if(CanIfState == UNINIT){
+    if(CanIfState == CANIF_UNINIT){
 #if(CanIfPublicDevErrorDetect == true)
         Det_ReportError(ModuleId,InstanceId, ApiId,CANIF_E_UNINIT);
 #endif
@@ -1209,8 +1209,8 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId){
             is enabled, CanIf shall buffer the information about a received TxConfirmation per
             CAN Controller, if the CCMSM of that controller is in state CANIF_CS_STARTED.
          */
-        CanIf_GetControllerMode(ControllerId, &CanIfControllerMode[ControllerId]);
-           if(CanIfControllerMode[ControllerId] == CANIF_CS_STARTED)
+        CanIf_GetControllerMode(txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId, &CanIfControllerMode[txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId]);
+           if(CanIfControllerMode[txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId] == CANIF_CS_STARTED)
            {
                CanIf_TxConfirmationInfo[txpduptr_0x13->CanIfTxPduId]= true;
            }
