@@ -14,17 +14,17 @@ Description:  			This container contains the private configuration (parameters) 
 **************************************************************************************************/
 /**************************************************************************************************
 **
-Name:                                   CanIfPrivateDlcCheck
+Name:                                   CANIF_PRIVATE_DLC_CHECK
 
 Type:                                    EcucBooleanParamDef
 
 Description: 				Selects whether the DLC check is supported.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPrivateDlcCheck	(boolean)true
+#define CANIF_PRIVATE_DLC_CHECK	true
 /**************************************************************************************************
 **
-Name:                                CanIfPrivateSoftwareFilterType
+Name:                                CANIF_PRIVATE_SOFTWARE_FILTERType
 
 Type:                                    EcucEnumerationParamDef
 
@@ -37,7 +37,7 @@ Range: 								Types implemented software filtering methods
 									LINEAR Selects Linear Filter method.
 									TABLE Selects Table Filter method.							**
 **************************************************************************************************/
-#define CanIfPrivateSoftwareFilter	(CanIfPrivateSoftwareFilterType)LINEAR
+#define CANIF_PRIVATE_SOFTWARE_FILTER	(CANIF_PRIVATE_SOFTWARE_FILTERType)LINEAR
 /***************************************************************************************************/
 
 
@@ -50,7 +50,7 @@ Description:  			This container contains the public configuration (parameters) o
 **************************************************************************************************/
 /**************************************************************************************************
 **
-Name:                                   CanIfPublicDevErrorDetect
+Name:                                   CANIF_PUBLIC_DEV_ERROR_DETECT
 
 Type:                                    EcucBooleanParamDef
 
@@ -58,7 +58,7 @@ Description: 				Switches the Default Error Tracer (Det) detection and notificat
 										• true: enabled (ON).
 										• false: disabled (OFF).								**
 **************************************************************************************************/
-#define CanIfPublicDevErrorDetect false
+#define CANIF_PUBLIC_DEV_ERROR_DETECT false
 /**************************************************************************************************
 **
 Name:                                   CanIfPublicHandleTypeEnum
@@ -73,7 +73,7 @@ Description: 				This parameter is used to configure the Can_HwHandleType. The
 #define CanIfPublicHandleTypeEnum	uint8
 /**************************************************************************************************
 **
-Name:                                 CanIfPublicReadRxPduDataApi
+Name:                                 CANIF_PUBLIC_READRXPDU_DATA_API
 
 Type:                                    EcucBooleanParamDef
 
@@ -81,10 +81,10 @@ Description: 				Enables / Disables the API CanIf_ReadRxPduData() for reading
 										received L-SDU data.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadRxPduDataApi	true
+#define CANIF_PUBLIC_READRXPDU_DATA_API	true
 /**************************************************************************************************
 **
-Name:                              CanIfPublicReadRxPduNotifyStatusApi
+Name:                              CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS
 
 Type:                                    EcucBooleanParamDef
 
@@ -92,10 +92,10 @@ Description: 				Enables and disables the API for reading the notification statu
 											receive L-PDUs.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadRxPduNotifyStatusApi	true
+#define CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS	true
 /**************************************************************************************************
 **
-Name:                              CanIfPublicReadTxPduNotifyStatusApi
+Name:                              CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS
 
 Type:                                    EcucBooleanParamDef
 
@@ -103,10 +103,10 @@ Description: 				Enables and disables the API for reading the notification statu
 											transmit L-PDUs.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadTxPduNotifyStatusApi	true
+#define CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS	true
 /**************************************************************************************************
 **
-Name:                              		CanIfPublicTxBuffering
+Name:                              		CANIF_PUBLIC_TX_BUFFERING
 
 Type:                                    EcucBooleanParamDef
 
@@ -114,20 +114,20 @@ Description: 				Enables and disables the buffering of transmit L-PDUs (rejected
 								CanDrv) within the CAN Interface module.	
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicTxBuffering	true
+#define CANIF_PUBLIC_TX_BUFFERING	true
 /**************************************************************************************************
 **
-Name:                              CanIfPublicTxConfirmPollingSupport
+Name:                              CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT
 
 Type:                                    EcucBooleanParamDef
 
 Description: 				Configuration parameter to enable/disable the API to poll for Tx
 										Confirmation state.										**
 **************************************************************************************************/
-#define CanIfPublicTxConfirmPollingSupport false
+#define CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT false
 /**************************************************************************************************
 **
-Name:                              		CanIfSetBaudrateApi
+Name:                              		CANIF_SET_BAUDRATE_API
 
 Type:                                   EcucBooleanParamDef
 
@@ -136,7 +136,7 @@ Description: 				Configuration parameter to enable/disable the CanIf_SetBaudrate
 							true the CanIf_SetBaudrate API shall be supported. Otherwise the API
 							is not supported.													**
 **************************************************************************************************/
-#define CanIfSetBaudrateApi true
+#define CANIF_SET_BAUDRATE_API true
 /*************************************************************************************************/
 
 /**************************************************************************************************
