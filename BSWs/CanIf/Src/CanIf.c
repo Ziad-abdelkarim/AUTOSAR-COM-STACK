@@ -967,7 +967,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeReq
 			}
 			else
 			{
-				if(CanIfControllerModeLocal[ControllerId] != CANIF_CS_STARTED)
+				if(CanIfControllerModeLocal != CANIF_CS_STARTED)
 				{
 					return E_NOT_OK;
 				}
@@ -1210,7 +1210,7 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
 	   is called.*/
 		if(CanTxPduId > CanIfMaxTxPduCfg)
 		{
-			#if(CanIfPublicDevErrorDetect == true
+			#if(CanIfPublicDevErrorDetect == true)
 			Det_ReportError(MODULE_ID, INSTANCE_ID, 0x13, CANIF_E_INVALID_TXPDUID);
 			#endif
 		}
@@ -1552,7 +1552,7 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType 
 			}
 			else
 			{
-				CanSM_ControllerModeIndication(ControllerId, ControllerMode);
+				/*CanSM_ControllerModeIndication(ControllerId, ControllerMode);*/
 			}
 		}
 	}
