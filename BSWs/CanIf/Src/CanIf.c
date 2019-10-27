@@ -9,6 +9,7 @@
  ********************************************************************************************************************************/
 #include "Can.h"
 #include "CanIf.h"
+#include <CanSM_Stub.h>
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
@@ -477,11 +478,56 @@ void CanIf_Init(const CanIf_ConfigType* ConfigPtr)
  the CAN controller mode.
  *******************************************************************************************************************************/
 
-Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,
-                                       CanIf_ControllerModeType ControllerMode)
-{
-
-    return E_OK;
+Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeType ControllerMode){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 /*********************************************************************************************************************************
@@ -498,11 +544,56 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,
  Description:
  This service reports about the current status of the requested CAN controller.
  *******************************************************************************************************************************/
-Std_ReturnType CanIf_GetControllerMode(
-        uint8 ControllerId, CanIf_ControllerModeType* ControllerModePtr)
-{
-
-    return E_OK;
+Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeType* ControllerModePtr){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 /*********************************************************************************************************************************
@@ -511,17 +602,17 @@ Std_ReturnType CanIf_GetControllerMode(
  Sync/Async:                                               Synchronous
  Reentrancy:                                                 Reentrant
  Parameters (in):                                           CanIfTxSduId    -->L-SDU handle to be transmitted.This handle specifies the corresponding CAN L-
- SDU ID and implicitly the CAN Driver instance as
- well as the corresponding CAN controller device.
- CanIfTxInfoPtr   -->Pointer to a structure with CAN L-SDU related data:
- DLC and pointer to CAN L-SDU buffer including the
- MetaData of dynamic L-PDUs.
- Parameters (inout):                                          None
+																								SDU ID and implicitly the CAN Driver instance as 
+																								well as the corresponding CAN controller device.
+																	CanIfTxInfoPtr   -->Pointer to a structure with CAN L-SDU related data: 
+																								DLC and pointer to CAN L-SDU buffer including the
+																								MetaData of dynamic L-PDUs.
+Parameters (inout):                                          None
  Parameters (out):                                            None
  Return value:                                              Std_ReturnType
  Description:
- This service initiates a request for transmission of the CAN L-PDU specified by
- the CanTxSduId and CAN related data in the L-SDU structure.
+					This service initiates a request for transmission of the CAN L-PDU specified by 	
+					 the CanTxSduId and CAN related data in the L-SDU structure.
  *******************************************************************************************************************************/
 
 Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
@@ -690,9 +781,9 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
  Sync/Async:                                               Synchronous
  Reentrancy:                                                 Non Reentrant
  Parameters (in):                                           CanIfRxSduId    -->Receive L-SDU handle specifying the corresponding 
- CAN L-SDU ID and implicitly the CAN Driver instance
- as well as the corresponding CAN controller device.
- Parameters (inout):                                          None
+																								CAN L-SDU ID and implicitly the CAN Driver instance 
+																								as well as the corresponding CAN controller device.
+Parameters (inout):                                          None
  Parameters (out):                                       CanIfRxInfoPtr   -->Pointer to a structure with CAN L-SDU related data:
  DLC and pointer to CAN L-SDU buffer including the
  MetaData of dynamic L-PDUs.
@@ -783,10 +874,56 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
  CanIfTxSduId.
  *******************************************************************************************************************************/
 
-CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId)
-{
+CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
-    return CANIF_TX_RX_NOTIFICATION;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 /*********************************************************************************************************************************
@@ -795,9 +932,9 @@ CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId)
  Sync/Async:                                                 Synchronous
  Reentrancy:                                                 Non Reentrant
  Parameters (in):                                            CanIfRxSduId    -->Receive L-SDU handle specifying the corresponding 
- CAN L-SDU ID and implicitly the CAN Driver instance
- as well as the corresponding CAN controller device.
- Parameters (inout):                                          None
+																								CAN L-SDU ID and implicitly the CAN Driver instance 
+																								as well as the corresponding CAN controller device.
+Parameters (inout):                                          None
  Parameters (out):                                            None
  Return value:                                              CanIf_NotifStatusType
  Description:
@@ -805,11 +942,62 @@ CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId)
  specific CAN Rx L-PDU, requested by the CanIfRxSduId.
  *******************************************************************************************************************************/
 
-CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId)
-{
-
-    return CANIF_TX_RX_NOTIFICATION;
-
+CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 /*********************************************************************************************************************************
@@ -827,12 +1015,58 @@ CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId)
  This service sets the requested mode at the L-PDUs of a predefined logical PDU channel.
  *******************************************************************************************************************************/
 
-Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
-                                CanIf_PduModeType PduModeRequest)
-{
-
-    return E_OK;
-
+Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 /*********************************************************************************************************************************
@@ -899,10 +1133,10 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,
  Sync/Async:                                                 Synchronous
  Reentrancy:                                                 Reentrant for different ControllerIds. Non reentrant for the same ControllerId.
  Parameters (in):                                           ControllerId      -->Abstracted CanIf ControllerId which is assigned to a
- CAN controller, which is requested for mode transition.
- BaudRateConfigID-->references a baud rate configuration by ID (see Can-
- ControllerBaudRateConfigID)
- Parameters (inout):                                          None
+                                                                                                CAN controller, which is requested for mode transition.
+																	BaudRateConfigID-->references a baud rate configuration by ID (see Can-
+																									ControllerBaudRateConfigID)							
+Parameters (inout):                                          None
  Parameters (out):                                            PduModePtr  -->Pointer to a memory location, where the current
  mode of the logical PDU channel will be stored.
  Return value:                                              Std_ReturnType
@@ -938,19 +1172,64 @@ Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId, uint16 BaudRateConfigID)
  Sync/Async:                                                 Synchronous
  Reentrancy:                                                 Reentrant
  Parameters (in):                                           CanTxPduId      -->L-PDU handle of CAN L-PDU successfully transmitted.
- This ID specifies the corresponding CAN L-PDU ID
- and implicitly the CAN Driver instance as well as the
- corresponding CAN controller device.
- Parameters (inout):                                          None
- Parameters (out):                                             None
- Return value:                                                   None
- Description:
- This service confirms a previously successfully processed transmission of a CAN TxPDU.
+																								This ID specifies the corresponding CAN L-PDU ID
+																								and implicitly the CAN Driver instance as well as the 
+																								corresponding CAN controller device.					
+Parameters (inout):                                          None
+Parameters (out):                                             None
+Return value:                                                   None
+Description:
+					This service confirms a previously successfully processed transmission of a CAN TxPDU.
  *******************************************************************************************************************************/
 
-void CanIf_TxConfirmation(PduIdType CanTxPduId)
-{
-
+void CanIf_TxConfirmation(PduIdType CanTxPduId){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 /*********************************************************************************************************************************
@@ -968,10 +1247,55 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
  to the CanIf after passing all filters and validation checks.
  *******************************************************************************************************************************/
 
-void CanIf_RxIndication(const Can_HwType* Mailbox,
-                        const PduInfoType* PduInfoPtr)
-{
-
+void CanIf_RxIndication(const Can_HwType* Mailbox,const PduInfoType* PduInfoPtr){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 /*********************************************************************************************************************************
@@ -980,17 +1304,118 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
  Sync/Async:                                                 Synchronous
  Reentrancy:                                                 Reentrant
  Parameters (in):                                            ControllerId      -->Abstracted CanIf ControllerId which is assigned to a
- CAN controller, which is requested for mode transition.
- Parameters (inout):                                          None
- Parameters (out):                                             None
- Return value:                                                   None
- Description:
- This service indicates a Controller BusOff event referring to the corresponding
- CAN Controller with the abstract CanIf ControllerId.
+                                                                                                CAN controller, which is requested for mode transition.
+Parameters (inout):                                          None
+Parameters (out):                                             None
+Return value:                                                   None
+Description:
+					This service indicates a Controller BusOff event referring to the corresponding 
+					CAN Controller with the abstract CanIf ControllerId.
  *******************************************************************************************************************************/
 
 void CanIf_ControllerBusOff(uint8 ControllerId)
 {
+  CanIf_ControllerModeType* ControllerModePtrBusOff;
+  Std_ReturnType ControllerState_bus = E_NOT_OK;
+  /*
+  [SWS_CANIF_00432] Caveats of CanIf_ControllerBusOff():
+      • The call context is either on interrupt level (interrupt mode) or on task level (polling
+        mode).
+      • The CanIf must be initialized after Power ON.
+
+  */
+
+  /* [SWS_CANIF_00431] If CanIf was not initialized before calling CanIf_ControllerBusOff(),
+  CanIf shall not execute BusOff notification, when CanIf_ControllerBusOff(), is called. */
+
+  if(CanIfState==CanIf_Init)
+  {
+    /*[SWS_CANIF_00429]  If parameter ControllerId of CanIf_ControllerBusOff()
+    has an invalid value, CanIf shall report development error code CANIF_E_PARAM_CONTROLLER
+    to the Det_ReportError service of the DET module, when CanIf_ControllerBusOff()
+    is called. (SRS_BSW_00323)*/
+
+
+    if(ControllerId >= NUMBER_OF_CONTROLLERS)
+    {
+       if(E_OK==Det_ReportError(0x12,0,0x16,CANIF_E_PARAM_CONTROLLER))
+       {
+
+       }else
+       {
+
+       }
+
+
+    }
+    else
+    {
+
+        /* [SWS_CANIF_00433]  Configuration of CanIf_ControllerBusOff(): ID of the
+        CAN Controller is published inside the configuration description of the CanIf (see ECUC_CanIf_ */
+        /*
+        [SWS_CANIF_00739] If CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT (see ECUC_CanIf_00
+        is enabled, CanIf shall clear the information about a TxConfirmation (see [SWS_CANIF_00740])
+        when callback CanIf_ControllerBusOff(ControllerId) is called. c()
+        */
+
+        #if CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT
+
+        CanIf_ClearTxConfirmationInfoBuffer();
+
+        #endif
+
+        /*
+        [SWS_CANIF_00298] d If a CCMSM is in state CANIF_CS_INIT when CanIf_ControllerBusOff(
+        is called with parameter ControllerId referencing that CCMSM, then the CCMSM shall
+        be changed to CANIF_CS_STOPPED.
+        */
+        ControllerState_bus=CanIf_GetControllerMode(ControllerId,ControllerModePtrBusOff);
+       /* if(ControllerState_bus==E_OK)
+        {
+          if (*ControllerModePtrBusOff==CANIF_CS_INIT)
+          {
+            CanIf_SetControllerMode(ControllerId,CANIF_CS_STOPPED);
+          }
+
+        }else
+        {
+          //nothing
+        }*/
+
+        /*
+        [SWS_CANIF_00488] d If a CCMSM is in state CANIF_CS_STARTED when CanIf_ControllerBusO
+        is called with parameter ControllerId referencing that CCMSM, then the CCMSM shall
+        be changed to CANIF_CS_STOPPED.
+        */
+        if(ControllerState_bus==E_OK)
+        {
+          if(*ControllerModePtrBusOff==CANIF_CS_STARTED)
+          {
+            CanIf_SetControllerMode(ControllerId,CANIF_CS_STOPPED);
+          }
+
+        }else
+        {
+          //nothing
+        }
+        /*
+        [SWS_CANIF_00724] When callback CanIf_ControllerBusOff( ControllerId)
+        is called, the CanIf shall call CanSM_ControllerBusOff(ControllerId) of the
+        CanSm (see subsubsection 8.6.3.9 or a CDD (see [SWS_CANIF_00559], [SWS_CANIF_00560]).
+        */
+
+        CanSM_ControllerBusOff(ControllerId);
+    }
+  }
+  else
+  {
+    //nothing
+  }
+
+
+  //
+
 
 }
 
@@ -1010,13 +1435,81 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
  CAN controller with the abstract CanIf ControllerId.
  *******************************************************************************************************************************/
 
-void CanIf_ControllerModeIndication(uint8 ControllerId,
-                                    CanIf_ControllerModeType ControllerMode)
-{
-
+void CanIf_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType ControllerMode){
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
 
 void main(void)
 {
 }
+
+
+
 
