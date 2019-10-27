@@ -124,7 +124,7 @@ Type:                                    EcucBooleanParamDef
 Description: 				Configuration parameter to enable/disable the API to poll for Tx
 										Confirmation state.										**
 **************************************************************************************************/
-#define CanIfPublicTxConfirmPollingSupport true
+#define CanIfPublicTxConfirmPollingSupport false
 /**************************************************************************************************
 **
 Name:                              		CanIfSetBaudrateApi

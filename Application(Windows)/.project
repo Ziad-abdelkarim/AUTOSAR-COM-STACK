@@ -46,6 +46,11 @@
 			<locationURI>copy_PARENT/BSWs/CanIf/Gen/CanIf_Cfg.c</locationURI>
 		</link>
 		<link>
+			<name>CanSM.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanSM/Src/CanSM.c</locationURI>
+		</link>
+		<link>
 			<name>Can_Cfg.h</name>
 			<type>1</type>
 			<locationURI>copy_PARENT/BSWs/CanDrv/Gen/Can_Cfg.h</locationURI>
@@ -64,6 +69,11 @@
 			<name>ComStack_Types.h</name>
 			<type>1</type>
 			<locationURI>copy_PARENT/BSWs/CanDrv/Inc/ComStack_Types.h</locationURI>
+		</link>
+		<link>
+			<name>Det.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/Det/Src/Det.c</locationURI>
 		</link>
 		<link>
 			<name>Platform_Types.h</name>

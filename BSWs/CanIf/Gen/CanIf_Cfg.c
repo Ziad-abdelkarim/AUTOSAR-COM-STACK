@@ -64,7 +64,11 @@ CanIf_ConfigType CanIf = {
 				 .CanIfRxPduId = 0x0,
 				 .CanIfRxPduReadData = true,
 				 .CanIfRxPduReadNotifyStatus = true,
-				 .CanIfRxPduUserRxIndicationUL = PDUR
+				 .CanIfRxPduUserRxIndicationUL = PDUR,
+				 .CanIfRxPduCanIdRange = {
+				                          .CanIfRxPduCanIdRangeLowerCanId = 0,
+				                          .CanIfRxPduCanIdRangeUpperCanId = 2000
+				 }
 			 }
 		 },
 		 
