@@ -63,7 +63,6 @@ Std_ReturnType Can_SetBaudrate( uint8 Controller, uint16 BaudRateConfigID );
 void Can_MainFunctionBusoff(void);
 void Can_MainFunction_Write(void);
 void Can_MainFunction_Read(void);
-void main(void);
 /********************************************************************************************************************************/
 #endif /* CAN_H */
 
