@@ -14,8 +14,10 @@ AUTOSAR Version:          								  4.2.2
 **                                               						  Defines                                                                                **
 ********************************************************************************************************************************/
 
-
-
+#define NUMBER_OF_CONTROLLERS       2
+#define Canif_SetControllerModeId   0x03
+#define Canif_GetControllerModeID   0x04
+#define Canif_ModuleID              0x12
 /*******************************************************************************************************************************
 **                                               						   Variables                                                                             **
 ********************************************************************************************************************************/
@@ -36,6 +38,7 @@ CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId);
 Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest);
 Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,CanIf_PduModeType* PduModePtr);
 Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId,uint16 BaudRateConfigID);
+Std_ReturnType Det_ReportError(uint16 ModuleId,uint8 InstanceId,uint8 ApiId,uint8 ErrorId);
 void CanIf_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType ControllerMode);
 void CanIf_ControllerBusOff(uint8 ControllerId);
 void CanIf_TxConfirmation(PduIdType CanTxPduId);
