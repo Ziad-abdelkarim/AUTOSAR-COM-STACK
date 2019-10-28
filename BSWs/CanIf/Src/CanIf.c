@@ -23,9 +23,13 @@ static enum CanIfStateType
 static CanIf_ControllerModeType CanIfControllerMode[NUMBER_OF_CONTROLLERS ] = {
         CANIF_CS_UNINIT, CANIF_CS_UNINIT };
 static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS ];
-static PduInfoType* RxBuffer[CanIfMaxRxPduCfg ];
+static const PduInfoType* RxBuffer[CanIfMaxRxPduCfg ];
 
-#if(CANIF_PUBLIC_TX_BUFFERING == true)
+#if(CanIfPublicReadRxPduNotifyStatusApi == true)
+static CanIf_NotifStatusType RxPduState[CanIfMaxRxPduCfg ];
+#endif
+
+#if(CanIfPublicTxBuffering == true)
 static CanIf_TxBufferType CanIfTxBuffer[NUMBER_OF_BUFFERS] = { {
         .CanIfBufferCfgRef = &CanIf.CanIfInitCfg.CanIfBufferCfg[0U],
         .CanIfTxBufferFront = -1, .CanIfTxBufferRear = -1, .CanIfTxBufferSize =
@@ -37,7 +41,7 @@ uint8 CanIfDevelopmentError;
 /********************************************************************************************************************************
  **                                                        Local Functions                                                                                        **
  *********************************************************************************************************************************/
-#if(CANIF_PUBLIC_TX_BUFFERING == true)
+#if(CanIfPublicTxBuffering == true)
 static Std_ReturnType CanIf_TxBufferGet(
         CanIfBufferCfg* CanIfTxPduBufferRefLocal,
         CanIf_TxBufferType *CanIfTxBufferLocal);
@@ -47,6 +51,8 @@ static Std_ReturnType CanIf_TxBufferNotFull(
         CanIf_TxBufferType *CanIfTxBufferLocal);
 static Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu,
                                             const Can_PduType* PduInfoPtr);
+static Std_ReturnType CanIf_TxBufferPeek(CanIfTxPduCfg* TxPdu,
+                                         const Can_PduType* PduInfoPtr);
 static Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu,
                                             const Can_PduType* PduInfoPtr);
 static Std_ReturnType CanIf_TxBufferClear(uint8 ControllerId);
@@ -66,7 +72,7 @@ static Std_ReturnType CanIf_GetRxPdu(PduIdType CanIfRxSduId,
  Description:							This service searches for the CanIf buffer referenced by the available
  CanIf buffers and the Tx Pdu
  *******************************************************************************************************************************/
-#if(CANIF_PUBLIC_TX_BUFFERING == true)
+#if(CanIfPublicTxBuffering == true)
 Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg *CanIfTxPduBufferRefLocal,
                                  CanIf_TxBufferType *CanIfBufferRefLocal)
 {
@@ -107,7 +113,7 @@ Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg *CanIfTxPduBufferRefLocal,
  Return value:                                            Std_ReturnType
  Description:							This service checks if the buffer is empty
  *******************************************************************************************************************************/
-#if(CANIF_PUBLIC_TX_BUFFERING == true)
+#if(CanIfPublicTxBuffering == true)
 Std_ReturnType CanIf_TxBufferNotEmpty(CanIf_TxBufferType *CanIfTxBufferRefLocal)
 {
     /* Check if the reference to the buffer is a valid reference */
@@ -138,7 +144,7 @@ Std_ReturnType CanIf_TxBufferNotEmpty(CanIf_TxBufferType *CanIfTxBufferRefLocal)
  Return value:                                            Std_ReturnType
  Description:							This service checks if the buffer is full
  *******************************************************************************************************************************/
-#if(CANIF_PUBLIC_TX_BUFFERING == true)
+#if(CanIfPublicTxBuffering == true)
 Std_ReturnType CanIf_TxBufferNotFull(CanIf_TxBufferType *CanIfTxBufferRefLocal)
 {
     /* Check if the reference to the buffer is a valid reference */
@@ -171,7 +177,7 @@ Std_ReturnType CanIf_TxBufferNotFull(CanIf_TxBufferType *CanIfTxBufferRefLocal)
  Return value:                                            Std_ReturnType
  Description:							This service returns the next PDU in the FIFO buffer
  *******************************************************************************************************************************/
-#if(CANIF_PUBLIC_TX_BUFFERING == true)
+#if(CanIfPublicTxBuffering == true)
 Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu,
                                      const Can_PduType* PduInfoPtr)
 {
@@ -217,6 +223,54 @@ Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu,
 #endif
 
 /*********************************************************************************************************************************
+ Service name:                                       CanIf_TxBufferPeek
+ Parameters (in):                               TxPdu -->Reference to the Tx PDU
+ PduInfoPtr --> Reference to the PDU
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                           This service only looks at the next PDU in the buffer without dequeuing
+ *******************************************************************************************************************************/
+#if(CanIfPublicTxBuffering == true)
+Std_ReturnType CanIf_TxBufferPeek(CanIfTxPduCfg* TxPdu,
+                                  const Can_PduType* PduInfoPtr)
+{
+    CanIf_TxBufferType* CanIfTxBufferRefLocal = NULL;
+
+    /* Check if the reference to the TxPdu is a valid reference */
+    if (TxPdu == NULL)
+    {
+        return E_NOT_OK;
+    }
+    else
+    {
+        /* Get the buffer of the Tx PDU */
+        if (CanIf_TxBufferGet(TxPdu->CanIfTxPduBufferRef,
+                              CanIfTxBufferRefLocal) == E_NOT_OK)
+        {
+            return E_NOT_OK;
+        }
+        else
+        {
+            /* Check if the buffer is empty */
+            if (CanIf_TxBufferNotEmpty(CanIfTxBufferRefLocal) == E_NOT_OK)
+            {
+                return E_NOT_OK;
+            }
+            else
+            {
+                /* Set the PDU pointer to the next PDU in the buffer */
+                PduInfoPtr =
+                        &CanIfTxBufferRefLocal->CanIfTxBufferPduData[CanIfTxBufferRefLocal->CanIfTxBufferFront];
+                return E_OK;
+            }
+        }
+    }
+
+}
+#endif
+
+/*********************************************************************************************************************************
  Service name:                                       CanIf_TxBufferEnqueue
  Parameters (in):                        		TxPdu -->Reference to the Tx PDU
  PduInfoPtr --> Reference to the PDU
@@ -225,7 +279,7 @@ Std_ReturnType CanIf_TxBufferDequeue(CanIfTxPduCfg* TxPdu,
  Return value:                                            Std_ReturnType
  Description:								This service adds a PDU to the FIFO buffer
  *******************************************************************************************************************************/
-#if(CANIF_PUBLIC_TX_BUFFERING == true)
+#if(CanIfPublicTxBuffering == true)
 Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu,
                                      const Can_PduType* PduInfoPtr)
 {
@@ -583,7 +637,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
                              is called. */
                             if (CanIfTxInfoPtr == NULL)
                             {
-#if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
                                 Det_ReportError(MODULE_ID, INSTANCE_ID, 0x05, CANIF_E_PARAM_POINTER);
 #endif
                                 return E_NOT_OK;
@@ -595,7 +649,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
                                  to the Det_ReportError service of the DET, when CanIf_Transmit() is called. */
                                 if (CanIfTxSduId >= CanIfMaxTxPduCfg)
                                 {
-#if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
                                     Det_ReportError(MODULE_ID, INSTANCE_ID, 0x05, CANIF_E_INVALID_TXPDUID);
 #endif
                                     return E_NOT_OK;
@@ -611,7 +665,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
                                      the Det_ReportError service of the DET. */
                                     if (CanIfTxInfoPtr->SduLength > 8)
                                     {
-#if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
                                         Det_ReportError(MODULE_ID, INSTANCE_ID, 0x05, CANIF_E_DATA_LENGTH_MISMATCH);
 #endif
                                         return E_NOT_OK;
@@ -654,7 +708,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
                                         }
                                         else if (Can_WriteReturn == CAN_BUSY)
                                         {
-#if(CANIF_PUBLIC_TX_BUFFERING == true)
+#if(CanIfPublicTxBuffering == true)
                                             if (CanIf_TxBufferEnqueue(
                                                     TxPduPtr,
                                                     PduInfoPtr) == E_OK)
@@ -703,7 +757,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
  *******************************************************************************************************************************/
 /*[SWS_CANIF_00330]This API can be enabled or disabled at pre-compile time 
  configuration by the configuration parameter CANIF_PUBLIC_READRXPDU_DATA_API*/
-#if(CANIF_PUBLIC_READRXPDU_DATA_API)
+#if(CanIfPublicReadRxPduDataApi)
 Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
                                    PduInfoType* CanIfRxInfoPtr)
 {
@@ -747,7 +801,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
                     if ((CanIfRxInfoPtr->SduLength)
                             > 8|| (CanIfRxInfoPtr->SduDataPtr)==NULL)
                     {
-#if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
                         Det_ReportError(MODULE_ID, INSTANCE_ID, 0x06, CANIF_E_PARAM_POINTER);
 #endif
                         return E_NOT_OK;
@@ -829,26 +883,26 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
 {
     CanIf_ControllerModeType CanIfControllerModeLocal;
     /*
-       [SWS_CANIF_00344] d Caveats of CanIf_SetPduMode(): CanIf must be initialized after Power ON.
-    */
-    if(CanIfState == CANIF_UNINIT)
+     [SWS_CANIF_00344] d Caveats of CanIf_SetPduMode(): CanIf must be initialized after Power ON.
+     */
+    if (CanIfState == CANIF_UNINIT)
     {
-        #if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
         Det_ReportError(MODULE_ID, INSTACE_ID, 0x09, CANIF_E_UNINIT);
-        #endif
+#endif
         return E_NOT_OK;
     }
     else
     {
         /* [SWS_CANIF_00341] d If CanIf_SetPduMode() is called with invalid ControllerId
-           , CanIf shall report development error code CANIF_E_PARAM_CONTROLLERID
-            to the Det_ReportError service of the DET module. c(SRS_BSW_00323)
+         , CanIf shall report development error code CANIF_E_PARAM_CONTROLLERID
+         to the Det_ReportError service of the DET module. c(SRS_BSW_00323)
          */
-        if(ControllerId >= NUMBER_OF_CONTROLLERS)
+        if (ControllerId >= NUMBER_OF_CONTROLLERS)
         {
-            #if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
             Det_ReportError(MODULE_ID, INSTACE_ID, 0x09, CANIF_E_PARAM_CONTROLLERID);
-            #endif
+#endif
             return E_NOT_OK;
         }
         else
@@ -857,13 +911,14 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
              * [SWS_CANIF_00874] The service CanIf_SetPduMode() shall not accept any request and shall return E_NOT_OK,
              *  if the CCMSM referenced by ControllerId is notin state CANIF_CS_STARTED.
              */
-            if(CanIf_GetControllerMode(ControllerId, &CanIfControllerModeLocal) == E_NOT_OK)
+            if (CanIf_GetControllerMode(ControllerId,
+                                        &CanIfControllerModeLocal) == E_NOT_OK)
             {
                 return E_NOT_OK;
             }
             else
             {
-                if(CanIfControllerModeLocal != CANIF_CS_STARTED)
+                if (CanIfControllerModeLocal != CANIF_CS_STARTED)
                 {
                     return E_NOT_OK;
                 }
@@ -871,20 +926,23 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
                 {
                     /*
                      * [SWS_CANIF_00860] If CanIf_SetPduMode() is called with invalid PduModeRequest,
-                       CanIf shall report development error code CANIF_E_PARAM_PDU_MODE to the Det_ReportError service of the DET module.
+                     CanIf shall report development error code CANIF_E_PARAM_PDU_MODE to the Det_ReportError service of the DET module.
                      */
-                    if(PduModeRequest != CANIF_OFFLINE && PduModeRequest != CANIF_TX_OFFLINE && PduModeRequest != CANIF_TX_OFFLINE_ACTIVE && PduModeRequest != CANIF_ONLINE )
+                    if (PduModeRequest != CANIF_OFFLINE
+                            && PduModeRequest != CANIF_TX_OFFLINE
+                            && PduModeRequest != CANIF_TX_OFFLINE_ACTIVE
+                            && PduModeRequest != CANIF_ONLINE)
                     {
-                        #if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
                         Det_ReportError(MODULE_ID, INSTACE_ID, 0x09, CANIF_E_PARAM_PDU_MODE);
-                        #endif
+#endif
                         return E_NOT_OK;
 
                     }
                     else
                     {
-                        CanIfPduMode[ControllerId]=PduModeRequest;
-                        return  E_OK ;
+                        CanIfPduMode[ControllerId] = PduModeRequest;
+                        return E_OK;
                     }
                 }
             }
@@ -922,9 +980,8 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,
          to the Det_ReportError service of the DET module.  */
         if (ControllerId >= NUMBER_OF_CONTROLLERS)
         {
-#if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
             Det_ReportError(MODULE_ID, INSTANCE_ID, 0x0A, CANIF_E_PARAM_CONTROLLERID);
-
 #endif
             return E_NOT_OK;
         }
@@ -935,7 +992,7 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,
              service of the DET module.*/
             if (PduModePtr == NULL)
             {
-#if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
                 Det_ReportError(MODULE_ID, INSTANCE_ID, 0x0A, CANIF_E_PARAM_POINTER);
 #endif
                 return E_NOT_OK;
@@ -968,7 +1025,7 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,
  Depending on necessary baud rate modifications the controller might
  have to reset.
  *******************************************************************************************************************************/
-#if(CANIF_SET_BAUDRATE_API==true)
+#if(CanIfSetBaudrateApi==true)
 Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId, uint16 BaudRateConfigID)
 {
     if (ControllerId >= NUMBER_OF_CONTROLLERS)
@@ -977,7 +1034,7 @@ Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId, uint16 BaudRateConfigID)
          ControllerId, CanIf shall report development error codeCANIF_E_PARAM_CONTROLLERID
          to the Det_ReportError service of the
          DET module */
-#if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
         Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_PARAM_CONTROLLERID);
 #endif
         return E_NOT_OK;
@@ -1007,42 +1064,42 @@ Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId, uint16 BaudRateConfigID)
 
 void CanIf_TxConfirmation(PduIdType CanTxPduId)
 {
-    CanIfTxPduCfg* txpduptr_0x13=0;
+    CanIfTxPduCfg* txpduptr_0x13 = 0;
     Can_ReturnType transmitcheck_0x13;
     CanIf_ControllerModeType CanIfControllerModeLocal;
     Can_PduType PduInfoPtr;
 
     /* The CanIf must be initialized after Power ON. */
-    if(CanIfState == CANIF_UNINIT)
+    if (CanIfState == CANIF_UNINIT)
     {
-        #if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
         Det_ReportError(MODULE_ID, INSTANCE_ID, 0x13, CANIF_E_UNINIT);
-        #endif
+#endif
     }
     else
     {
         /*[SWS_CANIF_00410] d If parameter CanTxPduId of CanIf_TxConfirmation()
-       has an invalid value, CanIf shall report development error code CANIF_E_PARAM_LPDU
-       to the Det_ReportError service of the DET module, when CanIf_TxConfirmation()
-       is called.*/
-        if(CanTxPduId > CanIfMaxTxPduCfg)
+         has an invalid value, CanIf shall report development error code CANIF_E_PARAM_LPDU
+         to the Det_ReportError service of the DET module, when CanIf_TxConfirmation()
+         is called.*/
+        if (CanTxPduId > CanIfMaxTxPduCfg)
         {
-            #if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
             Det_ReportError(MODULE_ID, INSTANCE_ID, 0x13, CANIF_E_INVALID_TXPDUID);
-            #endif
+#endif
         }
         else
         {
-            if(CanIf_GetTxPdu(CanTxPduId, txpduptr_0x13) == E_NOT_OK)
+            if (CanIf_GetTxPdu(CanTxPduId, txpduptr_0x13) == E_NOT_OK)
             {
 
             }
             else
             {
                 /*[SWS_CANIF_00740] d If CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT (see ECUC_CanIf_00
-                is enabled, CanIf shall buffer the information about a received TxConfirmation per
-                CAN Controller, if the CCMSM of that controller is in state CANIF_CS_STARTED.*/
-                #if(CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT == true)
+                 is enabled, CanIf shall buffer the information about a received TxConfirmation per
+                 CAN Controller, if the CCMSM of that controller is in state CANIF_CS_STARTED.*/
+#if(CanIfPublicTxConfirmPollingSupport == true)
                 if(CanIf_GetControllerMode(txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId, &CanIfControllerModeLocal) == E_NOT_OK)
                 {
 
@@ -1058,58 +1115,50 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
                         CanIf_TxConfirmationInfo[CanTxPduId]= true;
                     }
                 }
-                #endif
-                #if(CANIF_PUBLIC_TX_BUFFERING == true)
-                if(CanIf_TxBufferDequeue(txpduptr_0x13, &PduInfoPtr) == E_NOT_OK)
+#endif
+#if(CanIfPublicTxBuffering == true)
+                if (CanIf_TxBufferPeek(txpduptr_0x13, &PduInfoPtr) == E_NOT_OK)
                 {
 
                 }
                 else
                 {
                     /* Attempt to transmit a PDU from the buffer */
-                    transmitcheck_0x13 = Can_Write(txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId, &PduInfoPtr);
-                    if(transmitcheck_0x13 == CAN_OK)
+                    transmitcheck_0x13 =
+                            Can_Write(
+                                    txpduptr_0x13->CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthIdSymRef->CanObjectId,
+                                    &PduInfoPtr);
+                    if (transmitcheck_0x13 == CAN_OK)
                     {
-
-                    }
-                    /* If Can_Write returned BUSY return the PDU to the buffer again */
-                    else if(transmitcheck_0x13 == CAN_BUSY)
-                    {
-                        if(CanIf_TxBufferEnqueue(txpduptr_0x13, &PduInfoPtr) == E_NOT_OK)
-                        {
-
-                        }
-                        else
-                        {
-
-                        }
+                        CanIf_TxBufferDequeue(txpduptr_0x13, &PduInfoPtr);
                     }
                     else
                     {
 
                     }
                 }
-                #endif
-                #if(CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS == true)
+#endif
+#if(CanIfPublicReadTxPduNotifyStatusApi == true)
                 /*
                  * [SWS_CANIF_00391] d If configuration parameters CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS
-                (ECUC_CanIf_00609) and CANIF_TXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00589)
-                for the Transmitted L-PDU are set to TRUE, and if CanIf_TxConfirmation() is
-                called, CanIf shall set the notification status for the Transmitted L-PDU.
+                 (ECUC_CanIf_00609) and CANIF_TXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00589)
+                 for the Transmitted L-PDU are set to TRUE, and if CanIf_TxConfirmation() is
+                 called, CanIf shall set the notification status for the Transmitted L-PDU.
                  */
-                #endif
+#endif
                 /*
                  * [SWS_CANIF_00414] d Configuration of CanIf_TxConfirmation(): Each Tx L-
-                PDU (see ECUC_CanIf_00248) has to be configured with a corresponding transmit
-                confirmation service of an upper layer module (see [SWS_CANIF_00011]) which is
-                called in CanIf_TxConfirmation().
+                 PDU (see ECUC_CanIf_00248) has to be configured with a corresponding transmit
+                 confirmation service of an upper layer module (see [SWS_CANIF_00011]) which is
+                 called in CanIf_TxConfirmation().
                  */
 
-                if(txpduptr_0x13->CanIfTxPduUserTxConfirmationUL == PDUR )
+                if (txpduptr_0x13->CanIfTxPduUserTxConfirmationUL == PDUR)
                 {
                     /* PDUR_TxConfirmation(CanTxPduId);*/
                 }
-                else if(txpduptr_0x13->CanIfTxPduUserTxConfirmationUL == CAN_TP)
+                else if (txpduptr_0x13->CanIfTxPduUserTxConfirmationUL
+                        == CAN_TP)
                 {
                     /*CAN_TP_TxConfirmation(CanTxPduId);*/
                 }
@@ -1137,42 +1186,43 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
  to the CanIf after passing all filters and validation checks.
  *******************************************************************************************************************************/
 
-void CanIf_RxIndication(const Can_HwType* Mailbox, const PduInfoType* PduInfoPtr)
+void CanIf_RxIndication(const Can_HwType* Mailbox,
+                        const PduInfoType* PduInfoPtr)
 {
     /*[SWS_CANIF_00415] Within the service CanIf_RxIndication() the CanIf routes
-      this indication to the configured upper layer target service(s).*/
+     this indication to the configured upper layer target service(s).*/
 
-    CanIfPduUserUL Upper_User;
     uint8 CanObjectIdIteration;
-    uint8 CanIfObjectSelectedId;
-    const PduInfoType *RxBuffer[CanIfMaxRxPduCfg];
+    CanIfRxPduCfg* RxPduPtr = NULL;
 
-
-    if(CanIfState == CAN_UNINIT)
+    if (CanIfState == CAN_UNINIT)
     {
         /*[SWS_CANIF_00421] d If CanIf was not initialized before calling CanIf_RxIndication(),
-          CanIf shall not execute Rx indication handling, when CanIf_RxIndication(), is called.*/
+         CanIf shall not execute Rx indication handling, when CanIf_RxIndication(), is called.*/
     }
     else
     {
-        if((PduInfoPtr != NULL) && (Mailbox != NULL))
+        if ((PduInfoPtr != NULL) && (Mailbox != NULL))
         {
-            if(PduInfoPtr->SduLength > 8)
+            if (PduInfoPtr->SduLength > 8)
             {
-                #if (CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if (CanIfPublicDevErrorDetect == true)
                 Det_ReportError(MODULE_ID, INSTANCE_ID, 0x14,CANIF_E_INVALID_DLC);
-                #endif
+#endif
             }
             else
             {
-                if(Mailbox->Hoh < NUMBER_OF_HOH)
+                if (Mailbox->Hoh < NUMBER_OF_HOH)
                 {
-                    for(CanObjectIdIteration = 0 ; CanObjectIdIteration < NUMBER_OF_HOH ; CanObjectIdIteration++)
+                    for (CanObjectIdIteration = 0;
+                            CanObjectIdIteration < NUMBER_OF_HOH ;
+                            CanObjectIdIteration++)
                     {
-                        if(CanIf.CanIfInitCfg.CanIfRxPduCfg[CanObjectIdIteration].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId == Mailbox->Hoh)
+                        if (CanIf.CanIfInitCfg.CanIfRxPduCfg[CanObjectIdIteration].CanIfRxPduHrhIdRef->CanIfHrhIdSymRef->CanObjectId
+                                == Mailbox->Hoh)
                         {
-                            CanIfObjectSelectedId = CanObjectIdIteration;
-                            Upper_User = CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduUserRxIndicationUL;
+                            RxPduPtr =
+                                    &CanIf.CanIfInitCfg.CanIfRxPduCfg[CanObjectIdIteration];
                             break;
                         }
                         else
@@ -1180,190 +1230,209 @@ void CanIf_RxIndication(const Can_HwType* Mailbox, const PduInfoType* PduInfoPtr
                             /*Misra*/
                         }
                     }
-                    if((Mailbox->CanId >= (CanIf.CanIfInitCfg.CanIfRxPduCfg[CanObjectIdIteration].CanIfRxPduCanIdRange.CanIfRxPduCanIdRangeLowerCanId)) &&
-                       (Mailbox->CanId <= (CanIf.CanIfInitCfg.CanIfRxPduCfg[CanObjectIdIteration].CanIfRxPduCanIdRange.CanIfRxPduCanIdRangeUpperCanId)))
+                    if (RxPduPtr == NULL)
                     {
-                        /*[SWS_CANIF_00389] d If the function CanIf_RxIndication() is called, the CanIf
-                          shall process the Software Filtering on the received L-PDU as specified in 7.20, if
-                          configured (see multiplicity of ECUC_CanIf_00628 equals 0::) If Software Filtering
-                          rejects the received L-PDU, the CanIf shall end the receive indication for that call of
-                          CanIf_RxIndication().*/
 
-                        /*[SWS_CANIF_00390] If the CanIf accepts an L-PDU received via CanIf_RxIndication()
-                          during Software Filtering (see [SWS_CANIF_00389]), the CanIf shall process the DLC
-                          check afterwards, if configured (see ECUC_CanIf_00617).*/
-
-                        #if (CANIF_PRIVATE_DLC_CHECK == true)
-                        if(PduInfoPtr->SduLength >= CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduDlc)
-                        {
-
-                            /*[SWS_CANIF_00026] CanIf shall accept all received L-PDUs (see [SWS_CANIF_00390])
-                              with a DLC value equal or greater then the configured DLC value (see ECUC_CanIf_00599).
-                              c(SRS_CAN_01005)*/
-                            RxBuffer[CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduId] = PduInfoPtr;
-
-                             /*[SWS_CANIF_00392] d If configuration parameters CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_(ECUC_CanIf_00608)
-                               and CANIF_RXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00595) for the Received L-PDU are set to TRUE,
-                               and if CanIf_RxIndication() is called,the CanIf shall set the notification status for the Received L-PDU. c()*/
-
-                            #if((CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS == true) && (CANIF_RXPDU_READ_NOTIFYSTATUS == true))
-
-                                RxPduState[CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduId] = CANIF_TX_RX_NOTIFICATION;
-
-                            #elif((CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS == false) && (CANIF_RXPDU_READ_NOTIFYSTATUS == false))
-
-                             /*[SWS_CANIF_00056] d If CanIf accepts a L-PDU received via CanIf_RxIndication()
-                                during DLC check (see [SWS_CANIF_00390], [SWS_CANIF_00026]), CanIf shall
-                                identify if a target upper layer module was configured (see configuration descrption
-                                of [SWS_CANIF_00012] and ECUC_CanIf_00529, ECUC_CanIf_00530) to be called
-                                with its providing receive indication service for the received L-SDU.*/
-
-                            switch (Upper_User)
-                            {
-                                case PDUR:
-
-                                    /*[SWS_CANIF_00135] d If a target upper layer module was configured to be called
-                                      with its providing receive indication service (see [SWS_CANIF_00056]), the CanIf shall
-                                      call this configured receive indication callback service (see ECUC_CanIf_00530) and
-                                      shall provide the parameters required for upper layer notification callback functions
-                                      (see [SWS_CANIF_00012]) based on the parameters of CanIf_RxIndication().
-                                      c(SRS_BSW_00325)*/
-
-                                    /*[SWS_CANIF_00442] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to PDUR,
-                                      CANIF_RXPDU_USERRXINDICATION_NAME must be PduR_CanIfRxIndication.*/
-
-                                    PduR_CanIfRxIndication(CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduId , PduInfoPtr);
-
-                                    break;
-                                case CAN_TP:
-
-                                    /*[SWS_CANIF_00135] d If a target upper layer module was configured to be called
-                                      with its providing receive indication service (see [SWS_CANIF_00056]), the CanIf shall
-                                      call this configured receive indication callback service (see ECUC_CanIf_00530) and
-                                      shall provide the parameters required for upper layer notification callback functions
-                                      (see [SWS_CANIF_00012]) based on the parameters of CanIf_RxIndication().
-                                      c(SRS_BSW_00325)*/
-
-                                    /*[SWS_CANIF_00448] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to CAN_TP,
-                                      CANIF_RXPDU_USERRXINDICATION_NAME must be CanTp_RxIndication.*/
-
-                                    CanTp_RxIndication(CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduId , PduInfoPtr);
-
-                                            break;
-                                default:
-                                    /*error*/
-
-                                    break;
-
-                            }
-
-                            #endif
-
-                        }
-                        else
-                        {
-                            /*[SWS_CANIF_00168] If the DLC check rejects a received L-PDU (see [SWS_CANIF_00026]),
-                              CanIf shall report development error code CANIF_E_INVALID_DLC to the Det_ReportError()
-                              service of the DET module.*/
-                                #if (CANIF_PUBLIC_DEV_ERROR_DETECT == true)
-                                Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_INVALID_DLC);
-                                #endif
-                        }
-
-                        #else
-
-                        /*[SWS_CANIF_00392] If configuration parameters CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_(ECUC_CanIf_00608)
-                           and CANIF_RXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00595) for the Received L-PDU are set to TRUE,
-                           and if CanIf_RxIndication() is called,the CanIf shall set the notification status for the Received L-PDU. c()*/
-
-                        RxBuffer[CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduId] = PduInfoPtr;
-
-                        #if((CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS == true) && (CANIF_RXPDU_READ_NOTIFYSTATUS == true))
-
-                        RxPduState[CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduId] = CANIF_TX_RX_NOTIFICATION;
-
-                        #elif((CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS == false) && (CANIF_RXPDU_READ_NOTIFYSTATUS == false))
-
-                         /*[SWS_CANIF_00056] d If CanIf accepts a L-PDU received via CanIf_RxIndication()
-                            during DLC check (see [SWS_CANIF_00390], [SWS_CANIF_00026]), CanIf shall
-                            identify if a target upper layer module was configured (see configuration descrption
-                            of [SWS_CANIF_00012] and ECUC_CanIf_00529, ECUC_CanIf_00530) to be called
-                            with its providing receive indication service for the received L-SDU.*/
-
-                            switch (Upper_User)
-                            {
-                                case PDUR:
-                                    /*[SWS_CANIF_00135] d If a target upper layer module was configured to be called
-                                      with its providing receive indication service (see [SWS_CANIF_00056]), the CanIf shall
-                                      call this configured receive indication callback service (see ECUC_CanIf_00530) and
-                                      shall provide the parameters required for upper layer notification callback functions
-                                      (see [SWS_CANIF_00012]) based on the parameters of CanIf_RxIndication().
-                                      c(SRS_BSW_00325)*/
-
-                                    /*[SWS_CANIF_00442] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to PDUR,
-                                      CANIF_RXPDU_USERRXINDICATION_NAME must be PduR_CanIfRxIndication.*/
-
-                                    PduR_CanIfRxIndication(CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduId , PduInfoPtr);
-
-                                    break;
-
-                                case CAN_TP:
-                                    /*[SWS_CANIF_00135] d If a target upper layer module was configured to be called
-                                      with its providing receive indication service (see [SWS_CANIF_00056]), the CanIf shall
-                                      call this configured receive indication callback service (see ECUC_CanIf_00530) and
-                                      shall provide the parameters required for upper layer notification callback functions
-                                      (see [SWS_CANIF_00012]) based on the parameters of CanIf_RxIndication().
-                                      c(SRS_BSW_00325)*/
-
-                                    /*[SWS_CANIF_00448] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to CAN_TP,
-                                      CANIF_RXPDU_USERRXINDICATION_NAME must be CanTp_RxIndication.*/
-
-                                    CanTp_RxIndication(CanIf.CanIfInitCfg.CanIfRxPduCfg[CanIfObjectSelectedId].CanIfRxPduId , PduInfoPtr);
-                                    break;
-
-                                default:
-                                    /*error*/
-
-                                    break;
-
-                            }
-
-                            #endif
-
-                        #endif
                     }
                     else
                     {
-                        /*[SWS_CANIF_00417] d If parameter Mailbox->CanId of CanIf_RxIndication()
-                          has an invalid value, CanIf shall report development error code CANIF_E_PARAM_CANID
-                          to the Det_ReportError service of the DET module, when CanIf_RxIndication()
-                          is called. c(SRS_BSW_00323)*/
-                        #if (CANIF_PUBLIC_DEV_ERROR_DETECT == true)
-                        Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_PARAM_CANID);
-                        #endif
+                        if ((Mailbox->CanId
+                                >= (RxPduPtr->CanIfRxPduCanIdRange.CanIfRxPduCanIdRangeLowerCanId))
+                                && (Mailbox->CanId
+                                        <= (RxPduPtr->CanIfRxPduCanIdRange.CanIfRxPduCanIdRangeUpperCanId)))
+                        {
+                            /*[SWS_CANIF_00389] d If the function CanIf_RxIndication() is called, the CanIf
+                             shall process the Software Filtering on the received L-PDU as specified in 7.20, if
+                             configured (see multiplicity of ECUC_CanIf_00628 equals 0::) If Software Filtering
+                             rejects the received L-PDU, the CanIf shall end the receive indication for that call of
+                             CanIf_RxIndication().*/
+
+                            /*[SWS_CANIF_00390] If the CanIf accepts an L-PDU received via CanIf_RxIndication()
+                             during Software Filtering (see [SWS_CANIF_00389]), the CanIf shall process the DLC
+                             check afterwards, if configured (see ECUC_CanIf_00617).*/
+
+#if (CanIfPrivateDlcCheck == true)
+                            if (PduInfoPtr->SduLength
+                                    >= RxPduPtr->CanIfRxPduDlc)
+                            {
+
+                                /*[SWS_CANIF_00026] CanIf shall accept all received L-PDUs (see [SWS_CANIF_00390])
+                                 with a DLC value equal or greater then the configured DLC value (see ECUC_CanIf_00599).
+                                 c(SRS_CAN_01005)*/
+                                RxBuffer[RxPduPtr->CanIfRxPduId] = PduInfoPtr;
+
+                                /*[SWS_CANIF_00392] d If configuration parameters CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_(ECUC_CanIf_00608)
+                                 and CANIF_RXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00595) for the Received L-PDU are set to TRUE,
+                                 and if CanIf_RxIndication() is called,the CanIf shall set the notification status for the Received L-PDU. c()*/
+
+#if(CanIfPublicReadRxPduNotifyStatusApi == true)
+                                if (RxPduPtr->CanIfRxPduReadNotifyStatus == true)
+                                {
+                                    RxPduState[RxPduPtr->CanIfRxPduId] =
+                                            CANIF_TX_RX_NOTIFICATION;
+                                }
+#elif(CanIfPublicReadRxPduNotifyStatusApi == false)
+                                if(RxPduPtr->CanIfRxPduReadNotifyStatus == false)
+                                {
+                                    /*[SWS_CANIF_00056] d If CanIf accepts a L-PDU received via CanIf_RxIndication()
+                                     during DLC check (see [SWS_CANIF_00390], [SWS_CANIF_00026]), CanIf shall
+                                     identify if a target upper layer module was configured (see configuration descrption
+                                     of [SWS_CANIF_00012] and ECUC_CanIf_00529, ECUC_CanIf_00530) to be called
+                                     with its providing receive indication service for the received L-SDU.*/
+
+                                    switch (RxPduPtr->CanIfRxPduUserRxIndicationUL)
+                                    {
+                                        case PDUR:
+
+                                        /*[SWS_CANIF_00135] d If a target upper layer module was configured to be called
+                                         with its providing receive indication service (see [SWS_CANIF_00056]), the CanIf shall
+                                         call this configured receive indication callback service (see ECUC_CanIf_00530) and
+                                         shall provide the parameters required for upper layer notification callback functions
+                                         (see [SWS_CANIF_00012]) based on the parameters of CanIf_RxIndication().
+                                         c(SRS_BSW_00325)*/
+
+                                        /*[SWS_CANIF_00442] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to PDUR,
+                                         CANIF_RXPDU_USERRXINDICATION_NAME must be PduR_CanIfRxIndication.*/
+
+                                        PduR_CanIfRxIndication(RxPduPtr->CanIfRxPduId , PduInfoPtr);
+
+                                        break;
+                                        case CAN_TP:
+
+                                        /*[SWS_CANIF_00135] d If a target upper layer module was configured to be called
+                                         with its providing receive indication service (see [SWS_CANIF_00056]), the CanIf shall
+                                         call this configured receive indication callback service (see ECUC_CanIf_00530) and
+                                         shall provide the parameters required for upper layer notification callback functions
+                                         (see [SWS_CANIF_00012]) based on the parameters of CanIf_RxIndication().
+                                         c(SRS_BSW_00325)*/
+
+                                        /*[SWS_CANIF_00448] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to CAN_TP,
+                                         CANIF_RXPDU_USERRXINDICATION_NAME must be CanTp_RxIndication.*/
+
+                                        CanTp_RxIndication(PduInfoPtr->CanIfRxPduId , PduInfoPtr);
+
+                                        break;
+                                        default:
+                                        /*error*/
+
+                                        break;
+
+                                    }
+                                }
+#endif
+
+                            }
+                            else
+                            {
+                                /*[SWS_CANIF_00168] If the DLC check rejects a received L-PDU (see [SWS_CANIF_00026]),
+                                 CanIf shall report development error code CANIF_E_INVALID_DLC to the Det_ReportError()
+                                 service of the DET module.*/
+#if (CanIfPublicDevErrorDetect == true)
+                                Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_INVALID_DLC);
+#endif
+                            }
+
+#else
+
+                            /*[SWS_CANIF_00392] If configuration parameters CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_(ECUC_CanIf_00608)
+                             and CANIF_RXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00595) for the Received L-PDU are set to TRUE,
+                             and if CanIf_RxIndication() is called,the CanIf shall set the notification status for the Received L-PDU. c()*/
+
+                            RxBuffer[PduInfoPtr->CanIfRxPduId] = PduInfoPtr;
+
+#if(CanIfPublicReadRxPduNotifyStatusApi == true)
+                            if(PduInfoPtr->CanIfRxPduReadNotifyStatus == true)
+                            {
+                                RxPduState[PduInfoPtr->CanIfRxPduId] = CANIF_TX_RX_NOTIFICATION;
+                            }
+                            else
+                            {
+
+                            }
+#elif(CanIfPublicReadRxPduNotifyStatusApi == false)
+                            if(PduInfoPtr->CanIfRxPduReadNotifyStatus == false)
+                            {
+                                /*[SWS_CANIF_00056] d If CanIf accepts a L-PDU received via CanIf_RxIndication()
+                                 during DLC check (see [SWS_CANIF_00390], [SWS_CANIF_00026]), CanIf shall
+                                 identify if a target upper layer module was configured (see configuration descrption
+                                 of [SWS_CANIF_00012] and ECUC_CanIf_00529, ECUC_CanIf_00530) to be called
+                                 with its providing receive indication service for the received L-SDU.*/
+
+                                switch (RxPduPtr->CanIfRxPduUserRxIndicationUL)
+                                {
+                                    case PDUR:
+                                    /*[SWS_CANIF_00135] d If a target upper layer module was configured to be called
+                                     with its providing receive indication service (see [SWS_CANIF_00056]), the CanIf shall
+                                     call this configured receive indication callback service (see ECUC_CanIf_00530) and
+                                     shall provide the parameters required for upper layer notification callback functions
+                                     (see [SWS_CANIF_00012]) based on the parameters of CanIf_RxIndication().
+                                     c(SRS_BSW_00325)*/
+
+                                    /*[SWS_CANIF_00442] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to PDUR,
+                                     CANIF_RXPDU_USERRXINDICATION_NAME must be PduR_CanIfRxIndication.*/
+
+                                    PduR_CanIfRxIndication(PduInfoPtr->CanIfRxPduId , PduInfoPtr);
+
+                                    break;
+
+                                    case CAN_TP:
+                                    /*[SWS_CANIF_00135] d If a target upper layer module was configured to be called
+                                     with its providing receive indication service (see [SWS_CANIF_00056]), the CanIf shall
+                                     call this configured receive indication callback service (see ECUC_CanIf_00530) and
+                                     shall provide the parameters required for upper layer notification callback functions
+                                     (see [SWS_CANIF_00012]) based on the parameters of CanIf_RxIndication().
+                                     c(SRS_BSW_00325)*/
+
+                                    /*[SWS_CANIF_00448] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to CAN_TP,
+                                     CANIF_RXPDU_USERRXINDICATION_NAME must be CanTp_RxIndication.*/
+
+                                    CanTp_RxIndication(PduInfoPtr->CanIfRxPduId , PduInfoPtr);
+                                    break;
+
+                                    default:
+                                    /*error*/
+
+                                    break;
+
+                                }
+                            }
+#endif
+
+#endif
+                        }
+                        else
+                        {
+                            /*[SWS_CANIF_00417] d If parameter Mailbox->CanId of CanIf_RxIndication()
+                             has an invalid value, CanIf shall report development error code CANIF_E_PARAM_CANID
+                             to the Det_ReportError service of the DET module, when CanIf_RxIndication()
+                             is called. c(SRS_BSW_00323)*/
+#if (CanIfPublicDevErrorDetect == true)
+                            Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_PARAM_CANID);
+#endif
+                        }
                     }
                 }
                 else
                 {
                     /*[SWS_CANIF_00416] d If parameter Mailbox->Hoh of CanIf_RxIndication()
-                      has an invalid value, CanIf shall report development error code CANIF_E_PARAM_HOH
-                      to the Det_ReportError service of the DET module, when CanIf_RxIndication()
-                      is called. c(SRS_BSW_00323)*/
-                    #if (CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+                     has an invalid value, CanIf shall report development error code CANIF_E_PARAM_HOH
+                     to the Det_ReportError service of the DET module, when CanIf_RxIndication()
+                     is called. c(SRS_BSW_00323)*/
+#if (CanIfPublicDevErrorDetect == true)
                     Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_PARAM_HOH);
-                    #endif
+#endif
                 }
             }
         }
         else
         {
             /*[SWS_CANIF_00419] d If parameter PduInfoPtr or Mailbox of CanIf_RxIndication()
-              has an invalid value, CanIf shall report development error code CANIF_E_PARAM_POINTER
-              to the Det_ReportError service of the DET module, when CanIf_RxIndication()
-              is called. c(SRS_BSW_00323)*/
-            #if (CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+             has an invalid value, CanIf shall report development error code CANIF_E_PARAM_POINTER
+             to the Det_ReportError service of the DET module, when CanIf_RxIndication()
+             is called. c(SRS_BSW_00323)*/
+#if (CanIfPublicDevErrorDetect == true)
             Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_PARAM_POINTER);
-            #endif
+#endif
         }
     }
 }
@@ -1405,7 +1474,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
 
         if (ControllerId >= NUMBER_OF_CONTROLLERS)
         {
-#if(CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if(CanIfPublicDevErrorDetect == true)
             Det_ReportError(MODULE_ID, INSTANCE_ID, 0x14, CANIF_E_PARAM_CONTROLLER);
 #endif
         }
@@ -1420,7 +1489,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
              when callback CanIf_ControllerBusOff(ControllerId) is called. c()
              */
 
-#if CANIF_PUBLIC_TXCONFIRM_POLLING_SUPPORT
+#if CanIfPublicTxConfirmPollingSupport
             CanIf_ClearTxConfirmationInfoBuffer();
 #endif
 
@@ -1486,39 +1555,41 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
                                     CanIf_ControllerModeType ControllerMode)
 {
     /*[SWS_CANIF_00702] d If CanIf was not initialized before calling CanIf_ControllerModeIndication(),
-    CanIf shall not execute state transition notification, when CanIf_ControllerModeIndication()
-    is called.()*/
-    if(CanIfState == CANIF_UNINIT)
+     CanIf shall not execute state transition notification, when CanIf_ControllerModeIndication()
+     is called.()*/
+    if (CanIfState == CANIF_UNINIT)
     {
-        #if (CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if (CanIfPublicDevErrorDetect == true)
         Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, CANIF_E_UNINIT);
-        #endif
+#endif
     }
     else
     {
         /*[SWS_CANIF_00700] d If parameter ControllerId of CanIf_ControllerModeIndication()
-        has an invalid value, CanIf shall report development error code CANIF_E_PARAM_CONTROLLER
-        to the Det_ReportError service of the DET module, when CanIf_ControllerModeIndication()
-        is called. */
-        if(ControllerId >=NUMBER_OF_CONTROLLERS)
+         has an invalid value, CanIf shall report development error code CANIF_E_PARAM_CONTROLLER
+         to the Det_ReportError service of the DET module, when CanIf_ControllerModeIndication()
+         is called. */
+        if (ControllerId >= NUMBER_OF_CONTROLLERS)
         {
-            #if (CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if (CanIfPublicDevErrorDetect == true)
             Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, CANIF_E_PARAM_CONTROLLERID);
-            #endif
+#endif
         }
         else
         {
             /* Note: The CanIf calls this callback service. It is implemented by the configured upper
-            layer module. It is called in case of a state transition notification via CanIf_ControllerModeIndic
-            of the CanDrv. The delivered parameter ControllerId of the service CanIf_ControllerModeIn
-            is passed to the upper layer module. The delivered parameter ControllerMode of
-            the service CanIf_ControllerModeIndication() is mapped to the appropriate
-            parameter ControllerMode of <User_ControllerModeIndication>(). */
-            if(ControllerMode != CANIF_CS_SLEEP && ControllerMode!= CANIF_CS_STARTED && ControllerMode!= CANIF_CS_STOPPED)
+             layer module. It is called in case of a state transition notification via CanIf_ControllerModeIndic
+             of the CanDrv. The delivered parameter ControllerId of the service CanIf_ControllerModeIn
+             is passed to the upper layer module. The delivered parameter ControllerMode of
+             the service CanIf_ControllerModeIndication() is mapped to the appropriate
+             parameter ControllerMode of <User_ControllerModeIndication>(). */
+            if (ControllerMode != CANIF_CS_SLEEP
+                    && ControllerMode != CANIF_CS_STARTED
+                    && ControllerMode != CANIF_CS_STOPPED)
             {
-                #if (CANIF_PUBLIC_DEV_ERROR_DETECT == true)
+#if (CanIfPublicDevErrorDetect == true)
                 Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, CANIF_E_PARAM_CTRLMODE);
-                #endif
+#endif
             }
             else
             {
