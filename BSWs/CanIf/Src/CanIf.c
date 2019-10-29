@@ -1593,6 +1593,20 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
             }
             else
             {
+                switch(ControllerMode)
+                {
+                    case CANIF_CS_STARTED:
+                        CanIfControllerMode[ControllerId] = CANIF_CS_STARTED;
+                        break;
+                    case CANIF_CS_STOPPED:
+                        CanIfControllerMode[ControllerId] = CANIF_CS_STOPPED;
+                        break;
+                    case CANIF_CS_SLEEP:
+                        CanIfControllerMode[ControllerId] = CANIF_CS_SLEEP;
+                        break;
+                    default:
+                        break;
+                }
                 /*CanSM_ControllerModeIndication(ControllerId, ControllerMode);*/
             }
         }
@@ -1600,8 +1614,8 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
 }
 
 
-
 void main(void)
 {
 
 }
+

@@ -1582,3 +1582,5 @@ Std_ReturnType Can_SetBaudrate(uint8 Controller, uint16 BaudRateConfigID)
     return E_NOT_OK;
 }
 
+
+
