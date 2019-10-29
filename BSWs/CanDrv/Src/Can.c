@@ -1584,3 +1584,7 @@ Std_ReturnType Can_SetBaudrate(uint8 Controller, uint16 BaudRateConfigID)
 
 
 
+void main(void)
+{
+
+}

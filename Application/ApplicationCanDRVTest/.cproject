@@ -224,6 +224,8 @@
 									<listOptionValue builtIn="false" value="${PROJECT_ROOT}"/>
 									<listOptionValue builtIn="false" value="${TIVAWARE_INSTALL}"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/../../BSWs/CanDrv/Inc"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/../../BSWs/CanSM/Inc"/>
+									<listOptionValue builtIn="false" value="${PROJECT_LOC}/../../BSWs/Det/Inc"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/../../BSWs/CanDrv/Gen"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/../../BSWs/CanIf/Inc"/>
 									<listOptionValue builtIn="false" value="${PROJECT_LOC}/../../BSWs/CanIf/Gen"/>

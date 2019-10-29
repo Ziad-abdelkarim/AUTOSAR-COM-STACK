@@ -1615,8 +1615,4 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
 }
 
 
-void main(void)
-{
-
-}
 

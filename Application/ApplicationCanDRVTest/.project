@@ -95,6 +95,11 @@
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanDrv/Inc/Std_Types.h</locationURI>
 		</link>
+		<link>
+			<name>uartstdio.c</name>
+			<type>1</type>
+			<locationURI>PARENT-5-PROJECT_LOC/ti/SW-EK-TM4C123GXL-2.1.4.178/utils/uartstdio.c</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
