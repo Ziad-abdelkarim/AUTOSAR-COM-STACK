@@ -11,8 +11,11 @@ GEN_CMDS__FLAG :=
 
 ORDERED_OBJS += \
 "./Can.obj" \
-"./CanIf_stub.obj" \
+"./CanIf.obj" \
+"./CanIf_Cfg.obj" \
+"./CanSM.obj" \
 "./Can_PBcfg.obj" \
+"./Det.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./uartstdio.obj" \
 "C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/ccs/Debug/driverlib.lib" \
@@ -125,42 +128,42 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-ApplicationCanDRVTest.out \
+Application(Windows).out \
 
 EXE_OUTPUTS__QUOTED += \
-"ApplicationCanDRVTest.out" \
+"Application(Windows).out" \
 
 BIN_OUTPUTS += \
-ApplicationCanDRVTest.hex \
+Application(Windows).hex \
 
 BIN_OUTPUTS__QUOTED += \
-"ApplicationCanDRVTest.hex" \
+"Application(Windows).hex" \
 
 
 # All Target
 all: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
-	@$(MAKE) --no-print-directory -Onone "ApplicationCanDRVTest.out"
+	@$(MAKE) --no-print-directory -Onone "Application(Windows).out"
 
 # Tool invocations
-ApplicationCanDRVTest.out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
+Application(Windows).out: $(OBJS) $(CMD_SRCS) $(LIB_SRCS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: ARM Linker'
-	"C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --define=ccs="ccs" --define=PART_TM4C123GH6PM -g --gcc --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"ApplicationCanDRVTest.map" --heap_size=0 --stack_size=512 -i"C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/lib" -i"C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="ApplicationCanDRVTest_linkInfo.xml" --rom_model -o "ApplicationCanDRVTest.out" $(ORDERED_OBJS)
+	"C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 -me --define=ccs="ccs" --define=PART_TM4C123GH6PM -g --gcc --diag_warning=225 --diag_wrap=off --display_error_number --abi=eabi -z -m"Application(Windows).map" --heap_size=0 --stack_size=512 -i"C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/lib" -i"C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include" --reread_libs --diag_wrap=off --display_error_number --warn_sections --xml_link_info="Application(Windows)_linkInfo.xml" --rom_model -o "Application(Windows).out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
-ApplicationCanDRVTest.hex: $(EXE_OUTPUTS)
+Application(Windows).hex: $(EXE_OUTPUTS)
 	@echo 'Building files: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo 'Invoking: ARM Hex Utility'
-	"C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armhex"  -o "ApplicationCanDRVTest.hex" $(EXE_OUTPUTS__QUOTED)
+	"C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/bin/armhex"  -o "Application(Windows).hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $(strip $(EXE_OUTPUTS__QUOTED))'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Can.obj" "CanIf_stub.obj" "Can_PBcfg.obj" "tm4c123gh6pm_startup_ccs.obj" "uartstdio.obj" 
-	-$(RM) "Can.d" "CanIf_stub.d" "Can_PBcfg.d" "tm4c123gh6pm_startup_ccs.d" "uartstdio.d" 
+	-$(RM) "Can.obj" "CanIf.obj" "CanIf_Cfg.obj" "CanSM.obj" "Can_PBcfg.obj" "Det.obj" "tm4c123gh6pm_startup_ccs.obj" "uartstdio.obj" 
+	-$(RM) "Can.d" "CanIf.d" "CanIf_Cfg.d" "CanSM.d" "Can_PBcfg.d" "Det.d" "tm4c123gh6pm_startup_ccs.d" "uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

@@ -5,7 +5,6 @@ AUTOSAR Version:          								  4.2.2
 #ifndef CANIF_CFG_H
 #define CANIF_CFG_H
 
-
 /**************************************************************************************************
 **
 Name:                                   CanIfPrivateCfg
@@ -22,7 +21,7 @@ Type:                                    EcucBooleanParamDef
 Description: 				Selects whether the DLC check is supported.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPrivateDlcCheck	(boolean)true
+#define CanIfPrivateDlcCheck	true
 /**************************************************************************************************
 **
 Name:                                CanIfPrivateSoftwareFilterType
@@ -59,7 +58,7 @@ Description: 				Switches the Default Error Tracer (Det) detection and notificat
 										• true: enabled (ON).
 										• false: disabled (OFF).								**
 **************************************************************************************************/
-#define CanIfPublicDevErrorDetect   false
+#define CanIfPublicDevErrorDetect false
 /**************************************************************************************************
 **
 Name:                                   CanIfPublicHandleTypeEnum
@@ -82,7 +81,7 @@ Description: 				Enables / Disables the API CanIf_ReadRxPduData() for reading
 										received L-SDU data.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadRxPduDataApi	(boolean)true
+#define CanIfPublicReadRxPduDataApi	true
 /**************************************************************************************************
 **
 Name:                              CanIfPublicReadRxPduNotifyStatusApi
@@ -115,7 +114,7 @@ Description: 				Enables and disables the buffering of transmit L-PDUs (rejected
 								CanDrv) within the CAN Interface module.	
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicTxBuffering	   true
+#define CanIfPublicTxBuffering	true
 /**************************************************************************************************
 **
 Name:                              CanIfPublicTxConfirmPollingSupport
@@ -125,7 +124,7 @@ Type:                                    EcucBooleanParamDef
 Description: 				Configuration parameter to enable/disable the API to poll for Tx
 										Confirmation state.										**
 **************************************************************************************************/
-#define CanIfPublicTxConfirmPollingSupport true
+#define CanIfPublicTxConfirmPollingSupport false
 /**************************************************************************************************
 **
 Name:                              		CanIfSetBaudrateApi
@@ -137,7 +136,7 @@ Description: 				Configuration parameter to enable/disable the CanIf_SetBaudrate
 							true the CanIf_SetBaudrate API shall be supported. Otherwise the API
 							is not supported.													**
 **************************************************************************************************/
-#define CanIfSetBaudrateApi (boolean)true
+#define CanIfSetBaudrateApi true
 /*************************************************************************************************/
 
 /**************************************************************************************************
@@ -177,18 +176,5 @@ Description:  			Maximum number of Pdus. This parameter is needed only in case o
 						post-build loadable implementation using static memory allocation.		**
 **************************************************************************************************/
 #define CanIfMaxTxPduCfg	(uint32)1
-
-/**************************************************************************************************
-**
-Name:                                    CANIF_NUMBER_OF_PDU
-
-Type:                                   EcucIntegerParamDef
-
-Description:  							Maximum number of Pdus.		          					**
-**************************************************************************************************/
-#define CANIF_NUMBER_OF_PDU (CanIfMaxRxPduCfg+CanIfMaxTxPduCfg)
-
-
-
 
 #endif /*CANIF_CFG_H*/
