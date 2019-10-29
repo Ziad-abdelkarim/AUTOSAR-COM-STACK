@@ -92,7 +92,7 @@ Description: 				Enables and disables the API for reading the notification statu
 											receive L-PDUs.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadRxPduNotifyStatusApi	(boolean)true
+#define CanIfPublicReadRxPduNotifyStatusApi	true
 /**************************************************************************************************
 **
 Name:                              CanIfPublicReadTxPduNotifyStatusApi
@@ -103,7 +103,7 @@ Description: 				Enables and disables the API for reading the notification statu
 											transmit L-PDUs.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadTxPduNotifyStatusApi	(boolean)true
+#define CanIfPublicReadTxPduNotifyStatusApi	true
 /**************************************************************************************************
 **
 Name:                              		CanIfPublicTxBuffering
