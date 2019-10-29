@@ -14,6 +14,18 @@
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
+  CanIf_NotifStatusType TxPduState  [CanIfMaxTxPduCfg];
+ CanIf_NotifStatusType RxPduState[CanIfMaxRxPduCfg];
+ bool CanIfState=false;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 extern CanIf_ConfigType CanIf;
 
 static enum CanIfStateType
@@ -837,10 +849,70 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
  CanIfTxSduId.
  *******************************************************************************************************************************/
 
-CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId)
-{
+/*[SWS_CANIF_00335] d Configuration of CanIf_ReadTxNotifyStatus(): This API
+can be enabled or disabled at pre-compile time configuration globally by the parameter
+CANIF_PUBLIC_READTXPDU_NOTIFY_STATUS_API (see ECUC_CanIf_00609)*/
 
+#if(CanIfPublicReadTxPduNotifyStatusApi==true)
+
+CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId){
+	
+	
+    CanIf_NotifStatusType state_0x07;
+    state_0x07 = CANIF_NO_NOTIFICATION;
+    if (true == CanIfState)
+    {
+        /*[SWS_CANIF_00331] d If parameter CanIfTxSduId of
+        CanIf_ReadTxNotifStatus() is out of range or if no status information was
+        configured for this CAN Tx L-SDU, CanIf shall report development error code
+        CANIF_E_INVALID_TXPDUID to the Det_ReportError service of the DET
+        when CanIf_ReadTxNotifStatus() is called*/
+        if (CanIfMaxTxPduCfg > CanIfTxSduId)
+        {
+            if (CANIF_TX_RX_NOTIFICATION == TxPduState[CanIfTxSduId])
+            {
+                state_0x07 = CANIF_TX_RX_NOTIFICATION;
+                TxPduState[CanIfTxSduId]=CANIF_NO_NOTIFICATION;
+            }
+            else
+            {
+                ;
+                /*MISRA*/
+            }
+        }
+        else
+        {
+            /*THE ERROR TO BE RAISED HERE*/
+            CanIfDevelopmentError = CANIF_E_INVALID_TXPDUID;
+        }
+    }
+    else
+    {
+        CanIfDevelopmentError = CANIF_E_UNINIT;
+        /*MISRA*/
+    }
+	
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+return state_0x07;
 }
+#endif
 
 /*********************************************************************************************************************************
  Service name:                                       CanIf_ReadRxNotifStatus
@@ -858,11 +930,72 @@ CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId)
  specific CAN Rx L-PDU, requested by the CanIfRxSduId.
  *******************************************************************************************************************************/
 
-CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId)
-{
+/*[SWS_CANIF_00340] d Configuration of CanIf_ReadRxNotifStatus(): This API
+can be enabled or disabled at pre-compile time configuration globally by the parameter
+CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API (see ECUC_CanIf_00608).*/
 
+#if (CanIfPublicReadRxPduNotifyStatusApi==true)
+
+CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId){
+
+        CanIf_NotifStatusType state_0x08;
+        state_0x08 = CANIF_NO_NOTIFICATION;
+        if (true == CanIfState)
+        {
+            /*[SWS_CANIF_00336] d If parameter CanIfRxSduId of
+            CanIf_ReadRxNotifStatus() is out of range or if status for CanRxPduId
+            was requested whereas CANIF_READRXPDU_DATA_API is disabled or if no status
+            information was configured for this CAN Rx L-SDU, CanIf shall report development
+            error code CANIF_E_INVALID_RXPDUID to the Det_ReportError service of
+            the DET, when CanIf_ReadRxNotifStatus() is called. c*/
+            if (CanIfMaxRxPduCfg > CanIfRxSduId)
+            {
+                if (CANIF_TX_RX_NOTIFICATION == RxPduState[CanIfRxSduId])
+                {
+                    state_0x08 = CANIF_TX_RX_NOTIFICATION;
+                    RxPduState[CanIfRxSduId]=CANIF_NO_NOTIFICATION;
+                }
+                else
+                {
+                    ;
+                    /*MISRA*/
+                }
+            }
+            else
+            {
+                /*THE ERROR TO BE RAISED HERE*/
+                CanIfDevelopmentError = CANIF_E_INVALID_RXPDUID;
+            }
+        }
+        else
+        {
+            CanIfDevelopmentError = CANIF_E_UNINIT;
+            /*MISRA*/
+        }
+	
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+	
+return state_0x08;
+	
 }
-
+#endif
 /*********************************************************************************************************************************
  Service name:                                         CanIf_SetPduMode
  Service ID[hex]:                                               0x09
