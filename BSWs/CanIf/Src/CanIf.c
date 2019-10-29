@@ -16,16 +16,6 @@
  ********************************************************************************************************************************/
   CanIf_NotifStatusType TxPduState  [CanIfMaxTxPduCfg];
  CanIf_NotifStatusType RxPduState[CanIfMaxRxPduCfg];
- bool CanIfState=false;
- 
- 
- 
- 
- 
- 
- 
- 
- 
 extern CanIf_ConfigType CanIf;
 
 static enum CanIfStateType
@@ -860,7 +850,7 @@ CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId){
 	
     CanIf_NotifStatusType state_0x07;
     state_0x07 = CANIF_NO_NOTIFICATION;
-    if (true == CanIfState)
+    if (CANIF_READY == CanIfState)
     {
         /*[SWS_CANIF_00331] d If parameter CanIfTxSduId of
         CanIf_ReadTxNotifStatus() is out of range or if no status information was
@@ -883,12 +873,16 @@ CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId){
         else
         {
             /*THE ERROR TO BE RAISED HERE*/
-            CanIfDevelopmentError = CANIF_E_INVALID_TXPDUID;
+#if(CanIfPublicDevErrorDetect == true)
+        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_INVALID_RXPDUID);
+#endif
         }
     }
     else
     {
-        CanIfDevelopmentError = CANIF_E_UNINIT;
+#if(CanIfPublicDevErrorDetect == true)
+        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_UNINIT);
+#endif
         /*MISRA*/
     }
 	
@@ -938,9 +932,10 @@ CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API (see ECUC_CanIf_00608).*/
 
 CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId){
 
+
         CanIf_NotifStatusType state_0x08;
         state_0x08 = CANIF_NO_NOTIFICATION;
-        if (true == CanIfState)
+        if (CANIF_READY == CanIfState)
         {
             /*[SWS_CANIF_00336] d If parameter CanIfRxSduId of
             CanIf_ReadRxNotifStatus() is out of range or if status for CanRxPduId
@@ -964,12 +959,17 @@ CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId){
             else
             {
                 /*THE ERROR TO BE RAISED HERE*/
-                CanIfDevelopmentError = CANIF_E_INVALID_RXPDUID;
+#if(CanIfPublicDevErrorDetect == true)
+        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_INVALID_RXPDUID);
+#endif
+
             }
         }
         else
         {
-            CanIfDevelopmentError = CANIF_E_UNINIT;
+#if(CanIfPublicDevErrorDetect == true)
+        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_UNINIT);
+#endif
             /*MISRA*/
         }
 	
