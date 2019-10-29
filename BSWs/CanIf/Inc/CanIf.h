@@ -36,6 +36,7 @@ CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId);
 Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeRequest);
 Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,CanIf_PduModeType* PduModePtr);
 Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId,uint16 BaudRateConfigID);
+Std_ReturnType Det_ReportError(uint16 ModuleId,uint8 InstanceId,uint8 ApiId,uint8 ErrorId);
 void CanIf_ControllerModeIndication(uint8 ControllerId,CanIf_ControllerModeType ControllerMode);
 void CanIf_ControllerBusOff(uint8 ControllerId);
 void CanIf_TxConfirmation(PduIdType CanTxPduId);

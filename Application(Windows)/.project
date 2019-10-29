@@ -46,11 +46,14 @@
 			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanIf/Gen/CanIf_Cfg.c</locationURI>
 		</link>
 		<link>
+<<<<<<< HEAD
 			<name>CanSM.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanSM/Src/CanSM.c</locationURI>
 		</link>
 		<link>
+=======
+>>>>>>> CanIf_SetControllerMode_Anani
 			<name>Can_Cfg.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Gen/Can_Cfg.h</locationURI>
@@ -71,11 +74,14 @@
 			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Inc/ComStack_Types.h</locationURI>
 		</link>
 		<link>
+<<<<<<< HEAD
 			<name>Det.c</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/BSWs/Det/Src/Det.c</locationURI>
 		</link>
 		<link>
+=======
+>>>>>>> CanIf_SetControllerMode_Anani
 			<name>Platform_Types.h</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Inc/Platform_Types.h</locationURI>

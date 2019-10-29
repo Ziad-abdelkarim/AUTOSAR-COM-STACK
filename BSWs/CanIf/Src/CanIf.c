@@ -14,6 +14,7 @@
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
+extern CanDriverStateType CanDriverState;
   CanIf_NotifStatusType TxPduState  [CanIfMaxTxPduCfg];
  CanIf_NotifStatusType RxPduState[CanIfMaxRxPduCfg];
 extern CanIf_ConfigType CanIf;
@@ -535,9 +536,149 @@ void CanIf_Init(const CanIf_ConfigType* ConfigPtr)
  the CAN controller mode.
  *******************************************************************************************************************************/
 
-Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,
-                                       CanIf_ControllerModeType ControllerMode)
-{
+Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeType ControllerMode){
+    Std_ReturnType Can_SetControllerModeReturn = E_OK;
+
+
+	/*
+	 * [SWS_CANIF_00311] d If parameter ControllerId of CanIf_SetControllerMode()
+       has an invalid value, the CanIf shall report development error code CANIF_E_PARAM_CONTROLLERID
+       to the Det_ReportError service of the DET module, when CanIf_SetControllerMode()
+       is called
+	 */
+    if(ControllerId >= NUMBER_OF_CONTROLLERS)
+    {
+#if(CanIfPublicDevErrorDetect== true)
+       Det_ReportError(Canif_ModuleID, , Canif_SetControllerModeId, CANIF_E_PARAM_CONTROLLERID);
+#endif
+       return E_NOT_OK;
+    }
+    else
+    {
+        /*MISRA*/
+    }
+
+
+    /*
+     * [SWS_CANIF_00311] d If parameter ControllerId of CanIf_SetControllerMode()
+       has an invalid value, the CanIf shall report development error code CANIF_E_PARAM_CONTROLLERID
+       to the Det_ReportError service of the DET module, when CanIf_SetControllerMode()
+       is called.
+     */
+    if((ControllerMode != CANIF_CS_STARTED)||(ControllerMode != CANIF_CS_STOPPED)||(ControllerMode != CANIF_CS_SLEEP))
+    {
+#if(CanIfPublicDevErrorDetect == ture)
+         Det_ReportError(Canif_ModuleID, 0, Canif_SetControllerModeId, CANIF_E_PARAM_CTRLMODE);
+#endif
+         return E_NOT_OK;
+    }
+    else
+    {
+        /*MISRA*/
+    }
+
+	
+    /*
+     * [SWS_CANIF_00312]  Caveats of CanIf_SetControllerMode():
+        � The CAN Driver module must be initialized after Power ON.
+        � The CAN Interface module must be initialized after Power ON.
+     */
+    if(CanIfState == CANIF_READY)
+    {
+
+        switch(ControllerMode)
+        {
+            /*
+             * [SWS_CANIF_00480] d If a CCMSM is in state CANIF_CS_STOPPED or CANIF_CS_STARTED
+               when CanIf_SetControllerMode(ControllerId, CANIF_CS_STOPPED) is called
+               with parameter ControllerId referencing that CCMSM, then CanIf shall call Can_SetControllerMode(CAN_T_STOP).
+             */
+            case CANIF_CS_STOPPED :
+            {
+                CanIf_SetPduMode(ControllerId, CANIF_OFFLINE);
+                /*
+                 * [SWS_CANIF_00487] If a CCMSM is in state CANIF_CS_SLEEP when CanIf_SetControllerMode(CANIF_CS_STOPPED)
+                 * is called with parameter ControllerId referencing that CCMSM,
+                   then CanIf shall call Can_SetControllerMode(Controller, CAN_T_WAKEUP).
+                 */
+                if(CanIfControllerState[ControllerId] == CANIF_CS_SLEEP)
+                {
+                    Can_SetControllerMode(ControllerId, CAN_T_WAKEUP);
+                }
+                else
+                {
+                    Can_SetControllerModeReturn = Can_SetControllerMode(ControllerId,CAN_T_STOP);
+                }
+                /*
+                 * [SWS_CANIF_00475] d If during function CanIf_SetControllerMode() the call of
+                   Can_SetControllerMode() returns with CAN_NOT_OK, CanIf_SetControllerMode()
+                   returns E_NOT_OK.
+                 */
+                if(Can_SetControllerModeReturn == E_NOT_OK)
+                {
+                    return E_NOT_OK;
+                }
+                else
+                {
+                    return E_OK;
+
+                }
+                break;
+            }
+            /*
+             * [SWS_CANIF_00481] d When CanIf_SetControllerMode(ControllerId, CANIF_CS_STARTED)
+               is called with parameter ControllerId referencing that CCMSM, then CanIf shall call
+               Can_SetControllerMode(Controller, CAN_T_START).
+             */
+            case CANIF_CS_STARTED :
+            {
+                CanIf_SetPduMode(ControllerId, CANIF_ONLINE);
+                Can_SetControllerMode(ControllerId, CAN_T_START);
+                /*
+                 * [SWS_CANIF_00475] If during function CanIf_SetControllerMode() the call of
+                   Can_SetControllerMode() returns with CAN_NOT_OK, CanIf_SetControllerMode()
+                   returns E_NOT_OK.
+                 */
+                if(Can_SetControllerModeReturn == E_NOT_OK)
+                {
+                    return E_NOT_OK;
+                }
+                else
+                {
+                    return E_OK;
+                }
+                break;
+            }
+            /*
+             * [SWS_CANIF_00482] d When CanIf_SetControllerMode(ControllerId, CANIF_CS_SLEEP)
+               is called with parameter ControllerId referencing that CCMSM, then CanIf shall call
+               Can_SetControllerMode(Controller, CAN_T_SLEEP).
+             */
+            case CANIF_CS_SLEEP :
+            {
+                CanIf_SetPduMode(ControllerId, CANIF_OFFLINE);
+                Can_SetControllerModeReturn = Can_SetControllerMode(ControllerId, CAN_T_SLEEP);
+                /*
+                 * [SWS_CANIF_00475] If during function CanIf_SetControllerMode() the call of
+                   Can_SetControllerMode() returns with CAN_NOT_OK, CanIf_SetControllerMode()
+                   returns E_NOT_OK.
+                 */
+                if(Can_SetControllerModeReturn == E_NOT_OK)
+                {
+                    return E_NOT_OK;
+                }
+                else
+                {
+                    return E_OK;
+                }
+                break;
+            }
+        }
+    }
+    else
+    {
+        /*MISRA*/
+    }
 
 }
 
@@ -555,10 +696,71 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,
  Description:
  This service reports about the current status of the requested CAN controller.
  *******************************************************************************************************************************/
-Std_ReturnType CanIf_GetControllerMode(
-        uint8 ControllerId, CanIf_ControllerModeType* ControllerModePtr)
-{
+Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeType* ControllerModePtr){
+	
+    /*
+     * [SWS_CANIF_00313] d If parameter ControllerId of CanIf_GetControllerMode()
+       has an invalid, the CanIf shall report development error code CANIF_E_PARAM_CONTROLLERID
+       to the Det_ReportError service of the DET, when CanIf_GetControllerMode()
+       is called.
+     */
+    if(ControllerId >= NUMBER_OF_CONTROLLERS)
+    {
+#if(CanIfPublicDevErrorDetect == true)
+         Det_ReportError(Canif_ModuleID, , Canif_SetControllerModeId, CANIF_E_PARAM_CONTROLLERID);
+#endif
+         return E_NOT_OK
+    }
+    else
+    {
+        /*MISRA*/
+    }
 
+
+    /*
+     * [SWS_CANIF_00656] d If parameter ControllerModePtr of CanIf_GetControllerMode()
+       has an invalid value, the CanIf shall report development error code CANIF_E_PARAM_POINTER
+       to the Det_ReportError service of the DET, when CanIf_GetControllerMode()
+       is called.
+     */
+    if(ControllerModePtr == NULL)
+    {
+#if (CanIfPublicDevErrorDetect == ture)
+         Det_ReportError(Canif_ModuleID, 0, Canif_GetControllerModeID, CANIF_E_PARAM_POINTER);
+#endif
+         return E_NOT_OK;
+    }
+    else
+    {
+        /*MISRA*/
+    }
+
+
+    /*
+     * [SWS_CANIF_00316] d Caveats of CanIf_GetControllerMode:
+        � The CanDrv must be initialized after Power ON.
+        � The CanIf must be initialized after Power ON.
+     */
+    if(CanIfState==CANIF_READY)
+    {
+
+        if ((CanIfControllerState[ControllerId] == CANIF_CS_STARTED) ||(CanIfControllerState[ControllerId] == CANIF_CS_STOPPED) ||CanIfControllerState[ControllerId] == CANIF_CS_SLEEP))
+        {
+            *ControllerModePtr = CanIfControllerState[ControllerId] ;
+            /* Controller mode request has been accepted.*/
+            return E_OK;
+        }
+        else
+        {
+            /* Controller mode request has not been accepted. */
+            return E_NOT_OK;
+        }
+    }
+    else
+    {
+        /*MISRA*/
+    }
+    return E_NOT_OK;
 }
 
 /*********************************************************************************************************************************
