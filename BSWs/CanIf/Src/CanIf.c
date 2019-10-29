@@ -14,7 +14,7 @@
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
-extern CanDriverStateType CanDriverState;
+
   CanIf_NotifStatusType TxPduState  [CanIfMaxTxPduCfg];
  CanIf_NotifStatusType RxPduState[CanIfMaxRxPduCfg];
 extern CanIf_ConfigType CanIf;
@@ -567,7 +567,7 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
      */
     if((ControllerMode != CANIF_CS_STARTED)||(ControllerMode != CANIF_CS_STOPPED)||(ControllerMode != CANIF_CS_SLEEP))
     {
-#if(CanIfPublicDevErrorDetect == ture)
+#if(CanIfPublicDevErrorDetect == true)
          Det_ReportError(Canif_ModuleID, 0, Canif_SetControllerModeId, CANIF_E_PARAM_CTRLMODE);
 #endif
          return E_NOT_OK;
@@ -601,7 +601,7 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
                  * is called with parameter ControllerId referencing that CCMSM,
                    then CanIf shall call Can_SetControllerMode(Controller, CAN_T_WAKEUP).
                  */
-                if(CanIfControllerState[ControllerId] == CANIF_CS_SLEEP)
+                if(CanIfControllerMode[ControllerId] == CANIF_CS_SLEEP)
                 {
                     Can_SetControllerMode(ControllerId, CAN_T_WAKEUP);
                 }
@@ -623,7 +623,7 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
                     return E_OK;
 
                 }
-                break;
+
             }
             /*
              * [SWS_CANIF_00481] d When CanIf_SetControllerMode(ControllerId, CANIF_CS_STARTED)
@@ -647,7 +647,7 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
                 {
                     return E_OK;
                 }
-                break;
+
             }
             /*
              * [SWS_CANIF_00482] d When CanIf_SetControllerMode(ControllerId, CANIF_CS_SLEEP)
@@ -671,12 +671,13 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
                 {
                     return E_OK;
                 }
-                break;
+
             }
         }
     }
     else
     {
+        return E_NOT_OK;
         /*MISRA*/
     }
 
@@ -709,7 +710,7 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
 #if(CanIfPublicDevErrorDetect == true)
          Det_ReportError(Canif_ModuleID, , Canif_SetControllerModeId, CANIF_E_PARAM_CONTROLLERID);
 #endif
-         return E_NOT_OK
+         return E_NOT_OK;
     }
     else
     {
@@ -725,7 +726,7 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
      */
     if(ControllerModePtr == NULL)
     {
-#if (CanIfPublicDevErrorDetect == ture)
+#if (CanIfPublicDevErrorDetect == true)
          Det_ReportError(Canif_ModuleID, 0, Canif_GetControllerModeID, CANIF_E_PARAM_POINTER);
 #endif
          return E_NOT_OK;
@@ -744,9 +745,9 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
     if(CanIfState==CANIF_READY)
     {
 
-        if ((CanIfControllerState[ControllerId] == CANIF_CS_STARTED) ||(CanIfControllerState[ControllerId] == CANIF_CS_STOPPED) ||CanIfControllerState[ControllerId] == CANIF_CS_SLEEP))
+        if ((CanIfControllerMode[ControllerId] == CANIF_CS_STARTED) ||(CanIfControllerMode[ControllerId] == CANIF_CS_STOPPED) ||(CanIfControllerMode[ControllerId] == CANIF_CS_SLEEP))
         {
-            *ControllerModePtr = CanIfControllerState[ControllerId] ;
+            *ControllerModePtr = CanIfControllerMode[ControllerId] ;
             /* Controller mode request has been accepted.*/
             return E_OK;
         }
