@@ -139,12 +139,16 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
        to the Det_ReportError service of the DET module, when CanIf_SetControllerMode()
        is called
 	 */
-    #if(ControllerId > NUMBER_OF_CONTROLLERS)
+    if(ControllerId > NUMBER_OF_CONTROLLERS)
     {
 
         return Det_ReportError(Canif_ModuleID, , Canif_SetControllerModeId, CANIF_E_PARAM_CONTROLLERID);
     }
-    #endif
+    else
+    {
+        /*MISRA*/
+    }
+
 
     /*
      * [SWS_CANIF_00311] d If parameter ControllerId of CanIf_SetControllerMode()
@@ -152,18 +156,22 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
        to the Det_ReportError service of the DET module, when CanIf_SetControllerMode()
        is called.
      */
-    #if((ControllerMode != CANIF_CS_STARTED)||(ControllerMode != CANIF_CS_STOPPED)||(ControllerMode != CANIF_CS_SLEEP))
+    if((ControllerMode != CANIF_CS_STARTED)||(ControllerMode != CANIF_CS_STOPPED)||(ControllerMode != CANIF_CS_SLEEP))
     {
         return Det_ReportError(Canif_ModuleID, 0, Canif_SetControllerModeId, CANIF_E_PARAM_CTRLMODE);
     }
-    #endif
+    else
+    {
+        /*MISRA*/
+    }
+
 	
     /*
      * [SWS_CANIF_00312]  Caveats of CanIf_SetControllerMode():
         • The CAN Driver module must be initialized after Power ON.
         • The CAN Interface module must be initialized after Power ON.
      */
-    #if((CCMSM.CM_stateMachine==CANIF_READY) && (CanDriverState ==CAN_READY))
+    if((CCMSM.CM_stateMachine==CANIF_READY) && (CanDriverState ==CAN_READY))
     {
         Switch(ControllerMode)
         {
@@ -254,7 +262,11 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
             }
         }
     }
-    #endif
+    else
+    {
+        /*MISRA*/
+    }
+
 }
 
 /*********************************************************************************************************************************
@@ -279,12 +291,16 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
        to the Det_ReportError service of the DET, when CanIf_GetControllerMode()
        is called.
      */
-    #if(ControllerId > NUMBER_OF_CONTROLLERS)
+    if(ControllerId > NUMBER_OF_CONTROLLERS)
     {
 
         return Det_ReportError(Canif_ModuleID, , Canif_SetControllerModeId, CANIF_E_PARAM_CONTROLLERID);
     }
-    #endif
+    else
+    {
+        /*MISRA*/
+    }
+
 
     /*
      * [SWS_CANIF_00656] d If parameter ControllerModePtr of CanIf_GetControllerMode()
@@ -292,18 +308,22 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
        to the Det_ReportError service of the DET, when CanIf_GetControllerMode()
        is called.
      */
-    #if(ControllerModePtr == NULL)
+    if(ControllerModePtr == NULL)
     {
         return Det_ReportError(Canif_ModuleID, 0, Canif_GetControllerModeID, CANIF_E_PARAM_POINTER);
     }
-    #endif
+    else
+    {
+        /*MISRA*/
+    }
+
 
     /*
      * [SWS_CANIF_00316] d Caveats of CanIf_GetControllerMode:
         • The CanDrv must be initialized after Power ON.
         • The CanIf must be initialized after Power ON.
      */
-    #if((CCMSM.CM_stateMachine==CANIF_READY) && (CanDriverState ==CAN_READY))
+    if((CCMSM.CM_stateMachine==CANIF_READY) && (CanDriverState ==CAN_READY))
     {
         if((CCMSM.CM_stateMachine= CANIF_UNINIT) || (CCMSM.CM_stateMachine = CANIF_READY))
         {
@@ -321,7 +341,10 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
         /* Controller mode request has been accepted.*/
             return E_OK;
     }
-    #endif
+    else
+    {
+        /*MISRA*/
+    }
     return E_NOT_OK;
 }
 
