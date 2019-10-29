@@ -1041,7 +1041,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId, CanIf_PduModeType PduModeReq
 	
 	
 	
-}
+
 
 /*********************************************************************************************************************************
  Service name:                                         CanIf_GetPduMode
@@ -1357,7 +1357,7 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
 	
 	
 	
-}
+
 
 
 
