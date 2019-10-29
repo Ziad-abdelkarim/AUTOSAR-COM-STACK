@@ -144,6 +144,9 @@ typedef struct {
     bool  CanControllerActivation;
     uint32  CanControllerBaseAddress ;
     CanControllerBaudrateConfig *CanControllerDefaultBaudrate;
+    uint8 CanTxProcessing;
+    uint8 CanRxProcessing;
+    uint8 CanBusOffProcessing;
 }CanController;
 
 
@@ -331,6 +334,6 @@ typedef enum {
     CAN_CS_STOPPED,
     CAN_CS_STARTED,
     CAN_CS_SLEEP
-}ControllerStateType;
+}CanControllerStateType;
 
 #endif /** (CAN_GENERALTYPES_H	) **/

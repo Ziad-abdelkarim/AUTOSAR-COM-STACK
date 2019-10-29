@@ -28,6 +28,8 @@ Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/sysctl.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h
+Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
+Can_PBcfg.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_PBcfg.c: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h: 
@@ -57,3 +59,5 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/sysctl.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h: 
+C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 

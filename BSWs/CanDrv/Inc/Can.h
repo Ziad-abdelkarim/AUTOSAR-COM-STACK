@@ -11,7 +11,7 @@ AUTOSAR Version:            4.2.2
 *********************************************************************************************************************************/
 #include "Can_GeneralTypes.h"
 #include "ComStack_Types.h"
-#include <CanIf.h>
+#include "CanIf.h"
 #include "Can_Cfg.h"
 
 /*******************************************************************************************************************************
@@ -43,7 +43,7 @@ AUTOSAR Version:            4.2.2
 #define   GET_ADDRESS_VAL(A,B)           *((volatile uint32_t *)((A)+(B)))
 #define    CLEAR_BIT(A,B,P)                    *((volatile uint32_t *)((A)+(B))) & (~(1 << P))
 #define    SET_BIT(A,B,P)                          *((volatile uint32_t *)((A)+(B)))|(1 << P))
-#define     status_Initialization   (GET_ADDRESS_VAL(cancontrollerbaseadress,CANCTL))&CAN_CTL_INIT
+#define     status_Initialization   (GET_ADDRESS_VAL(CanControllerBaseAddress,CANCTL))&CAN_CTL_INIT
 #define      GetBit(reg,n)              ((reg>>n)&1)
 /********************************************************************************************************************************/
 
@@ -63,6 +63,7 @@ Std_ReturnType Can_SetBaudrate( uint8 Controller, uint16 BaudRateConfigID );
 void Can_MainFunctionBusoff(void);
 void Can_MainFunction_Write(void);
 void Can_MainFunction_Read(void);
+void Can_ISRHandler(uint8 Controller);
 /********************************************************************************************************************************/
 #endif /* CAN_H */
 

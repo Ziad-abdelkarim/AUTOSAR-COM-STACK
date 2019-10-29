@@ -14,12 +14,16 @@ AUTOSAR Version:            4.2.2
 /*************************************************************************************
 **                                    Defines                                       **
 **************************************************************************************/
-#define Can0RxProcessing	INTERRUPT
-#define Can1RxProcessing	INTERRUPT
-#define Can0TxProcessing	INTERRUPT
-#define Can1TxProcessing	INTERRUPT
-#define Can0BusoffProcessing	INTERRUPT
-#define	Can1BusoffProcessing	INTERRUPT
+/**************************************************************************************************
+**
+Name:                                     CanDevErrorDetection
+Type:                                      EcucBooleanParamDef
+Description:            Switches the Default Error Tracer (Det) detection and notification ON or
+OFF.
+                                        true: enabled (ON).
+                                        false: disabled (OFF)                                  **
+**************************************************************************************************/
+#define CanDevErrorDetection    false
 /**************************************************************************************/
 
 extern Can_ConfigType Can;

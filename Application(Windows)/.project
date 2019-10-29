@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>CanIf_Test</name>
+	<name>ApplicationCanDRVTest</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -28,22 +28,22 @@
 		<link>
 			<name>Can.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanDrv/Src/Can.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Src/Can.c</locationURI>
 		</link>
 		<link>
 			<name>Can.h</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanDrv/Inc/Can.h</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Inc/Can.h</locationURI>
 		</link>
 		<link>
 			<name>CanIf.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanIf/Src/CanIf.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanIf/Src/CanIf.c</locationURI>
 		</link>
 		<link>
 			<name>CanIf_Cfg.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanIf/Gen/CanIf_Cfg.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanIf/Gen/CanIf_Cfg.c</locationURI>
 		</link>
 		<link>
 			<name>CanSM.c</name>
@@ -53,22 +53,22 @@
 		<link>
 			<name>Can_Cfg.h</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanDrv/Gen/Can_Cfg.h</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Gen/Can_Cfg.h</locationURI>
 		</link>
 		<link>
 			<name>Can_GeneralTypes.h</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanDrv/Inc/Can_GeneralTypes.h</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Inc/Can_GeneralTypes.h</locationURI>
 		</link>
 		<link>
 			<name>Can_PBcfg.c</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanDrv/Gen/Can_PBcfg.c</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Gen/Can_PBcfg.c</locationURI>
 		</link>
 		<link>
 			<name>ComStack_Types.h</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanDrv/Inc/ComStack_Types.h</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Inc/ComStack_Types.h</locationURI>
 		</link>
 		<link>
 			<name>Det.c</name>
@@ -78,12 +78,12 @@
 		<link>
 			<name>Platform_Types.h</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanDrv/Inc/Platform_Types.h</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Inc/Platform_Types.h</locationURI>
 		</link>
 		<link>
 			<name>Std_Types.h</name>
 			<type>1</type>
-			<locationURI>copy_PARENT/BSWs/CanDrv/Inc/Std_Types.h</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/CanDrv/Inc/Std_Types.h</locationURI>
 		</link>
 		<link>
 			<name>driverlib.lib</name>
@@ -100,10 +100,6 @@
 		<variable>
 			<name>TIVAWARE_INSTALL</name>
 			<value>file:/C:/ti/TivaWare_C_Series-2.1.4.178</value>
-		</variable>
-		<variable>
-			<name>copy_PARENT</name>
-			<value>file:/E:/Engineering/Graduation%20Project/Adaptive-Cruise-Control</value>
 		</variable>
 	</variableList>
 </projectDescription>
