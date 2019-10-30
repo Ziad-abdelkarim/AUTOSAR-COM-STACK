@@ -21,7 +21,7 @@ Type:                                    EcucBooleanParamDef
 Description: 				Selects whether the DLC check is supported.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPrivateDlcCheck	true
+#define CanIfPrivateDlcCheck	false
 /**************************************************************************************************
 **
 Name:                                CanIfPrivateSoftwareFilterType
@@ -92,7 +92,7 @@ Description: 				Enables and disables the API for reading the notification statu
 											receive L-PDUs.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadRxPduNotifyStatusApi	true
+#define CanIfPublicReadRxPduNotifyStatusApi	false
 /**************************************************************************************************
 **
 Name:                              CanIfPublicReadTxPduNotifyStatusApi
@@ -103,7 +103,7 @@ Description: 				Enables and disables the API for reading the notification statu
 											transmit L-PDUs.
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicReadTxPduNotifyStatusApi	true
+#define CanIfPublicReadTxPduNotifyStatusApi	false
 /**************************************************************************************************
 **
 Name:                              		CanIfPublicTxBuffering
@@ -114,7 +114,7 @@ Description: 				Enables and disables the buffering of transmit L-PDUs (rejected
 								CanDrv) within the CAN Interface module.	
 									True: Enabled False: Disabled								**
 **************************************************************************************************/
-#define CanIfPublicTxBuffering	true
+#define CanIfPublicTxBuffering	false
 /**************************************************************************************************
 **
 Name:                              CanIfPublicTxConfirmPollingSupport

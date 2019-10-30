@@ -9,27 +9,34 @@
  ********************************************************************************************************************************/
 #include "Can.h"
 #include "CanIf.h"
+#include "PduR.h"
 #include "CanSM.h"
 #include "Det.h"
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
-
-  CanIf_NotifStatusType TxPduState  [CanIfMaxTxPduCfg];
- CanIf_NotifStatusType RxPduState[CanIfMaxRxPduCfg];
 extern CanIf_ConfigType CanIf;
 
 static enum CanIfStateType
 {
     CANIF_UNINIT, CANIF_READY
 } CanIfState = CANIF_UNINIT;
-static CanIf_ControllerModeType CanIfControllerMode[NUMBER_OF_CONTROLLERS ] = {
+
+static CanIf_ControllerModeType CanIfControllerMode[NUMBER_OF_CONTROLLERS] = {
         CANIF_CS_UNINIT, CANIF_CS_UNINIT };
-static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS ];
-static const PduInfoType* RxBuffer[CanIfMaxRxPduCfg ];
+
+static CanIf_PduModeType CanIfPduMode[NUMBER_OF_CONTROLLERS];
+
+#if(CanIfPublicReadRxPduDataApi == true)
+static PduInfoType RxBuffer[CanIfMaxRxPduCfg];
+#endif
+
+#if(CanIfPublicReadTxPduNotifyStatusApi==true)
+CanIf_NotifStatusType TxPduState[CanIfMaxTxPduCfg];
+#endif
 
 #if(CanIfPublicReadRxPduNotifyStatusApi == true)
-static CanIf_NotifStatusType RxPduState[CanIfMaxRxPduCfg ];
+static CanIf_NotifStatusType RxPduState[CanIfMaxRxPduCfg];
 #endif
 
 #if(CanIfPublicTxBuffering == true)
@@ -60,11 +67,51 @@ static Std_ReturnType CanIf_TxBufferEnqueue(CanIfTxPduCfg* TxPdu,
                                             const Can_PduType* PduInfoPtr);
 static Std_ReturnType CanIf_TxBufferClear(uint8 ControllerId);
 #endif
-static Std_ReturnType CanIf_GetTxPdu(PduIdType CanIfTxSduId,
-                                     CanIfTxPduCfg* TxPduPtr);
-static Std_ReturnType CanIf_GetRxPdu(PduIdType CanIfRxSduId,
-                                     CanIfRxPduCfg* RxPduPtr);
 
+#if(CanIfPublicTxConfirmPollingSupport==true)
+static Std_ReturnType CanIf_TxConfirmationInfoClear(uint8 ControllerId);
+#endif
+static CanIfTxPduCfg* CanIf_GetTxPdu(PduIdType CanIfTxSduId);
+static CanIfRxPduCfg* CanIf_GetRxPdu(PduIdType CanIfRxSduId);
+
+/*********************************************************************************************************************************
+ Service name:                                       CanIf_TxConfirmationInfoClear
+ Parameters (in):                                   ControllerId-->Controller Index
+ Parameters (inout):                                          None
+ Parameters (out):                                            None
+ Return value:                                            Std_ReturnType
+ Description:                  This service clears Tx Confirmation Info of PDUs which belong to a certain controller
+ *******************************************************************************************************************************/
+#if(CanIfPublicTxConfirmPollingSupport==true)
+Std_ReturnType CanIf_TxConfirmationInfoClear(uint8 ControllerId)
+{
+   uint8 TxPduIndex;
+   if(ControllerId < NUMBER_OF_CONTROLLERS)
+   {
+      for(TxPduIndex = 0; TxPduIndex < CanIfMaxTxPduCfg; TxPduIndex++)
+      {
+         if(CanIf.CanIfInitCfg.CanIfTxPduCfg[TxPduIndex].CanIfTxPduBufferRef->CanIfBufferHthRef->CanIfHthCanCtrlIdRef->CanIfCtrlId == ControllerId)
+         {
+             TxPduState[TxPduIndex] = CANIF_NO_NOTIFICATION;
+         }
+         else
+         {
+
+         }
+      }
+
+      return E_OK;
+   }
+   else
+   {
+
+   }
+
+   return E_NOT_OK;
+}
+#endif
+
+#if(CanIfPublicTxBuffering == true)
 /*********************************************************************************************************************************
  Service name:                                       CanIf_TxBufferGet
  Parameters (in):                      CanIfTxPduBufferRefLocal-->Tx PDU reference to a CanIf buffer configuration.
@@ -95,13 +142,14 @@ Std_ReturnType CanIf_TxBufferGet(CanIfBufferCfg *CanIfTxPduBufferRefLocal,
                     == CanIfTxPduBufferRefLocal)
             {
                 CanIfBufferRefLocal = &CanIfTxBuffer[BufferIndex];
-                return E_OK;
             }
             else
             {
 
             }
         }
+
+        return E_OK;
     }
 
     return E_NOT_OK;
@@ -403,17 +451,16 @@ Std_ReturnType CanIf_TxBufferClear(uint8 ControllerId)
     return E_OK;
 
 }
-
+#endif
 /*********************************************************************************************************************************
  Service name:                                       CanIf_GetTxPdu
  Parameters (in):                        		CanIfTxSduId -->Id of the Tx PDU
- TxPduPtr --> Reference to the Tx PDU
  Parameters (inout):                                          None
  Parameters (out):                                            None
- Return value:                                            Std_ReturnType
+ Return value:                                            CanIfTxPduCfg*
  Description:								This service returns the Tx PDU with the desired ID
  *******************************************************************************************************************************/
-Std_ReturnType CanIf_GetTxPdu(PduIdType CanIfTxSduId, CanIfTxPduCfg* TxPduPtr)
+CanIfTxPduCfg* CanIf_GetTxPdu(PduIdType CanIfTxSduId)
 {
     uint32 TxPduIndex;
     if (CanIfTxSduId < CanIfMaxTxPduCfg)
@@ -423,8 +470,7 @@ Std_ReturnType CanIf_GetTxPdu(PduIdType CanIfTxSduId, CanIfTxPduCfg* TxPduPtr)
             if (CanIf.CanIfInitCfg.CanIfTxPduCfg[TxPduIndex].CanIfTxPduId
                     == CanIfTxSduId)
             {
-                TxPduPtr = &CanIf.CanIfInitCfg.CanIfTxPduCfg[TxPduIndex];
-                return E_OK;
+                return &CanIf.CanIfInitCfg.CanIfTxPduCfg[TxPduIndex];
             }
             else
             {
@@ -434,10 +480,10 @@ Std_ReturnType CanIf_GetTxPdu(PduIdType CanIfTxSduId, CanIfTxPduCfg* TxPduPtr)
     }
     else
     {
-        return E_NOT_OK;
+        return NULL;
     }
 
-    return E_NOT_OK;
+    return NULL;
 }
 
 /*********************************************************************************************************************************
@@ -449,7 +495,7 @@ Std_ReturnType CanIf_GetTxPdu(PduIdType CanIfTxSduId, CanIfTxPduCfg* TxPduPtr)
  Return value:                                            Std_ReturnType
  Description:                               This service returns the Rx PDU with the desired ID
  *******************************************************************************************************************************/
-Std_ReturnType CanIf_GetRxPdu(PduIdType CanIfRxSduId, CanIfRxPduCfg* RxPduPtr)
+CanIfRxPduCfg* CanIf_GetRxPdu(PduIdType CanIfRxSduId)
 {
     uint32 RxPduIndex;
     if (CanIfRxSduId < CanIfMaxRxPduCfg)
@@ -459,8 +505,7 @@ Std_ReturnType CanIf_GetRxPdu(PduIdType CanIfRxSduId, CanIfRxPduCfg* RxPduPtr)
             if (CanIf.CanIfInitCfg.CanIfRxPduCfg[RxPduIndex].CanIfRxPduId
                     == CanIfRxSduId)
             {
-                RxPduPtr = &CanIf.CanIfInitCfg.CanIfRxPduCfg[RxPduIndex];
-                return E_OK;
+                return &CanIf.CanIfInitCfg.CanIfRxPduCfg[RxPduIndex];
             }
             else
             {
@@ -470,10 +515,10 @@ Std_ReturnType CanIf_GetRxPdu(PduIdType CanIfRxSduId, CanIfRxPduCfg* RxPduPtr)
     }
     else
     {
-        return E_NOT_OK;
+
     }
 
-    return E_NOT_OK;
+    return NULL;
 }
 
 /********************************************************************************************************************************
@@ -511,6 +556,19 @@ void CanIf_Init(const CanIf_ConfigType* ConfigPtr)
             CanIfControllerMode[Iterator_1] = CANIF_CS_STOPPED;
             CanIfPduMode[Iterator_1] = CANIF_OFFLINE;
         }
+
+#if(CanIfPublicReadTxPduNotifyStatusApi == true)
+        for(Iterator_1 = 0; Iterator_1 < CanIfMaxTxPduCfg; Iterator_1++)
+        {
+            TxPduState[Iterator_1] = CANIF_NO_NOTIFICATION;
+        }
+#endif
+#if(CanIfPublicReadRxPduNotifyStatusApi == true)
+        for(Iterator_1 = 0; Iterator_1 < CanIfMaxRxPduCfg; Iterator_1++)
+        {
+            RxPduState[Iterator_1] = CANIF_NO_NOTIFICATION;
+        }
+#endif
 
         CanIfState = CANIF_READY;/*Initialization is done*/
     }
@@ -565,7 +623,7 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
        to the Det_ReportError service of the DET module, when CanIf_SetControllerMode()
        is called.
      */
-    if((ControllerMode != CANIF_CS_STARTED)||(ControllerMode != CANIF_CS_STOPPED)||(ControllerMode != CANIF_CS_SLEEP))
+    if((ControllerMode != CANIF_CS_STARTED)&&(ControllerMode != CANIF_CS_STOPPED)&&(ControllerMode != CANIF_CS_SLEEP))
     {
 #if(CanIfPublicDevErrorDetect == true)
          Det_ReportError(Canif_ModuleID, 0, Canif_SetControllerModeId, CANIF_E_PARAM_CTRLMODE);
@@ -680,7 +738,7 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
         return E_NOT_OK;
         /*MISRA*/
     }
-
+    return E_NOT_OK;
 }
 
 /*********************************************************************************************************************************
@@ -798,7 +856,9 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
     }
     else
     {
-        if (CanIf_GetTxPdu(CanIfTxSduId, TxPduPtr) == E_NOT_OK)
+        TxPduPtr = CanIf_GetTxPdu(CanIfTxSduId);
+
+        if (TxPduPtr == NULL)
         {
             return E_NOT_OK;
         }
@@ -967,7 +1027,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
                                    PduInfoType* CanIfRxInfoPtr)
 {
     CanIf_ControllerModeType CanIf_GetControllerModeReturn;
-    CanIfRxPduCfg *RxPduPtr = NULL;
+    CanIfRxPduCfg *RxPduPtr ;
 
     /*  CanIf must be initialized after Power ON */
     if (CanIfState == CANIF_UNINIT)
@@ -976,7 +1036,8 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
     }
     else
     {
-        if (CanIf_GetRxPdu(CanIfRxSduId, RxPduPtr) == E_NOT_OK)
+        RxPduPtr = CanIf_GetRxPdu(CanIfRxSduId);
+        if (RxPduPtr == NULL)
         {
             return E_NOT_OK;
         }
@@ -1003,8 +1064,8 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
                     /*[SWS_CANIF_00326]If parameter CanIfRxInfoPtr of CanIf_ReadRxPduData()
                      has an invalid value, CanIf shall report development error code CANIF_E_PARAM_POINTER
                      to the Det_ReportError service of the DET module, when CanIf_ReadRxPduData() is called.*/
-                    if ((CanIfRxInfoPtr->SduLength)
-                            > 8|| (CanIfRxInfoPtr->SduDataPtr)==NULL)
+                    if ((RxBuffer[CanIfRxSduId].SduLength)
+                            > 8|| (RxBuffer[CanIfRxSduId].SduDataPtr)== NULL)
                     {
 #if(CanIfPublicDevErrorDetect == true)
                         Det_ReportError(MODULE_ID, INSTANCE_ID, 0x06, CANIF_E_PARAM_POINTER);
@@ -1013,8 +1074,8 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
                     }
                     else
                     {
-
-                        CanIfRxInfoPtr = RxBuffer[CanIfRxSduId];
+                        *CanIfRxInfoPtr = RxBuffer[CanIfRxSduId];
+                        //UARTprintf("CanIf_ReadRxPduData %d\n", *(CanIfRxInfoPtr->SduDataPtr));
                         return E_OK;
                     }
                 }
@@ -1131,11 +1192,10 @@ return state_0x07;
 can be enabled or disabled at pre-compile time configuration globally by the parameter
 CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_API (see ECUC_CanIf_00608).*/
 
-#if (CanIfPublicReadRxPduNotifyStatusApi==true)
+#if(CanIfPublicReadRxPduNotifyStatusApi==true)
 
-CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId){
-
-
+CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId)
+{
         CanIf_NotifStatusType state_0x08;
         state_0x08 = CANIF_NO_NOTIFICATION;
         if (CANIF_READY == CanIfState)
@@ -1175,26 +1235,7 @@ CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId){
 #endif
             /*MISRA*/
         }
-	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	
 return state_0x08;
 	
 }
@@ -1247,6 +1288,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
              * [SWS_CANIF_00874] The service CanIf_SetPduMode() shall not accept any request and shall return E_NOT_OK,
              *  if the CCMSM referenced by ControllerId is notin state CANIF_CS_STARTED.
              */
+            Can_MainFunction_Mode();
             if (CanIf_GetControllerMode(ControllerId,
                                         &CanIfControllerModeLocal) == E_NOT_OK)
             {
@@ -1337,11 +1379,10 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,
             else
             {
                 *PduModePtr = CanIfPduMode[ControllerId];
+                return E_OK;
             }
         }
     }
-
-    return E_NOT_OK;
 }
 
 /*********************************************************************************************************************************
@@ -1401,8 +1442,7 @@ Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId, uint16 BaudRateConfigID)
 
 void CanIf_TxConfirmation(PduIdType CanTxPduId)
 {
-    CanIfTxPduCfg* txpduptr_0x13 = 0;
-    Can_ReturnType transmitcheck_0x13;
+    CanIfTxPduCfg *txpduptr_0x13 = NULL;
     CanIf_ControllerModeType CanIfControllerModeLocal;
     Can_PduType PduInfoPtr;
 
@@ -1427,7 +1467,8 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
         }
         else
         {
-            if (CanIf_GetTxPdu(CanTxPduId, txpduptr_0x13) == E_NOT_OK)
+            txpduptr_0x13 = CanIf_GetTxPdu(CanTxPduId) ;
+            if (txpduptr_0x13 == NULL)
             {
 
             }
@@ -1449,11 +1490,12 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
                     }
                     else
                     {
-                        CanIf_TxConfirmationInfo[CanTxPduId]= true;
+                        TxPduState[CanTxPduId]= CANIF_TX_RX_NOTIFICATION;
                     }
                 }
 #endif
 #if(CanIfPublicTxBuffering == true)
+                Can_ReturnType transmitcheck_0x13;
                 if (CanIf_TxBufferPeek(txpduptr_0x13, &PduInfoPtr) == E_NOT_OK)
                 {
 
@@ -1482,6 +1524,14 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
                  for the Transmitted L-PDU are set to TRUE, and if CanIf_TxConfirmation() is
                  called, CanIf shall set the notification status for the Transmitted L-PDU.
                  */
+                if(txpduptr_0x13->CanIfTxPduReadNotifyStatus == true)
+                {
+                    TxPduState[CanTxPduId]= CANIF_TX_RX_NOTIFICATION;
+                }
+                else
+                {
+
+                }
 #endif
                 /*
                  * [SWS_CANIF_00414] d Configuration of CanIf_TxConfirmation(): Each Tx L-
@@ -1492,12 +1542,12 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
 
                 if (txpduptr_0x13->CanIfTxPduUserTxConfirmationUL == PDUR)
                 {
-                    /* PDUR_TxConfirmation(CanTxPduId);*/
+                    PduR_CanIfTxConfirmation(CanTxPduId);
                 }
                 else if (txpduptr_0x13->CanIfTxPduUserTxConfirmationUL
                         == CAN_TP)
                 {
-                    /*CAN_TP_TxConfirmation(CanTxPduId);*/
+                    /*PduRCanTPTxConfirmation(CanTxPduId);*/
                 }
                 else
                 {
@@ -1596,7 +1646,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                                 /*[SWS_CANIF_00026] CanIf shall accept all received L-PDUs (see [SWS_CANIF_00390])
                                  with a DLC value equal or greater then the configured DLC value (see ECUC_CanIf_00599).
                                  c(SRS_CAN_01005)*/
-                                RxBuffer[RxPduPtr->CanIfRxPduId] = PduInfoPtr;
+                                RxBuffer[RxPduPtr->CanIfRxPduId] = *PduInfoPtr;
 
                                 /*[SWS_CANIF_00392] d If configuration parameters CANIF_PUBLIC_READRXPDU_NOTIFY_STATUS_(ECUC_CanIf_00608)
                                  and CANIF_RXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00595) for the Received L-PDU are set to TRUE,
@@ -1608,7 +1658,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                                     RxPduState[RxPduPtr->CanIfRxPduId] =
                                             CANIF_TX_RX_NOTIFICATION;
                                 }
-#elif(CanIfPublicReadRxPduNotifyStatusApi == false)
+#else
                                 if(RxPduPtr->CanIfRxPduReadNotifyStatus == false)
                                 {
                                     /*[SWS_CANIF_00056] d If CanIf accepts a L-PDU received via CanIf_RxIndication()
@@ -1646,7 +1696,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                                         /*[SWS_CANIF_00448] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to CAN_TP,
                                          CANIF_RXPDU_USERRXINDICATION_NAME must be CanTp_RxIndication.*/
 
-                                        CanTp_RxIndication(PduInfoPtr->CanIfRxPduId , PduInfoPtr);
+                                        //CanTp_RxIndication(RxPduPtr->CanIfRxPduId , PduInfoPtr);
 
                                         break;
                                         default:
@@ -1675,19 +1725,20 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                              and CANIF_RXPDU_READ_NOTIFYSTATUS (ECUC_CanIf_00595) for the Received L-PDU are set to TRUE,
                              and if CanIf_RxIndication() is called,the CanIf shall set the notification status for the Received L-PDU. c()*/
 
-                            RxBuffer[PduInfoPtr->CanIfRxPduId] = PduInfoPtr;
+                            RxBuffer[RxPduPtr->CanIfRxPduId] = *PduInfoPtr;
+                            UARTprintf("CanIf_RxIndication Message Received %d\n", *(PduInfoPtr->SduDataPtr));
 
 #if(CanIfPublicReadRxPduNotifyStatusApi == true)
-                            if(PduInfoPtr->CanIfRxPduReadNotifyStatus == true)
+                            if(RxPduPtr->CanIfRxPduReadNotifyStatus == true)
                             {
-                                RxPduState[PduInfoPtr->CanIfRxPduId] = CANIF_TX_RX_NOTIFICATION;
+                                RxPduState[RxPduPtr->CanIfRxPduId] = CANIF_TX_RX_NOTIFICATION;
                             }
                             else
                             {
 
                             }
-#elif(CanIfPublicReadRxPduNotifyStatusApi == false)
-                            if(PduInfoPtr->CanIfRxPduReadNotifyStatus == false)
+#else
+                            if(RxPduPtr->CanIfRxPduReadNotifyStatus == false)
                             {
                                 /*[SWS_CANIF_00056] d If CanIf accepts a L-PDU received via CanIf_RxIndication()
                                  during DLC check (see [SWS_CANIF_00390], [SWS_CANIF_00026]), CanIf shall
@@ -1708,7 +1759,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                                     /*[SWS_CANIF_00442] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to PDUR,
                                      CANIF_RXPDU_USERRXINDICATION_NAME must be PduR_CanIfRxIndication.*/
 
-                                    PduR_CanIfRxIndication(PduInfoPtr->CanIfRxPduId , PduInfoPtr);
+                                    PduR_CanIfRxIndication(RxPduPtr->CanIfRxPduId , PduInfoPtr);
 
                                     break;
 
@@ -1723,7 +1774,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                                     /*[SWS_CANIF_00448] d Configuration of <User_RxIndication>(): If CANIF_RXPDU_USERRXINDICATION_is set to CAN_TP,
                                      CANIF_RXPDU_USERRXINDICATION_NAME must be CanTp_RxIndication.*/
 
-                                    CanTp_RxIndication(PduInfoPtr->CanIfRxPduId , PduInfoPtr);
+                                    //CanTp_RxIndication(RxPduPtr->CanIfRxPduId , PduInfoPtr);
                                     break;
 
                                     default:
@@ -1826,8 +1877,8 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
              when callback CanIf_ControllerBusOff(ControllerId) is called. c()
              */
 
-#if CanIfPublicTxConfirmPollingSupport
-            CanIf_ClearTxConfirmationInfoBuffer();
+#if(CanIfPublicTxConfirmPollingSupport==true)
+            CanIf_TxConfirmationInfoClear(ControllerId);
 #endif
 
             /*
@@ -1934,12 +1985,15 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
                 {
                     case CANIF_CS_STARTED:
                         CanIfControllerMode[ControllerId] = CANIF_CS_STARTED;
+                        UARTprintf("CanIf_ControllerModeIndication CANIF_CS_STARTED\n");
                         break;
                     case CANIF_CS_STOPPED:
                         CanIfControllerMode[ControllerId] = CANIF_CS_STOPPED;
+                        UARTprintf("CanIf_ControllerModeIndication CANIF_CS_STOPPED\n");
                         break;
                     case CANIF_CS_SLEEP:
                         CanIfControllerMode[ControllerId] = CANIF_CS_SLEEP;
+                        UARTprintf("CanIf_ControllerModeIndication CANIF_CS_SLEEP\n");
                         break;
                     default:
                         break;
@@ -1950,5 +2004,7 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
     }
 }
 
+void main(void)
+{
 
-
+}

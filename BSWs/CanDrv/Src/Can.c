@@ -130,9 +130,8 @@ void Can_ISRHandler(uint8 Controller)
                                  Note: The service CanIf_TxConfirmation() is implemented in CanIf and called
                                  by the CanDrv after the CAN L-PDU has been TRANSMITted on the CAN network.
                                  */
-                                //CanIf_TxConfirmation(MessageObject[Controller][ui8NumberOfObjectHandler][ui8NumberOfObject].PduId);
                                 UARTprintf("CAN_ISRHandler Message Sent\n");
-
+                                CanIf_TxConfirmation(MessageObject[Controller][ui8NumberOfObjectHandler][ui8NumberOfObject].PduId);
                             }
                             else
                             {
@@ -165,8 +164,8 @@ void Can_ISRHandler(uint8 Controller)
                                 ReceiverMailBox.CanId = ReceivedMessage.ui32MsgID;
                                 ReceiverPduInfo.SduDataPtr = ReceivedMessage.pui8MsgData;
                                 ReceiverPduInfo.SduLength = ReceivedMessage.ui32MsgLen;
-                                //CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);
                                 UARTprintf("CAN_ISRHandler Message Received %d\n", *(ReceivedMessage.pui8MsgData));
+                                CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);
                             }
                             else
                             {
@@ -450,7 +449,7 @@ void Can_MainFunction_Write()
                                                  polling mode.*/
 
                                                 MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].Confirmation=true;
-                                                //CanIf_TxConfirmation(MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].PduId);
+                                                CanIf_TxConfirmation(MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].PduId);
                                                 UARTprintf("Can_MainFunction_Write Transmission Confirmed\n");
                                             }
                                             else
@@ -468,7 +467,7 @@ void Can_MainFunction_Write()
                                                  polling mode.*/
 
                                                 MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].Confirmation=true;
-                                                //CanIf_TxConfirmation(MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].PduId);
+                                                CanIf_TxConfirmation(MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].PduId);
                                                 UARTprintf("Can_MainFunction_Write Transmission Confirmed\n");
                                             }
                                             else
@@ -1230,7 +1229,7 @@ void Can_MainFunction_Read(void)
                                     ReceiverPduInfo.SduDataPtr = CanMsgReceived.pui8MsgData;
                                     ReceiverPduInfo.SduLength = CanMsgReceived.ui32MsgLen;
 
-                                    //CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);
+                                    CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);
                                     UARTprintf("Can_MainFunction_Read Message Received %d\n", *(CanMsgReceived.pui8MsgData));
 
 
@@ -1445,7 +1444,7 @@ void Can_MainFunction_Mode(void)
                          in case the state transition was triggered by function Can_SetControllerMode.
                          */
 
-                        //CanIf_ControllerModeIndication(Iteration, temp_case);
+                        CanIf_ControllerModeIndication(Iteration, temp_case);
                         switch(temp_case)
                         {
                         case CANIF_CS_STARTED:
@@ -1580,11 +1579,4 @@ Std_ReturnType Can_SetBaudrate(uint8 Controller, uint16 BaudRateConfigID)
         return E_NOT_OK;
     }
     return E_NOT_OK;
-}
-
-
-
-void main(void)
-{
-
 }

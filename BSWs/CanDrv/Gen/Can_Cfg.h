@@ -26,5 +26,4 @@ OFF.
 #define CanDevErrorDetection    false
 /**************************************************************************************/
 
-extern Can_ConfigType Can;
 #endif /** (CAN_CFG_H) **/
