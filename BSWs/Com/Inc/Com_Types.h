@@ -26,14 +26,6 @@ typedef uint16 Com_SignalIdType;
 /*The AUTOSAR COM module's signal group object identifier.*/
 typedef uint16 Com_SignalGroupIdType;
 
-/*The AUTOSAR COM I-PDU module's group object identifier.*/
-typedef uint16 Com_IpduGroupIdType;
-
-/*This type can be used to store a flag (bit) for each I-PDU group within the system. It is used for setting the activation
- *state and deadline monitoring state for I-PDU groups within one function call*/
-uint8 Com_IpduGroupVector[(ComSupportedIPduGroups-1)/8+1];
-
-
 /********************************************************************************************************************************
 
 Name:                                Com_StatusType
@@ -50,8 +42,8 @@ typedef enum{
     COM_UNINIT,
 
     /*The AUTOSAR COM module is initialized and usable.*/
-    COM_INIT
-}Com_StatusType;
+    COM_READY
+}Com_StateType;
 
 
 /********************************************************************************************************************************
@@ -239,13 +231,6 @@ typedef struct{
    /*Range from 0 to 3600*/
    const float32 ComTxModeRepetitionPeriod ;
 
-   /*Defines the period in seconds between the start of the I-PDU by Com_IpduGroupControl and the first transmission request
-    *in case ComTxModeMode is configured to PERIODIC or MIXED. In case of the mixed transmission mode only the periodic part is affected.
-    *In case ComTxModeTimeOffset is omitted or configured to 0, the first periodic transmission shall be transmitted within
-    *the next invocation of Com_MainFunctionTx.*/
-   /*Range from 0 to 3600*/
-   const float32 ComTxModeTimeOffset ;
-
    /*Defines the repetition period in seconds of the periodic transmission re-quests in case ComTxModeMode is configured to PERIODIC
     * or MIXED. In case of the mixed transmission mode only the periodic part is affected.*/
    /*Range: from 0 to 3600*/
@@ -301,17 +286,6 @@ typedef struct{
 
     /*The referenced transmission mode object that is used when the filtering state for this I-PDU evaluates to true.*/
     Com_TxModeTrueType ComTxModeTrue;
-
-
-    /*Defines the Minimum Delay Time (MDT) between successive transmissions of this I-PDU in seconds. The MDT is independent of
-     *the possible different transmission modes. There is only one minimum delay time parameter for one I-PDU. The minimum delay
-     *timer is not reset by changing the transmission mode. Hence, it is not allowed to violate the minimum delay time by
-     *transmission mode changes. It is not possible to monitor the minimum delay time for I-PDUs that are requested using the
-     *transmission Com_TriggerTransmit API.*/
-    /*Range: from 0 to 3600 */
-    const float32 ComMinimumDelayTime;
-
-
 
 }Com_TxIPduType;
 
@@ -388,31 +362,13 @@ typedef struct{
      *for this signal (group).*/
     boolean ComInitialValueOnly;
 
-    /*Defines whether the uint8-array based access shall be used for this Com-SignalGroup.*/
-    boolean ComSignalGroupArrayAccess;
-
     /*The numerical value used as the ID.For signals it is required by the API calls Com_UpdateShadowSignal,
      *Com_ReceiveShadowSignal and Com_InvalidateShadowSignal. For sig-nals groups it is required by the Com_SendSignalGroup
      *and Com_ReceiveSignalGroup calls.*/
      uint16 ComHandleId ;
 
-    /*Defines the length of the first deadline monitoring timeout period in seconds. This timeout is used immediately
-     *after start (or restart) of the dead-line monitoring service. The timeout period of the successive periods is
-     *configured by ECUC_Com_00263.*/
-    /*Range: from 0 to 3600*/
-     float32 ComFirstTimeout;
-
-    /*Defines the length of the deadline monitoring timeout period in seconds. The period for the first timeout
-     * period can be configured separately by*/
-     float32 EcucFloatParamDef;
-
-    /*Defines the length of the deadline monitoring timeout period in seconds. The period for the first timeout period
-     *can be configured separately by*/
-    /*Range: From 0 to 3600*/
-     float32 ComTimeout ;
-
     Com_TransferPropertyType ComTransferProperty;
-    Com_GroupSignalType ComGroupSignal[ComMaxGroupSignalCnt];
+    Com_GroupSignalType* ComGroupSignalRef[ComMaxGroupSignalCnt];
 
 }Com_SignalGroupType;
 
@@ -441,10 +397,6 @@ typedef struct{
      *If this parameter is omitted no notification shall take place.*/
     void (* ComNotification) (void);
 
-    /*On sender side: Name of Com_CbkTxTOut callback function to be called.
-     *On receiver side: Name of Com_CbkRxTOut callback function to be called.*/
-    void (* ComTimeoutNotification )(void);
-
 
     /*Bit position of update-bit inside I-PDU.If this attribute is omitted then there is no update-bit.
      *This setting must be consistently on sender and on receiver side. Range: 0..63 for CAN and LIN,
@@ -470,15 +422,6 @@ typedef struct{
      * For ComSignalTypes FLOAT32 and FLOAT64 the size is already defined by the signal type and therefore may be omitted.*/
     uint8 ComBitSize;
 
-    /*Defines the length of the first deadline monitoring timeout period in se-conds. This timeout is used immediately after
-     *start (or restart) of the dead-line monitoring service. The timeout period of the successive periods is configured by
-     *start ECUC_Com_00263.*/
-    float32 ComFirstTimeout;
-
-    /*Defines the length of the deadline monitoring timeout period in seconds.
-     *the period for the first timeout period can be configured separately by ECUC_Com_00183.*/
-    float32 ComTimeout;
-
 }Com_SignalType;
 
 
@@ -499,14 +442,8 @@ typedef struct{
 
     Com_TxIPduType ComTxIPdu;
 
-    Com_SignalGroupType * ComIPduSignalGroupRef;
-    Com_SignalType * ComIPduSignalRef;
-
-    /*Defines for I-PDUs with ComIPduType NORMAL: If the underlying IF-module supports cancellation of transmit requests.
-      Defines for I-PDUs with ComIPduType TP: If the underlying TP-module supports RX and TX cancellation of ongoing requests.*/
-    /*dependency: This parameter shall not be set to true if ComCancellation-Support is set to false*/
-    boolean ComIPduCancellationSupport;
-
+    Com_SignalGroupType * ComIPduSignalGroupRef[ComMaxSignalGroupCnt];
+    Com_SignalType * ComIPduSignalRef[ComMaxSignalCnt];
 
     /*The numerical value used as the ID of this I-PDU. The ComIPduHandleId is required by the API calls Com_RxIndication,
      *Com_TpRxIndication Com_StartOfReception and Com_CopyRxData to receive I-PDUs from the PduR (ComIP-duDirection: Receive),
@@ -536,7 +473,7 @@ typedef struct{
     Com_IPduType ComIPdu[ComMaxIPduCnt];
     Com_SignalGroupType ComSignalGroup[ComMaxSignalGroupCnt];
     Com_SignalType ComSignal[ComMaxSignalCnt];
-
+	Com_GroupSignalType ComGroupSignal[ComMaxGroupSignalCnt];
 
 }Com_ConfigType;
 
@@ -553,8 +490,6 @@ Description:          This container contains the configuration parameters and s
 typedef struct {
     Com_ConfigType ComConfig;
 }Com_Type;
-
-
 
 
 #endif /* COM_TYPES_H_ */

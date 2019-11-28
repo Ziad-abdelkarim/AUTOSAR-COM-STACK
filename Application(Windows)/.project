@@ -66,9 +66,19 @@
 			<locationURI>copy_PARENT/BSWs/CanDrv/Gen/Can_PBcfg.c</locationURI>
 		</link>
 		<link>
+			<name>Com.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/Com/Src/Com.c</locationURI>
+		</link>
+		<link>
 			<name>ComStack_Types.h</name>
 			<type>1</type>
 			<locationURI>copy_PARENT/BSWs/CanDrv/Inc/ComStack_Types.h</locationURI>
+		</link>
+		<link>
+			<name>Com_Cfg.c</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/BSWs/Com/Gen/Com_Cfg.c</locationURI>
 		</link>
 		<link>
 			<name>Det.c</name>
