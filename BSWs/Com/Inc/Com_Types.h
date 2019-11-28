@@ -326,6 +326,8 @@ typedef struct{
 
     Com_SignalEndiannessType ComSignalEndianness;
     Com_SignalTypeType ComSignalType;
+	
+	uint32 *ComBufferRef;
 
 
 }Com_GroupSignalType;
@@ -421,6 +423,8 @@ typedef struct{
     /*Size in bits, for integer signal types. For ComSignalType UINT8_N and UINT8_DYN the size shall be configured by ComSignalLength.
      * For ComSignalTypes FLOAT32 and FLOAT64 the size is already defined by the signal type and therefore may be omitted.*/
     uint8 ComBitSize;
+	
+	uint32* ComBufferRef;
 
 }Com_SignalType;
 
@@ -453,6 +457,8 @@ typedef struct{
      *the PduId passed to the Tx-I-PDU-callout configured with ComIPduCallout and/or ComIPduTrigger-TransmitCallout.*/
     /*Range: from 0 to 3600*/
     uint16 ComIPduHandleId;
+	
+	uint8* ComBufferRef;
 
 }Com_IPduType;
 
