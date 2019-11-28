@@ -11,7 +11,8 @@ AUTOSAR Version:          								  4.2.2
 **                                                                        Defines                                                                                **
 ********************************************************************************************************************************/
 
-#define ComMaxSignalGrpCnt   1
+#define ComMaxSignalGroupCnt   1
+#define ComMaxGroupSignal		1
 #define ComMaxSignalCnt   2
 #define COMMINIMUMDELAYTIME (float32)0.5
 

@@ -412,7 +412,7 @@ typedef struct{
      float32 ComTimeout ;
 
     Com_TransferPropertyType ComTransferProperty;
-    Com_GroupSignalType ComGroupSignal;
+    Com_GroupSignalType ComGroupSignal[ComMaxGroupSignalCnt];
 
 }Com_SignalGroupType;
 
@@ -534,7 +534,7 @@ Description:          This container contains the configuration parameters and s
 *********************************************************************************************************************************/
 typedef struct{
     Com_IPduType ComIPdu[ComMaxIPduCnt];
-    Com_SignalGroupType ComSignalGroup[ComMaxSignalGrpCnt];
+    Com_SignalGroupType ComSignalGroup[ComMaxSignalGroupCnt];
     Com_SignalType ComSignal[ComMaxSignalCnt];
 
 
