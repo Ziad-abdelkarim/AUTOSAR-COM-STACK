@@ -680,54 +680,137 @@ void Com_TxConfirmation(PduIdType TxPduId)
 *******************************************************************************************************************************/
 void Com_MainFunctionTx(void)
 {
+    uint8 IPduIdIndex;
 
+	ComIPdu_type *ComIPduLoc;
+	ComTeamIPdu_type *ComTeamIPduLoc;
+	uint8 ComTeamTxIPduNumberOfRepetitionsLoc;
+	uint8 ComTeamTxModeRepetitionPeriodLoc;
+	uint8 ComTeamTxModeTimePeriodLoc;
+    
+	for ( IPduIdIndex = 0; IPduIdIndex < COM_MAX_IPDU_CNT; IPduIdIndex++)
+	{
+		
+		ComIPduLoc =&Com.ComConfig.ComIPdu[IPduIdIndex]
+		ComTeamIPduLoc = &ComTeamConfig.ComTeamIPdu[IPduIdIndex];
+		ComTeamTxIPduNumberOfRepetitionsLoc = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions;
+		ComTeamTxModeRepetitionPeriodLoc    = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod; 
+		ComTeamTxModeTimePeriodLoc          = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod;
+		
+		/* check if  IPdu Direction should be transmitted */
+		if (ComIPduLoc->ComIPduDirection == SEND) 
+		{/* check If IPDU has periodic transmission mode*/
+			if (ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == PERIODIC)
+			{
+				if(ComTeamTxModeTimePeriodLoc > 0)
+					{
+						ComTeamTxModeTimePeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
+					}
+				else if(ComTeamTxModeTimePeriodLoc <= 0)
+				{
+					if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
+					{   /*Reset periodic timer.*/
+						ComTeamTxModeTimePeriodLoc = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
+					}
+					else
+					{
+						/*misra*/
+					}						
+				}
+				else
+				{
+						/*misra*/
+				}						
+			}/* check If IPDU has DIRECT transmission mode*/
+			else if (ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT)
+			{
+				if (ComTeamTxIPduNumberOfRepetitionsLoc > 0) 
+				{
+					if(ComTeamTxModeTimePeriodLoc > 0)
+					{
+						ComTeamTxModeTimePeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
+					}
+				    else if(ComTeamTxModeTimePeriodLoc <= 0)
+				    {
+						if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
+					    {   /*Reset periodic timer.*/
+							ComTeamTxModeTimePeriodLoc = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
+							ComTeamTxIPduNumberOfRepetitionsLoc--;
+						}
+						else
+						{
+							/*misra*/
+						}						
+				    }
+					else
+					{
+						/*misra*/
+					}
+				}
+				else
+				{
+				 /*misra*/
+				}		
+			}/* check If IPDU has MIXED transmission mode*/
+            else if (ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED)
+			{    /*it time for a direct transmission*/
+				if (ComTeamTxIPduNumberOfRepetitionsLoc > 0) 
+				{
+					if(ComTeamTxModeTimePeriodLoc > 0)
+					{
+						ComTeamTxModeTimePeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
+					}
+				    else if(ComTeamTxModeTimePeriodLoc <= 0)
+				    {
+						if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
+					    {   /*Reset periodic timer.*/
+							ComTeamTxModeTimePeriodLoc = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
+							ComTeamTxIPduNumberOfRepetitionsLoc--;
+						}
+						else
+						{
+							/*misra*/
+						}						
+				    }
+					else
+					{
+						/*misra*/
+					}
+				} /*it time for a periodic transmission*/
+				else
+				{
+					if(ComTeamTxModeTimePeriodLoc > 0)
+					{
+						ComTeamTxModeTimePeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
+					}
+					else if(ComTeamTxModeTimePeriodLoc <= 0)
+					{
+						if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
+						{   /*Reset periodic timer.*/
+						ComTeamTxModeTimePeriodLoc = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
+						}
+						else
+						{
+						/*misra*/
+						}						
+					}
+					else
+					{
+						/*misra*/
+					}	
+				}		
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+			}/* The IDPU has NONE transmission mode*/
+			else 
+			{
+				/* Don't send!*/
+			}					
+		}
+		else
+		{
+		 /*IPdu Direction is not send*/	
+		}	
+	}
    return ;
 }
 
