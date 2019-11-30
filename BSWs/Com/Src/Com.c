@@ -57,17 +57,17 @@ void Com_WriteSignalToIPdu(Com_SignalIdType SignalId, void *SignalDataPtr)
 					/* Write data from signal buffer to IPdu*/
 					for(BitIndex = 0; BitIndex < ComSignalLocal->ComBitSize; BitIndex++)
 					{
-					   if((*(ComSignalLocal->ComBufferRef) >> (ComSignalLocal->ComBitSize - BitIndex - 1)) & 1)
+					   if((*(ComSignalLocal->ComBufferRef) >> BitIndex) & 1)
 					   {
-						   ComIPduLocal->ComBufferRef[(BitIndex + ComSignalLocal->ComBitPosition) / 8] |= 1 << (7 - ((BitIndex + ComSignalLocal->ComBitPosition)%8));
+						   ComIPduLocal->ComBufferRef[(BitIndex + ComSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex + ComSignalLocal->ComBitPosition)%8);
 					   }
 					   else
 					   {
-						   ComIPduLocal->ComBufferRef[(BitIndex + ComSignalLocal->ComBitPosition) / 8] &= ~(1 << (7 - ((BitIndex + ComSignalLocal->ComBitPosition)%8)));
+						   ComIPduLocal->ComBufferRef[(BitIndex + ComSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex + ComSignalLocal->ComBitPosition)%8));
 					   }
 					}
 					/*Set update bit*/ 
-					ComIPduLocal->ComBufferRef[ComSignalLocal->UpdateBitPosition / 8] |= (1<<(7 - (ComSignalLocal->UpdateBitPosition%8)));
+					ComIPduLocal->ComBufferRef[ComSignalLocal->UpdateBitPosition / 8] |= 1 << (ComSignalLocal->UpdateBitPosition%8);
 					
 					return;
 				}
@@ -107,13 +107,13 @@ void Com_ReadSignalFromIPdu(Com_SignalIdType SignalId, void* SignalDataPtr)
 					/* Write data from IPdu buffer to Signal buffer*/
 					for(BitIndex = ComSignalLocal->ComBitPosition; BitIndex < ComSignalLocal->ComBitPosition + ComSignalLocal->ComBitSize; BitIndex++)
 					{
-					   if((ComIPduLocal->ComBufferRef[BitIndex / 8] >> (7 - (BitIndex % 8))) & 1)
+					   if((ComIPduLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
 					   {
-						   ComSignalLocal->ComBufferRef |= (1 << (ComSignalLocal->ComBitSize + ComSignalLocal->ComBitPosition - BitIndex - 1));
+						   *(ComSignalLocal->ComBufferRef) |= 1 << (BitIndex - ComSignalLocal->ComBitPosition);
 					   }
 					   else
 					   {
-						   ComSignalLocal->ComBufferRef &= ~(1 << (ComSignalLocal->ComBitSize + ComSignalLocal->ComBitPosition - BitIndex - 1));
+						   *(ComSignalLocal->ComBufferRef) &= ~(1 << (BitIndex - ComSignalLocal->ComBitPosition));
 					   }
 					}
 
@@ -161,17 +161,17 @@ void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
 						/* Write data from signal buffer to IPdu*/
 						for(BitIndex = 0; BitIndex < ComGroupSignalLocal->ComBitSize; BitIndex++)
 						{
-							if((*(ComGroupSignalLocal->ComBufferRef) >> (ComGroupSignalLocal->ComBitSize - BitIndex - 1)) & 1)
+							if((*(ComGroupSignalLocal->ComBufferRef) >> BitIndex) & 1)
 							{
-								ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] |= 1 << (7 - ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8));
+								ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8);
 							}
 							else
 							{
-								ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << (7 - ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8)));
+								ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8));
 							}
 						}
 						/*Set update bit*/ 
-						ComIPduLocal->ComBufferRef[ComGroupSignalLocal->UpdateBitPosition / 8] |= (1<<(7 - (ComGroupSignalLocal->UpdateBitPosition%8)));
+						ComIPduLocal->ComBufferRef[ComGroupSignalLocal->UpdateBitPosition / 8] |= 1 << (ComGroupSignalLocal->UpdateBitPosition % 8);
 						
 						return;
 					}
@@ -214,13 +214,13 @@ void Com_CopySignalGroupToShadowBuffer(Com_SignalGroupIdType SignalGroupId)
 						/* Write data from signal buffer to IPdu*/
 						for(BitIndex = ComGroupSignalLocal->ComBitPosition; BitIndex < ComGroupSignalLocal->ComBitPosition + ComGroupSignalLocal->ComBitSize; BitIndex++)
 						{
-							if((ComIPduLocal->ComBufferRef[BitIndex / 8] >> (7 - (BitIndex % 8))) & 1)
+							if((ComIPduLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
 						    {
-							   ComGroupSignalLocal->ComBufferRef |= (1 << (ComGroupSignalLocal->ComBitSize + ComGroupSignalLocal->ComBitPosition - BitIndex - 1));
+							   *(ComGroupSignalLocal->ComBufferRef) |= 1 << (BitIndex - ComGroupSignalLocal->ComBitPosition);
 						    }
 						   else
 						    {
-							   ComGroupSignalLocal->ComBufferRef &= ~(1 << (ComGroupSignalLocal->ComBitSize + ComGroupSignalLocal->ComBitPosition - BitIndex - 1));
+							   *(ComGroupSignalLocal->ComBufferRef) &= ~(1 << (BitIndex - ComGroupSignalLocal->ComBitPosition));
 						    }
 						}	
 					}
@@ -763,12 +763,12 @@ void Com_MainFunctionRx(void)
 						ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
 						
 						/* Check if update bit is set*/
-						if(Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (7 - (ComUpdateBitPositionLocal % 8))))
+						if(Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
 						{
 							/* Notify RTE */
 							Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex]->ComNotification();
 							/* Clear update bit */
-							Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (7 - (ComUpdateBitPositionLocal % 8)));
+							Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
 						}
 						else
 						{
@@ -781,12 +781,12 @@ void Com_MainFunctionRx(void)
 						ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
 						
 						/* Check if update bit is set*/
-						if(Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (7 - (ComUpdateBitPositionLocal % 8))))
+						if(Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
 						{
 							/* Notify RTE */
 							Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComNotification();
 							/* Clear update bit */
-							Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (7 - (ComUpdateBitPositionLocal % 8)));
+							Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
 						}
 						else
 						{
