@@ -35,10 +35,10 @@ void Com_WriteSignalToIPdu(Com_SignalIdType SignalId, void *SignalDataPtr)
 	Com_SignalType *ComSignalLocal;
 	Com_IPduType *ComIPduLocal;
 	uint8 ComIPduIndex, ComSignalIndex, BitIndex;
-	
+
 	/* Check that the signal ID is a valid ID*/
 	if(SignalId < ComMaxSignalCnt)
-	{	
+	{
 		/* Find the IPdu which contains this signal */
 		for(ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt; ComIPduIndex++)
 		{
@@ -50,10 +50,10 @@ void Com_WriteSignalToIPdu(Com_SignalIdType SignalId, void *SignalDataPtr)
 					ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
 					/*Get Signal*/
 					ComSignalLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex];
-					
+
 					/*Copy signal to signal buffer*/
 					memcpy(ComSignalLocal->ComBufferRef, SignalDataPtr, ComSignalLocal->ComSignalLength);
-					
+
 					/* Write data from signal buffer to IPdu*/
 					for(BitIndex = 0; BitIndex < ComSignalLocal->ComBitSize; BitIndex++)
 					{
@@ -66,14 +66,14 @@ void Com_WriteSignalToIPdu(Com_SignalIdType SignalId, void *SignalDataPtr)
 						   ComIPduLocal->ComBufferRef[(BitIndex + ComSignalLocal->ComBitPosition) / 8] &= ~(1 << (7 - ((BitIndex + ComSignalLocal->ComBitPosition)%8)));
 					   }
 					}
-					/*Set update bit*/ 
+					/*Set update bit*/
 					ComIPduLocal->ComBufferRef[ComSignalLocal->UpdateBitPosition / 8] |= (1<<(7 - (ComSignalLocal->UpdateBitPosition%8)));
-					
+
 					return;
 				}
 				else
 				{
-					
+
 				}
 			}
 		}
@@ -88,7 +88,7 @@ void Com_ReadSignalFromIPdu(Com_SignalIdType SignalId, void* SignalDataPtr)
 	Com_SignalType *ComSignalLocal;
 	Com_IPduType *ComIPduLocal;
 	uint8 ComIPduIndex, ComSignalIndex, BitIndex;
-	
+
 	/* Check that the signal ID is a valid ID*/
 	if(SignalId < ComMaxSignalCnt)
 	{
@@ -103,7 +103,7 @@ void Com_ReadSignalFromIPdu(Com_SignalIdType SignalId, void* SignalDataPtr)
 					ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
 					/*Get Signal*/
 					ComSignalLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex];
-					
+
 					/* Write data from IPdu buffer to Signal buffer*/
 					for(BitIndex = ComSignalLocal->ComBitPosition; BitIndex < ComSignalLocal->ComBitPosition + ComSignalLocal->ComBitSize; BitIndex++)
 					{
@@ -118,20 +118,20 @@ void Com_ReadSignalFromIPdu(Com_SignalIdType SignalId, void* SignalDataPtr)
 					}
 
 					return;
-					
+
 				}
 				else
 				{
-					
+
 				}
 			}
-			
+
 			SignalDataPtr = ComSignalLocal->ComBufferRef;
 		}
 	}
 	else
 	{
-		
+
 	}
 }
 
@@ -140,7 +140,7 @@ void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
 	uint8 ComIPduIndex, ComSignalGroupIndex, ComGroupSignalIndex, BitIndex;
 	Com_GroupSignalType* ComGroupSignalLocal;
 	Com_IPduType* ComIPduLocal;
-	
+
 	if(SignalGroupId < ComMaxSignalGroupCnt)
 	{
 		/* Find the IPdu which contains this signal */
@@ -152,12 +152,12 @@ void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
 				{
 					/* Get IPdu */
 					ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
-					
+
 					for(ComGroupSignalIndex = 0; Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex] != NULL; ComGroupSignalIndex++)
 					{
 						/*Get Group Signal*/
 						ComGroupSignalLocal = Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex];
-					
+
 						/* Write data from signal buffer to IPdu*/
 						for(BitIndex = 0; BitIndex < ComGroupSignalLocal->ComBitSize; BitIndex++)
 						{
@@ -170,9 +170,9 @@ void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
 								ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << (7 - ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8)));
 							}
 						}
-						/*Set update bit*/ 
+						/*Set update bit*/
 						ComIPduLocal->ComBufferRef[ComGroupSignalLocal->UpdateBitPosition / 8] |= (1<<(7 - (ComGroupSignalLocal->UpdateBitPosition%8)));
-						
+
 						return;
 					}
 				}
@@ -184,7 +184,7 @@ void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
 	}
 	else
 	{
-		
+
 	}
 }
 
@@ -193,7 +193,7 @@ void Com_CopySignalGroupToShadowBuffer(Com_SignalGroupIdType SignalGroupId)
 	uint8 ComIPduIndex, ComSignalGroupIndex, ComGroupSignalIndex, BitIndex;
 	Com_GroupSignalType* ComGroupSignalLocal;
 	Com_IPduType* ComIPduLocal;
-	
+
 	if(SignalGroupId < ComMaxSignalGroupCnt)
 	{
 		/* Find the IPdu which contains this signal */
@@ -205,12 +205,12 @@ void Com_CopySignalGroupToShadowBuffer(Com_SignalGroupIdType SignalGroupId)
 				{
 					/* Get IPdu */
 					ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
-					
+
 					for(ComGroupSignalIndex = 0; Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex] != NULL; ComGroupSignalIndex++)
 					{
 						/*Get Group Signal*/
 						ComGroupSignalLocal = Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex];
-					
+
 						/* Write data from signal buffer to IPdu*/
 						for(BitIndex = ComGroupSignalLocal->ComBitPosition; BitIndex < ComGroupSignalLocal->ComBitPosition + ComGroupSignalLocal->ComBitSize; BitIndex++)
 						{
@@ -222,9 +222,9 @@ void Com_CopySignalGroupToShadowBuffer(Com_SignalGroupIdType SignalGroupId)
 						    {
 							   ComGroupSignalLocal->ComBufferRef &= ~(1 << (ComGroupSignalLocal->ComBitSize + ComGroupSignalLocal->ComBitPosition - BitIndex - 1));
 						    }
-						}	
+						}
 					}
-				}	
+				}
 				else
 				{
 				}
@@ -484,14 +484,14 @@ void Com_UpdateShadowSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 			}
 			else
 			{
-				
+
 			}
 		}
-		
+
 	}
 	else
 	{
-		
+
 	}
 }
 
@@ -523,13 +523,13 @@ void Com_ReceiveShadowSignal(Com_SignalIdType SignalId, void* SignalDataPtr)
 			}
 			else
 			{
-				
+
 			}
 		}
 	}
 	else
 	{
-		
+
 	}
 }
 
@@ -761,7 +761,7 @@ void Com_MainFunctionRx(void)
 					for(ComSignalIndex=0; Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
 					{
 						ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
-						
+
 						/* Check if update bit is set*/
 						if(Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (7 - (ComUpdateBitPositionLocal % 8))))
 						{
@@ -772,14 +772,14 @@ void Com_MainFunctionRx(void)
 						}
 						else
 						{
-							
+
 						}
 					}
 					/* Loop over all Signal groups in this IPDU */
 					for(ComSignalGroupIndex=0; Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
 					{
 						ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
-						
+
 						/* Check if update bit is set*/
 						if(Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (7 - (ComUpdateBitPositionLocal % 8))))
 						{
@@ -790,26 +790,26 @@ void Com_MainFunctionRx(void)
 						}
 						else
 						{
-							
+
 						}
 					}
 				}
 				else
 				{
-					
+
 				}
 			}
 			else
 			{
-				
+
 			}
 		}
 	}
 	else
 	{
-		
+
 	}
-	
+
 	return ;
 }
 
@@ -901,8 +901,16 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
 uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 {
 
+	/*[SWS_Com_00638] ⌈The service Com_ReceiveSignalGroup shall copy the received
+	signal group from the I-PDU to the shadow buffer.⌋ (SRS_Com_02041)*/
 
+	Com_CopySignalGroupToShadowBuffer(SignalGroupId);
+	return E_OK;
 
+ /*After this call, the group signals could be copied from the shadow buffer to the RTE
+	by calling Com_ReceiveSignal.*/
+//return COM_BUSY;
+	// to be implemented if we implement TP
 
 
 
