@@ -617,54 +617,117 @@ void Com_TxConfirmation(PduIdType TxPduId)
 {
 
 
+  uint8 ComIPduIndex;
+    uint8 ComSignalIndex;
+    uint8 ComSignalGroupIndex;
+    Com_IPduType* ComIPduLocal;
+    uint8  ComUpdateBitPositionLocal;
+
+    /*Check the Com State is Ready*/
+    if (ComState == COM_READY)
+    {
+        /*Check the validation of PduId, Less than the Maximum Count*/
+        if (TxPduId <= ComMaxIPduCnt)
+        {
+            /*Looping over the sent Index*/
+            for (ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt ; ComIPduIndex++)
+            {
+                if (Com.ComConfig.ComIPdu[ComIPduIndex].ComHandleId == TxPduId)
+                 {
+                    ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
+                    break;
+                }
+
+                else
+                {
+                    //MISRA
+                }
+            }
+
+            /*Check the IPduDirection to be Send*/
+            if (ComIPduLocal->ComIPduDirection == SEND)
+            {
+                /* Looping over all Signal in this IPDU */
+                for (ComSignalIndex = 0; ComIPduLocal->ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+                {
+                    if (ComIPduLocal->ComTxIPdu.ComTxPduClearUpdateBit == Confirmation)
+                    {
+                        ComUpdateBitPositionLocal =ComIPduLocal->ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
+
+                        /* Check if update bit is set*/
+                        if (ComIPduLocal->ComBufferRef[ComUpdateBitPositionLocal/ 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+                        {
+                            /* Clear update bit */
+                            ComIPduLocal->ComBufferRef[ComUpdateBitPositionLocal/ 8] &= ~(1<< (ComUpdateBitPositionLocal % 8));
+                        }
+                        else
+                        {
+                            //MISRA
+                        }
+                    }
+                    else
+                    {
+                         //MISRA
+                    }
+
+                    /* Notify RTE */
+                    ComIPduLocal->ComIPduSignalRef[ComSignalIndex]->ComNotification();
+                }
+
+                /* Looping over all Signal groups in this IPDU */
+                for (ComSignalGroupIndex = 0; Com.ComConfig.ComIPdu[TxPduId].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+                {
+                    if (ComIPduLocal->ComTxIPdu.ComTxPduClearUpdateBit== Confirmation)
+                    {
+                        ComUpdateBitPositionLocal = ComIPduLocal->ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
+
+                        /* Check if update bit is set*/
+                        if (ComIPduLocal->ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+                        {
+                            /* Clear update bit */
+                            ComIPduLocal->ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1<< (ComUpdateBitPositionLocal % 8));
+                        }
+                        else
+                        {
+                            //MISRA
+                        }
+                    }
+
+                    else
+                    {
+                        //MISRA
+                    }
+
+                    /* Notify RTE */
+                    ComIPduLocal->ComIPduSignalGroupRef[ComSignalGroupIndex]->ComNotification();
+                }
+            }
+            else
+            {
+                //MISRA
+            }
+        }
+
+    }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   return ;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*********************************************************************************************************************************
