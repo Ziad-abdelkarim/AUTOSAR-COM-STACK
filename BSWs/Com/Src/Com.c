@@ -429,11 +429,6 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 }
 
 
-
-
-
-
-
 /*********************************************************************************************************************************
  Service name:               Com_ReceiveSignal
  Service ID:                    0x0b
