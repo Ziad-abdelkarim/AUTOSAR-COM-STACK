@@ -328,53 +328,102 @@ void Com_Init( const Com_ConfigType* config)
 *******************************************************************************************************************************/
 uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 {
+ /*
+     [SWS_Com_00804] ⌈Error code if any other API service, except Com_GetStatus, is called before the AUTOSAR COM module was initialized with Com_Init
+     or after a call to Com_Deinit:
+     error code: COM_E_UNINIT
+     value [hex]: 0x02
+     (SRS_BSW_00337)
+   */
+    if(Com_StateType==COM_UNINIT)
+    {
+        Det_ReportError(ModuleId,InstanceId,ApiId,COM_E_UNINIT);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
 
 
+    /*
+      [SWS_Com_00803] ⌈API service called with wrong parameter:
+      error code: COM_E_PARAM
+      value [hex]: 0x01
+      (SRS_BSW_00337)
+   */
+    else if(SignalId>=ComMaxSignalCnt)
+    {
+        Det_ReportError(ModuleId,InstanceId,ApiId,COM_E_PARAM);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
 
 
+    /*
+      [SWS_Com_00805] ⌈NULL pointer checking:
+      error code: COM_E_PARAM_POINTER
+      value [hex]: 0x03
+      (SRS_BSW_00414)
+    */
+    else if(SignalDataPtr==NULL)
+    {
+        Det_ReportError(ModuleId,InstanceId,ApiId,COM_E_PARAM_POINTER);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
 
 
+    else
+    {
 
 
+        /*
+         *  [SWS_Com_00624] ⌈The service Com_SendSignal shall update the signal object identified by SignalId with the signal referenced by
+           the SignalDataPtr parameter.
+           (SRS_Com_02037)
+         */
+
+    uint32 PreviousValue = *(Com.ComConfing.ComSignal[SignalId].ComBufferRef);
+
+     const Com_SignalType *Signal;
+     const Com_IPduType * IPDU;
 
 
+    /*
+     * [SWS_Com_00625] ⌈If the updated signal has the ComTransferProperty TRIG-GERED and it is assigned to an I-PDU with ComTxModeMode DIRECT or MIXED,
+       then Com_SendSignal shall perform an immediate transmission (within the next main function at the latest)
+       of that I-PDU, unless the sending is delayed or prevented by other COM mechanisms.⌋ (SRS_Com_02037)
+     */
 
+     for (ComIpduIndex=0; ComIpduIndex <ComMaxIpduCnt; ComIpduIndex++)
+     {
+         for (ComSignalIndex=0; Com.ComConfig.ComIpdu[ComIpduIndex].ComIpduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+         {
+             if (Com.ComConfig.ComIpdu[ComIpduIndex].ComIpduSignalRef[ComSignalIndex]->ComHandeleId==SignalId)
+             {
+                Ipdu=&Com.ComConfig.ComIpdu[ComIpduIndex];
+                Signal= &Com.ComConfig.ComIpdu[ComIpduIndex].ComIpduSignalRef[ComSignalIndex];
+                switch (Signal -> ComTransferProperty)
+                {
+                    case TRIGGERED:
+                         ComTeamConfig.ComTeamIPdu.ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions=ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions+1;
+                         Com_WriteSignalToIPdu(SignalId,SignalDataPtr);
+                         break;
 
+                    case TRIGGERED_ON_CHANGE:
+                        if(PreviousValue != Signal->ComBufferRef)
+                        {
+                            ComTeamConfig.ComTeamIPdu.ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions=ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions=1;
+                            Com_WriteSignalToIPdu(SignalId,SignalDataPtr);
 
+                        }
 
+                        break;
+                }
+             }
+             else
+             {
 
+             }
+         }
+     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+   }
 
    return ;
 }
