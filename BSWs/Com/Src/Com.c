@@ -15,7 +15,7 @@
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
-extern Com_ConfigType Com;
+extern Com_Type Com;
 
 static Com_StateType ComState = COM_UNINIT;
 
@@ -67,7 +67,7 @@ void Com_WriteSignalToIPdu(Com_SignalIdType SignalId, void *SignalDataPtr)
 					   }
 					}
 					/*Set update bit*/ 
-					ComIPduLocal->ComBufferRef[ComSignalLocal->UpdateBitPosition / 8] |= 1 << (ComSignalLocal->UpdateBitPosition%8);
+					ComIPduLocal->ComBufferRef[ComSignalLocal->ComUpdateBitPosition / 8] |= 1 << (ComSignalLocal->ComUpdateBitPosition%8);
 					
 					return;
 				}
@@ -139,6 +139,7 @@ void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
 {
 	uint8 ComIPduIndex, ComSignalGroupIndex, ComGroupSignalIndex, BitIndex;
 	Com_GroupSignalType* ComGroupSignalLocal;
+	Com_SignalGroupType* ComSignalGroupLocal;
 	Com_IPduType* ComIPduLocal;
 	
 	if(SignalGroupId < ComMaxSignalGroupCnt)
@@ -146,10 +147,13 @@ void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
 		/* Find the IPdu which contains this signal */
 		for(ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt; ComIPduIndex++)
 		{
-			for(ComSignalGroupIndex = 0; Com.ComConfig.ComIPdu[ComIPduIndex].ComSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+			for(ComSignalGroupIndex = 0; Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
 			{
 				if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComHandleId == SignalGroupId)
 				{
+				    /* Get SignalGroup */
+				    ComSignalGroupLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex];
+
 					/* Get IPdu */
 					ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
 					
@@ -170,15 +174,15 @@ void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
 								ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8));
 							}
 						}
-						/*Set update bit*/ 
-						ComIPduLocal->ComBufferRef[ComGroupSignalLocal->UpdateBitPosition / 8] |= 1 << (ComGroupSignalLocal->UpdateBitPosition % 8);
-						
-						return;
 					}
 				}
 				else
 				{
 				}
+
+				/*Set update bit*/
+                ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] |= 1 << (ComSignalGroupLocal->ComUpdateBitPosition % 8);
+                return;
 			}
 		}
 	}
@@ -199,7 +203,7 @@ void Com_CopySignalGroupToShadowBuffer(Com_SignalGroupIdType SignalGroupId)
 		/* Find the IPdu which contains this signal */
 		for(ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt; ComIPduIndex++)
 		{
-			for(ComSignalGroupIndex = 0; Com.ComConfig.ComIPdu[ComIPduIndex].ComSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+			for(ComSignalGroupIndex = 0; Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
 			{
 				if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComHandleId == SignalGroupId)
 				{
@@ -766,7 +770,14 @@ void Com_MainFunctionRx(void)
 						if(Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
 						{
 							/* Notify RTE */
-							Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex]->ComNotification();
+						    if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex]->ComNotification != NULL)
+						    {
+							    Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex]->ComNotification();
+						    }
+						    else
+						    {
+
+						    }
 							/* Clear update bit */
 							Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
 						}
@@ -784,7 +795,14 @@ void Com_MainFunctionRx(void)
 						if(Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
 						{
 							/* Notify RTE */
-							Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComNotification();
+						    if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComNotification != NULL)
+						    {
+						        Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComNotification();
+						    }
+						    else
+						    {
+
+						    }
 							/* Clear update bit */
 							Com.ComConfig.ComIPdu[ComIPduIndex].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
 						}
