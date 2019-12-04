@@ -550,6 +550,105 @@ void Com_ReceiveShadowSignal(Com_SignalIdType SignalId, void* SignalDataPtr)
 *******************************************************************************************************************************/
 void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 {
+	uint8 IpduBufferIndex , SignalBufferIndex ,SignalGroupBufferIndex , ComUpdateBitPositionLocal;
+	
+	if(ComState == COM_READY)
+	{
+		if(RxPduId <= ComMaxIPduCnt)
+		{
+			if(PduInfoPtr != NULL)
+			{  
+				if (Com.ComConfig.ComIPdu[RxPduId].ComIPduDirection == RECEIVE)
+				{
+					/*[SWS_Com_00574] ?When unpacking an I-PDU, 
+					  the AUTOSAR COM module shall check the received data length (PduInfoPtr->SduLength) and unpack 
+					  and notify only completely received signals via ComNotification. (SRS_Com_02046)*/
+				
+					if(PduInfoPtr -> SduLength <= 8)  
+					{
+						memcpy(Com.ComConfig.ComIPdu[RxPduId].ComBufferRef , PduInfoPtr -> SduDataPtr , PduInfoPtr -> SduLength);
+					}	  
+					else
+					{
+						/*Misra*/	
+					}	
+					
+					if(Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalProcessing == IMMEDIATE)
+					{
+						/*[SWS_Com_00300] If ComIPduSignalProcessing for an I-PDU is configured to IM-MEDIATE, 
+						  the AUTOSAR COM module shall invoke the configured ComNotifications for the included signals 
+						  and signal groups within the Com_RxIndication,or Com_TpRxIndication function respectively.(SRS_Com_02046)*/
+					 
+						/* Loop over all Signals in this IPDU */		
+						for(SignalBufferIndex = 0 ; Com.ComConfig.ComIPdu[RxPduId].ComIpduSignalRef[SignalBufferIndex] != NULL ; SignalBufferIndex++)
+						{
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIpduSignalRef[SignalBufferIndex] -> ComUpdateBitPosition;
+						
+							/* Check if UpdateBit is set*/
+							if((Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8]) & (1 << (ComUpdateBitPositionLocal % 8)))
+							{	
+								/*invoke the configured ComNotifications for the included signals to RTE*/
+								Com.ComConfig.ComIPdu[RxPduId].ComIpduSignalRef[SignalBufferIndex] -> ComNotification();
+								/* Clear UpdateBit */
+								Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal  / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8))
+							}
+							else
+							{
+								/*Misra*/
+							}
+						}
+						
+						/* Loop over all Signal groups in the current IPDU */
+						for(SignalGroupBufferIndex=0; Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[SignalGroupBufferIndex] != NULL; SignalGroupBufferIndex++)
+						{
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[SignalGroupBufferIndex]->ComUpdateBitPosition;
+						
+							/* Check if UpdateBit is set*/
+							if(Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8]  &  (1 << (ComUpdateBitPositionLocal % 8)))
+							{
+								/*invoke the configured ComNotifications for the included signal groups to RTE*/
+								Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[SignalGroupBufferIndex]->ComNotification();
+								/* Clear UpdateBit */
+								Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+							}
+							else
+							{
+								/*Misra*/
+							}		
+					
+						}
+					}	
+					else 
+					{
+						/*[SWS_Com_00301] ?If ComIPduSignalProcessing for an I-PDU is configured to DE-FERRED,
+						  the AUTOSAR COM module shall first copy the I-PDU’s data within the Com_RxIndication function 
+						  or the related TP reception functions respectively from the PduR into COM. 
+						  Then the AUTOSAR COM module shall invoke the configured ComNotifications for the included signals 
+						  and signal groups asynchronously during the next call to Com_MainFunctionRx.(SRS_Com_02046)*/
+					}	
+				}
+				else
+				{
+					/*Com.ComConfig.ComIPdu[RxPduId].ComIPduDirection != RECEIVE*/
+				}
+			}
+			else
+			{
+				/*PduInfoPtr == NULL*/
+			}
+		
+		}
+		else
+		{
+			/* RxPduId > PduIdMax */
+		}
+	}
+	else
+	{
+		/*ComState != COM_READY*/
+	}
+}
+
 
 
 
