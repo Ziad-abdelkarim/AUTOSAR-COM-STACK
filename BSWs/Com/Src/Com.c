@@ -621,7 +621,7 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 					else 
 					{
 						/*[SWS_Com_00301] ?If ComIPduSignalProcessing for an I-PDU is configured to DE-FERRED,
-						  the AUTOSAR COM module shall first copy the I-PDU’s data within the Com_RxIndication function 
+						  the AUTOSAR COM module shall first copy the I-PDU\92s data within the Com_RxIndication function 
 						  or the related TP reception functions respectively from the PduR into COM. 
 						  Then the AUTOSAR COM module shall invoke the configured ComNotifications for the included signals 
 						  and signal groups asynchronously during the next call to Com_MainFunctionRx.(SRS_Com_02046)*/
@@ -1052,5 +1052,5 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 
 void main(void)
 {
-
+test
 }
