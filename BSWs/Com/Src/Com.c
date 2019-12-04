@@ -405,6 +405,66 @@ uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
 {
 
 
+if(ComStatus==COM_UNINIT)
+{
+    /*[SWS_Com_00804] ⌈Error code if any other API service, except Com_GetStatus, is called before the AUTOSAR COM module was initialized with Com_Init
+    or after a call to Com_Deinit:
+    error code: COM_E_UNINIT
+    value [hex]: 0x02
+    (SRS_BSW_00337)
+    */
+    Det_ReportError(0x0F,0x00,0x0b,COM_E_UNINIT);
+    return COM_SERVICE_NOT_AVAILABLE;
+    
+}
+else
+{
+    
+    
+    if(SignalDataPtr==NULL)
+    {
+    
+        /*
+          [SWS_Com_00805] ⌈NULL pointer checking:
+          error code: COM_E_PARAM_POINTER
+          value [hex]: 0x03
+          (SRS_BSW_00414)
+        */
+        Det_ReportError(0x0F,0x00,0x0b,COM_E_PARAM_POINTER);
+        return COM_SERVICE_NOT_AVAILABLE; 
+        
+        
+    }
+    else
+    {
+        
+
+   if(SignalId >= ComMaxSignalCnt)
+   {
+       /* 
+         [SWS_Com_00803] ⌈API service called with wrong parameter:
+            error code: COM_E_PARAM
+            value [hex]: 0x01
+            (SRS_BSW_00337)
+      */
+       Det_ReportError(0x0F,0x00,0x0b,COM_E_PARAM);
+       return COM_SERVICE_NOT_AVAILABLE;
+       
+       
+   }
+        else
+        {
+            
+            Com_ReadSignalFromIPdu(SignalId,SignalDataPtr);
+            return E_OK;
+            
+        }
+        
+        
+    }
+    
+    
+}
 
 
 
@@ -432,26 +492,6 @@ uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   return ;
 }
 
 
