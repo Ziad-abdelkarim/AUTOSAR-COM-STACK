@@ -681,32 +681,44 @@ void Com_TxConfirmation(PduIdType TxPduId)
 void Com_MainFunctionTx(void)
 {
     uint8 IPduIdIndex;
-
+    
 	ComIPdu_type *ComIPduLoc;
 	ComTeamIPdu_type *ComTeamIPduLoc;
-	uint8 ComTeamTxIPduNumberOfRepetitionsLoc;
-	uint8 ComTeamTxModeRepetitionPeriodLoc;
-	uint8 ComTeamTxModeTimePeriodLoc;
+	uint8   ComTeamTxIPduNumberOfRepetitionsLoc;
+	float32 ComTeamTxModeRepetitionPeriodLoc;
+	float32 ComTeamTxModeTimePeriodLoc;
+	float32 ComTeamMinimumDelayTimerLoc;
     
 	for ( IPduIdIndex = 0; IPduIdIndex < COM_MAX_IPDU_CNT; IPduIdIndex++)
 	{
 		
 		ComIPduLoc =&Com.ComConfig.ComIPdu[IPduIdIndex]
 		ComTeamIPduLoc = &ComTeamConfig.ComTeamIPdu[IPduIdIndex];
-		ComTeamTxIPduNumberOfRepetitionsLoc = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions;
-		ComTeamTxModeRepetitionPeriodLoc    = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod; 
-		ComTeamTxModeTimePeriodLoc          = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod;
+	
 		
 		/* check if  IPdu Direction should be transmitted */
 		if (ComIPduLoc->ComIPduDirection == SEND) 
-		{/* check If IPDU has periodic transmission mode*/
+		{
+			ComTeamTxIPduNumberOfRepetitionsLoc = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions;
+			ComTeamTxModeRepetitionPeriodLoc    = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod; 
+			ComTeamTxModeTimePeriodLoc          = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod;
+			ComTeamMinimumDelayTimerLoc         = ComTeamIPduLoc->ComTeamTxMode.ComTeamMinimumDelayTimer;
+			if(ComTeamMinimumDelayTimerLoc > 0)
+				{
+					ComTeamMinimumDelayTimerLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
+				}
+			else
+			{
+				/*misra*/
+			}	
+			/* check If IPDU has periodic transmission mode*/
 			if (ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == PERIODIC)
 			{
 				if(ComTeamTxModeTimePeriodLoc > 0)
 					{
 						ComTeamTxModeTimePeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
 					}
-				else if(ComTeamTxModeTimePeriodLoc <= 0)
+				else if((ComTeamTxModeTimePeriodLoc <= 0)&&(ComTeamMinimumDelayTimerLoc<=0))
 				{
 					if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
 					{   /*Reset periodic timer.*/
@@ -726,15 +738,15 @@ void Com_MainFunctionTx(void)
 			{
 				if (ComTeamTxIPduNumberOfRepetitionsLoc > 0) 
 				{
-					if(ComTeamTxModeTimePeriodLoc > 0)
+					if(ComTeamTxModeRepetitionPeriodLoc > 0)
 					{
-						ComTeamTxModeTimePeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
+						ComTeamTxModeRepetitionPeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
 					}
-				    else if(ComTeamTxModeTimePeriodLoc <= 0)
+				    else if((ComTeamTxModeRepetitionPeriodLoc <= 0)&&(ComTeamMinimumDelayTimerLoc<=0))
 				    {
 						if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
 					    {   /*Reset periodic timer.*/
-							ComTeamTxModeTimePeriodLoc = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
+							ComTeamTxModeRepetitionPeriodLoc = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod;
 							ComTeamTxIPduNumberOfRepetitionsLoc--;
 						}
 						else
@@ -756,15 +768,15 @@ void Com_MainFunctionTx(void)
 			{    /*it time for a direct transmission*/
 				if (ComTeamTxIPduNumberOfRepetitionsLoc > 0) 
 				{
-					if(ComTeamTxModeTimePeriodLoc > 0)
+					if(ComTeamTxModeRepetitionPeriodLoc > 0)
 					{
-						ComTeamTxModeTimePeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
+						ComTeamTxModeRepetitionPeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
 					}
-				    else if(ComTeamTxModeTimePeriodLoc <= 0)
+				    else if((ComTeamTxModeRepetitionPeriodLoc <= 0)&&(ComTeamMinimumDelayTimerLoc<=0))
 				    {
 						if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
 					    {   /*Reset periodic timer.*/
-							ComTeamTxModeTimePeriodLoc = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
+							ComTeamTxModeRepetitionPeriodLoc = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod;
 							ComTeamTxIPduNumberOfRepetitionsLoc--;
 						}
 						else
@@ -783,7 +795,7 @@ void Com_MainFunctionTx(void)
 					{
 						ComTeamTxModeTimePeriodLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
 					}
-					else if(ComTeamTxModeTimePeriodLoc <= 0)
+					else if((ComTeamTxModeTimePeriodLoc <= 0)&&(ComTeamMinimumDelayTimerLoc<=0))
 					{
 						if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
 						{   /*Reset periodic timer.*/
@@ -811,9 +823,8 @@ void Com_MainFunctionTx(void)
 		 /*IPdu Direction is not send*/	
 		}	
 	}
-   return ;
+	return;
 }
-
 
 /*********************************************************************************************************************************
  Service name:               Com_MainFunctionRx
