@@ -57,7 +57,7 @@ void Com_WriteSignalToIPdu(Com_SignalIdType SignalId, void *SignalDataPtr)
 					/* Write data from signal buffer to IPdu*/
 					for(BitIndex = 0; BitIndex < ComSignalLocal->ComBitSize; BitIndex++)
 					{
-					   if((*(ComSignalLocal->ComBufferRef) >> BitIndex) & 1)
+					   if((ComSignalLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
 					   {
 						   ComIPduLocal->ComBufferRef[(BitIndex + ComSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex + ComSignalLocal->ComBitPosition)%8);
 					   }
@@ -109,11 +109,11 @@ void Com_ReadSignalFromIPdu(Com_SignalIdType SignalId, void* SignalDataPtr)
 					{
 					   if((ComIPduLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
 					   {
-						   *(ComSignalLocal->ComBufferRef) |= 1 << (BitIndex - ComSignalLocal->ComBitPosition);
+						   ComSignalLocal->ComBufferRef[(BitIndex - ComSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex - ComSignalLocal->ComBitPosition) % 8);
 					   }
 					   else
 					   {
-						   *(ComSignalLocal->ComBufferRef) &= ~(1 << (BitIndex - ComSignalLocal->ComBitPosition));
+						   ComSignalLocal->ComBufferRef[(BitIndex - ComSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex - ComSignalLocal->ComBitPosition) % 8));
 					   }
 					}
 
@@ -165,7 +165,7 @@ void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
 						/* Write data from signal buffer to IPdu*/
 						for(BitIndex = 0; BitIndex < ComGroupSignalLocal->ComBitSize; BitIndex++)
 						{
-							if((*(ComGroupSignalLocal->ComBufferRef) >> BitIndex) & 1)
+							if((ComGroupSignalLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
 							{
 								ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8);
 							}
@@ -220,11 +220,11 @@ void Com_CopySignalGroupToShadowBuffer(Com_SignalGroupIdType SignalGroupId)
 						{
 							if((ComIPduLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
 						    {
-							   *(ComGroupSignalLocal->ComBufferRef) |= 1 << (BitIndex - ComGroupSignalLocal->ComBitPosition);
+							   ComGroupSignalLocal->ComBufferRef[(BitIndex - ComGroupSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex - ComGroupSignalLocal->ComBitPosition) % 8);
 						    }
 						   else
 						    {
-							   *(ComGroupSignalLocal->ComBufferRef) &= ~(1 << (BitIndex - ComGroupSignalLocal->ComBitPosition));
+							   ComGroupSignalLocal->ComBufferRef[(BitIndex - ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex - ComGroupSignalLocal->ComBitPosition) % 8));
 						    }
 						}	
 					}

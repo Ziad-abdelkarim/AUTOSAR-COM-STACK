@@ -21,8 +21,17 @@ void Com_CbkRxAck(void)
 
 }
 
-uint32 ComSignalBuffer[ComMaxSignalCnt];
-uint32 ComGroupSignalBuffer[ComMaxGroupSignalCnt];
+/* ComSignal Buffers */
+uint8 ComSignal0Buffer[1];
+uint8 ComSignal1Buffer[1];
+uint8 ComSignal2Buffer[1];
+uint8 ComSignal3Buffer[1];
+
+/* ComGroupSignal Buffers */
+uint8 ComGroupSignal0Buffer[2];
+uint8 ComGroupSignal1Buffer[2];
+
+/* Com IPdu Buffers */
 uint8 ComIPdu0Buffer[8];
 uint8 ComIPdu1Buffer[8];
 
@@ -42,7 +51,7 @@ Com_Type Com =
              .ComSignalType= UINT8,
              .ComTransferProperty =  PENDING,
              .ComUpdateBitPosition = 8,
-             .ComBufferRef = &ComSignalBuffer[0]
+             .ComBufferRef = ComSignal0Buffer
             },
             {
              .ComBitPosition = 9,
@@ -54,7 +63,7 @@ Com_Type Com =
              .ComSignalType= UINT8,
              .ComTransferProperty =  TRIGGERED,
              .ComUpdateBitPosition = 17,
-             .ComBufferRef = &ComSignalBuffer[1]
+             .ComBufferRef = ComSignal1Buffer
             },
             {
              .ComBitPosition = 0,
@@ -66,7 +75,7 @@ Com_Type Com =
              .ComSignalType= UINT8,
              .ComTransferProperty =  TRIGGERED_ON_CHANGE,
              .ComUpdateBitPosition = 8,
-             .ComBufferRef = &ComSignalBuffer[2]
+             .ComBufferRef = ComSignal2Buffer
             },
             {
              .ComBitPosition = 9,
@@ -78,7 +87,7 @@ Com_Type Com =
              .ComSignalType= UINT8,
              .ComTransferProperty =  TRIGGERED_WITHOUT_REPETITION,
              .ComUpdateBitPosition = 17,
-             .ComBufferRef = &ComSignalBuffer[3]
+             .ComBufferRef = ComSignal3Buffer
             }
         },
         .ComIPduGroup=
@@ -100,7 +109,7 @@ Com_Type Com =
                 .ComSignalLength=2,
                 .ComSignalType= UINT16,
                 .ComTransferProperty = PENDING,
-                .ComBufferRef = &ComGroupSignalBuffer[0]
+                .ComBufferRef = ComGroupSignal0Buffer
             },
             {
                 .ComBitPosition=18,
@@ -110,7 +119,7 @@ Com_Type Com =
                 .ComSignalLength=2,
                 .ComSignalType= UINT16,
                 .ComTransferProperty = PENDING,
-                .ComBufferRef = &ComGroupSignalBuffer[1]
+                .ComBufferRef = ComGroupSignal1Buffer
             }
         },
         .ComSignalGroup=

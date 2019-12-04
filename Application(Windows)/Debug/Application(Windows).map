@@ -1,7 +1,7 @@
 ******************************************************************************
                   TI ARM Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Wed Dec  4 01:31:23 2019
+>> Linked Wed Dec  4 15:34:18 2019
 
 OUTPUT FILE NAME:   <Application(Windows).out>
 ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 00003021
@@ -124,14 +124,18 @@ section   page    origin      length       input sections
                   2000024f    00000001     Com.obj (.data)
 
 .bss       0    20000450    00000048     UNINITIALIZED
-                  20000450    00000010     (.common:ComSignalBuffer)
-                  20000460    0000000c     Can.obj (.bss:MessageObject)
-                  2000046c    00000008     CanIf.obj (.bss:RxBuffer)
-                  20000474    00000008     (.common:ComGroupSignalBuffer)
-                  2000047c    00000008     (.common:ComIPdu0Buffer)
-                  20000484    00000008     (.common:ComIPdu1Buffer)
-                  2000048c    00000004     CanIf.obj (.bss:CanIfPduMode)
-                  20000490    00000004     Can.obj (.bss:LogicalSleep)
+                  20000450    0000000c     Can.obj (.bss:MessageObject)
+                  2000045c    00000008     CanIf.obj (.bss:RxBuffer)
+                  20000464    00000008     (.common:ComIPdu0Buffer)
+                  2000046c    00000008     (.common:ComIPdu1Buffer)
+                  20000474    00000004     CanIf.obj (.bss:CanIfPduMode)
+                  20000478    00000004     Can.obj (.bss:LogicalSleep)
+                  2000047c    00000004     (.common:ComGroupSignal0Buffer)
+                  20000480    00000004     (.common:ComGroupSignal1Buffer)
+                  20000484    00000004     (.common:ComSignal0Buffer)
+                  20000488    00000004     (.common:ComSignal1Buffer)
+                  2000048c    00000004     (.common:ComSignal2Buffer)
+                  20000490    00000004     (.common:ComSignal3Buffer)
                   20000494    00000004     (.common:CurrentCanState)
 
 .stack     0    20000250    00000200     UNINITIALIZED
@@ -245,10 +249,14 @@ address   name
 00000bdd  Can_SetControllerMode          
 000010e1  Can_Write                      
 20000000  Com                            
-20000474  ComGroupSignalBuffer           
-2000047c  ComIPdu0Buffer                 
-20000484  ComIPdu1Buffer                 
-20000450  ComSignalBuffer                
+2000047c  ComGroupSignal0Buffer          
+20000480  ComGroupSignal1Buffer          
+20000464  ComIPdu0Buffer                 
+2000046c  ComIPdu1Buffer                 
+20000484  ComSignal0Buffer               
+20000488  ComSignal1Buffer               
+2000048c  ComSignal2Buffer               
+20000490  ComSignal3Buffer               
 00003197  Com_CbkRxAck                   
 00003195  Com_CbkTxAck                   
 00002485  Com_Init                       
@@ -424,12 +432,16 @@ address   name
 20000144  Can                            
 200001dc  CanIf                          
 20000250  __stack                        
-20000450  ComSignalBuffer                
 20000450  __STACK_END                    
 20000450  __STACK_TOP                    
-20000474  ComGroupSignalBuffer           
-2000047c  ComIPdu0Buffer                 
-20000484  ComIPdu1Buffer                 
+20000464  ComIPdu0Buffer                 
+2000046c  ComIPdu1Buffer                 
+2000047c  ComGroupSignal0Buffer          
+20000480  ComGroupSignal1Buffer          
+20000484  ComSignal0Buffer               
+20000488  ComSignal1Buffer               
+2000048c  ComSignal2Buffer               
+20000490  ComSignal3Buffer               
 20000494  CurrentCanState                
 ffffffff  __TI_pprof_out_hndl            
 ffffffff  __TI_prof_data_size            
@@ -440,4 +452,4 @@ ffffffff  binit
 UNDEFED   __mpu_init                     
 UNDEFED   _system_post_cinit             
 
-[115 symbols]
+[119 symbols]

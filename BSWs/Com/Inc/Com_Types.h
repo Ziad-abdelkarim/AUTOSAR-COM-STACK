@@ -377,7 +377,7 @@ typedef struct{
 
     /* Reference to the group signal buffer */
     /* Note: Autosar extension */
-    uint32 *ComBufferRef;
+    uint8* ComBufferRef;
 
 
 }Com_GroupSignalType;
@@ -487,7 +487,7 @@ typedef struct{
 
     /* Reference to the signal buffer */
     /* Note: Autosar extension */
-    uint32* ComBufferRef;
+    uint8* ComBufferRef;
 
 }Com_SignalType;
 
