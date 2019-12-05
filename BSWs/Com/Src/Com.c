@@ -21,6 +21,8 @@ static Com_StateType ComState = COM_UNINIT;
 
 uint8 ComDevelopmentError;
 
+ComTeamConfig_type ComTeamConfig;
+
 /********************************************************************************************************************************
  **                                                        Local Functions                                                                                        **
  *********************************************************************************************************************************/
@@ -619,55 +621,136 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 *******************************************************************************************************************************/
 void Com_TxConfirmation(PduIdType TxPduId)
 {
+    uint8 ComIPduIndex,
+    ComSignalIndex,
+    ComSignalGroupIndex;
 
+    Com_IPduType *ComIPduLocal;
+    Com_SignalType *ComSignalLocal;
+    Com_SignalGroupType *ComSignalGroupLocal;
 
+    if(TxPduId < ComMaxIPduCnt)
+    {
+        /* Loop over all IPdus*/
+        for(ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt ; ComIPduIndex++)
+        {
+            ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
 
+            /* Check if the IPdu has the desired ID */
+            if(ComIPduLocal->ComIPduHandleId == TxPduId)
+            {
+                /* Check if the IPdu direction is send */
+                if(ComIPduLocal->ComIPduDirection == SEND)
+                {
+                    /* Loop over all signals which belong to this IPdu */
+                    for (ComSignalIndex = 0; ComIPduLocal->ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+                    {
+                        ComSignalLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex];
 
+                        /* Check if the signal was updated */
+                        if(ComTeamConfig.ComTeamSignal[ComSignalIndex].ComTeamSignalUpdated)
+                        {
+                            /* Clear that the signal was updated */
+                            ComTeamConfig.ComTeamSignal[ComSignalIndex].ComTeamSignalUpdated = false;
 
+                            if(ComIPduLocal->ComTxIPdu.ComTxIPduClearUpdateBit == Confirmation)
+                            {
+                                /* Clear update bit */
+                                ComIPduLocal->ComBufferRef[ComSignalLocal->ComUpdateBitPosition / 8] &= ~(1<< (ComSignalLocal->ComUpdateBitPosition % 8));
+                            }
+                            else
+                            {
 
+                            }
+                            if(ComIPduLocal->ComIPduSignalProcessing == IMMEDIATE)
+                            {
+                                /* Notify RTE */
+                                if(ComSignalLocal->ComNotification != NULL)
+                                {
+                                    ComSignalLocal->ComNotification();
+                                }
+                                else
+                                {
 
+                                }
+                            }
+                            else if(ComIPduLocal->ComIPduSignalProcessing == DEFERRED)
+                            {
+                                /* Set Flag so Com_MainFunctionTx can check it at a later cyclic call */
+                                ComTeamConfig.ComTeamSignal[ComSignalIndex].ComTeamSignalConfirmed = true;
+                            }
+                            else
+                            {
 
+                            }
+                        }
+                        else
+                        {
 
+                        }
+                    }
+                    /* Loop over all signalgroups which belong to this IPdu */
+                    for (ComSignalGroupIndex = 0; ComIPduLocal->ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+                    {
+                        ComSignalGroupLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex];
 
+                        /* Check if the signalgroup was updated */
+                        if(ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupUpdated)
+                        {
+                            ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupUpdated = false;
 
+                            if(ComIPduLocal->ComTxIPdu.ComTxIPduClearUpdateBit == Confirmation)
+                            {
+                                /* Clear update bit */
+                                ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] &= ~(1<< (ComSignalGroupLocal->ComUpdateBitPosition % 8));
+                            }
+                            else
+                            {
 
+                            }
+                            if(ComIPduLocal->ComIPduSignalProcessing == IMMEDIATE)
+                            {
+                                /* Notify RTE */
+                                if(ComSignalGroupLocal->ComNotification != NULL)
+                                {
+                                    ComSignalGroupLocal->ComNotification();
+                                }
+                                else
+                                {
 
+                                }
+                            }
+                            else if(ComIPduLocal->ComIPduSignalProcessing == DEFERRED)
+                            {
+                                /* Set Flag so Com_MainFunctionTx can check it at a later cyclic call */
+                                ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupConfirmed = true;
+                            }
+                            else
+                            {
 
+                            }
+                        }
+                        else
+                        {
 
+                        }
+                    }
+                }
+                else
+                {
 
+                }
 
+                break;
+            }
+        }
+    }
+    else
+    {
 
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   return ;
+    return;
 }
 
 
@@ -684,59 +767,229 @@ void Com_TxConfirmation(PduIdType TxPduId)
 *******************************************************************************************************************************/
 void Com_MainFunctionTx(void)
 {
+    uint8 IPduIdIndex;
+    uint8 SignalIdIndex;
+    uint8 SignalGroupIdIndex;
+    Com_IPduType *ComIPduLoc;
+    ComTeamIPdu_type *ComTeamIPduLoc;
+    boolean MinimumDelayTimerLoc=true;
 
+    if(ComState == COM_READY)
+    {
+		for ( IPduIdIndex = 0; IPduIdIndex < ComMaxIPduCnt; IPduIdIndex++)
+		{
+			ComIPduLoc =&Com.ComConfig.ComIPdu[IPduIdIndex];
+			ComTeamIPduLoc = &ComTeamConfig.ComTeamIPdu[IPduIdIndex];
 
+			/* check if  IPdu Direction should be transmitted */
+			if (ComIPduLoc->ComIPduDirection == SEND)
+			{
+				#if(ComEnableMDTForCyclicTransmission == true)
+				
+					if(ComTeamIPduLoc->ComTeamTxMode.ComTeamMinimumDelayTimer> 0)
+					{
+						ComTeamIPduLoc->ComTeamTxMode.ComTeamMinimumDelayTimer -= ComTxTimeBase;
+					}
+					else
+					{
+						/*misra*/
+					}
 
+					if(ComTeamIPduLoc->ComTeamTxMode.ComTeamMinimumDelayTimer<=0)
+					{
+						MinimumDelayTimerLoc=true;
+					}
+					else
+					{
+						MinimumDelayTimerLoc=false;
+					}
+				#endif
 
+				/* check If IPDU has periodic transmission mode*/
+				if (ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == PERIODIC)
+				{
+					if(ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod> 0)
+					{
+						ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod -= ComTxTimeBase;
+					}
+					else if((ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod<= 0)&&(MinimumDelayTimerLoc))
+					{
+						if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
+						{
+							/*Reset periodic timer.*/
+							ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod= ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
+							#if(ComEnableMDTForCyclicTransmission == true)
+								ComTeamMinimumDelayTimerLoc=ComIPduLoc->ComTxIPdu.ComMinimumDelayTime;
+							#endif	
+						}
+						else
+						{
+							/*misra*/
+						}
+					}	
+					else	
+					{ 
+						/*misra*/
+					}						
+				}
+				/* check If IPDU has DIRECT transmission mode*/
+				else if (ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT)
+				{
+				    if (ComTeamIPduLoc->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions > 0)
+					{
+						if(ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod > 0)
+						{
+						    ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod    -= ComTxTimeBase;
+						}
+						else if((ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod <= 0)&&(MinimumDelayTimerLoc))
+						{
+							if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
+							{   /*Reset periodic timer.*/
+								ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod;
+								ComTeamIPduLoc->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions--;
+								#if(ComEnableMDTForCyclicTransmission == true)
+									ComTeamMinimumDelayTimerLoc=ComIPduLoc->ComTxIPdu.ComMinimumDelayTime;
+								#endif
+							}
+							else
+							{
+								/*misra*/
+							}
+						}
+						else
+						{
+							/*misra*/
+						}
+					}
+					else
+					{
+						/*misra*/
+					}
+				}
+			    /* check If IPDU has MIXED transmission mode*/
+				else if (ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED)
+				{    
+			        /*it time for a direct transmission*/
+					if (ComTeamIPduLoc->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions > 0)
+					{
+						if(ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod > 0)
+						{
+						ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod    -= ComTxTimeBase;
+						}
+						else if((ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod <= 0)&&(MinimumDelayTimerLoc))
+						{
+							if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
+							{   /*Reset periodic timer.*/
+								ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod;
+								ComTeamIPduLoc->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions--;
+								#if(ComEnableMDTForCyclicTransmission == true)
+									ComTeamMinimumDelayTimerLoc=ComIPduLoc->ComTxIPdu.ComMinimumDelayTime;
+								#endif
+							}
+							else
+							{
+								/*misra*/
+							}
+						}
+						else
+						{
+							/*misra*/
+						}
+					} /*it time for a periodic transmission*/
+					else
+					{
+						if(ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod> 0)
+						{
+							ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod -= ComTxTimeBase;
+						}
+						else if((ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod<= 0)&&(MinimumDelayTimerLoc))
+						{
+							if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
+							{   /*Reset periodic timer.*/
+								ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod= ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
+								#if(ComEnableMDTForCyclicTransmission == true)
+									ComTeamMinimumDelayTimerLoc=ComIPduLoc->ComTxIPdu.ComMinimumDelayTime;
+								#endif
+							}
+							else
+							{
+								/*misra*/
+							}
+						}
+						else
+						{
+							/*misra*/
+						}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   return ;
+				    }
+				}	
+				/* The IDPU has NONE transmission mode*/
+				else
+				{
+					/* Don't send!*/
+				}
+				if(Com.ComConfig.ComIPdu[IPduIdIndex].ComIPduSignalProcessing==DEFERRED)
+				{
+					for ( SignalIdIndex = 0; Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalRef[SignalIdIndex] !=NULL; SignalIdIndex++)
+					{
+						if(ComTeamConfig.ComTeamSignal[SignalIdIndex].ComTeamSignalConfirmed)
+						{
+							if(Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalRef[SignalIdIndex]->ComNotification !=NULL)
+							{
+								Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalRef[SignalIdIndex]->ComNotification();
+							}
+							else
+							{
+								/*misra*/
+							}
+							ComTeamConfig.ComTeamSignal[SignalIdIndex].ComTeamSignalConfirmed=false;
+						}
+						else
+						{
+							 /*misra*/
+						}
+					} 
+					for ( SignalGroupIdIndex = 0; Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalGroupRef[SignalGroupIdIndex] !=NULL; SignalGroupIdIndex++)
+					{
+						if(ComTeamConfig.ComTeamSignalGroup[SignalGroupIdIndex].ComTeamSignalGroupConfirmed)
+						{
+							if(Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalGroupRef[SignalGroupIdIndex]->ComNotification !=NULL)
+							{
+								Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalGroupRef[SignalGroupIdIndex]->ComNotification();
+							}
+							else
+							{
+								/*misra*/
+							}
+							ComTeamConfig.ComTeamSignalGroup[SignalGroupIdIndex].ComTeamSignalGroupConfirmed=false;
+						}
+						else
+						{
+							/*misra*/
+						}
+					}
+				}
+				else
+				{
+					/*misra*/
+				}	
+			}
+			else
+			{
+			 /*IPdu Direction is not send*/
+			}
+		}
+	}	
+	else 
+	{
+		/*misra*/
+	}	
+		
+    return;
 }
 
 
-/*********************************************************************************************************************************
+/*********** **********************************************************************************************************************
  Service name:               Com_MainFunctionRx
  Service ID:                    0x18
  Parameters (in):               None
@@ -966,7 +1219,23 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 
 
 
-   return ;
+   return;
+}
+
+/*********************************************************************************************************************************
+ Service name:               Com_TriggerIPduSend
+ Service ID:                    0x17
+ Parameters (in):               PduId -->  The I-PDU-ID of the I-PDU that shall be triggered for sending.
+ Parameters (inout):            None
+ Parameters (out):              None
+ Return value:                  Std_ReturnType  --->
+									E_OK: I-PDU was triggered for transmission
+									E_NOT_OK: I-PDU is stopped, the transmission could not be triggered
+ Description:        			By a call to Com_TriggerIPDUSend the I-PDU with the given ID is triggered for transmission.
+*******************************************************************************************************************************/
+Std_ReturnType Com_TriggerIPDUSend(PduIdType PduId)
+{
+	
 }
 
 void main(void)

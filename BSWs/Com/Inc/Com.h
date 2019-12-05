@@ -10,6 +10,7 @@ AUTOSAR Version:          								  4.2.2
  ******************************************************************************************************************************/
 #include "Com_Cfg.h"
 #include "Com_Types.h"
+#include "ComTeam_Types.h"
 #include "ComStack_Types.h"
 /*******************************************************************************************************************************
 **                                               						  Defines                                                                                **
@@ -34,6 +35,7 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId);
 uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId);
 void Com_UpdateShadowSignal(Com_SignalIdType SignalId,const void* SignalDataPtr);
 void Com_ReceiveShadowSignal(Com_SignalIdType SignalId, void* SignalDataPtr);
+Std_ReturnType Com_TriggerIPDUSend(PduIdType PduId);
 void main(void);
 
 #endif /*COM_H*/

@@ -565,9 +565,6 @@ typedef struct{
 }Com_IPduType;
 
 
-
-
-
 /********************************************************************************************************************************
 
 Name:                                ComConfig
@@ -593,6 +590,7 @@ typedef struct{
     /* This container contains the configuration parameters of group signals. I.e. signals that are included within a signal group */
     /* Note: Autosar violation, Moved from inside ComSignalGroup to ComConfig */
     Com_GroupSignalType ComGroupSignal[ComMaxGroupSignalCnt];
+	
 }Com_ConfigType;
 
 

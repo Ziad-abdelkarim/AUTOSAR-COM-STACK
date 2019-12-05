@@ -77,7 +77,7 @@ Description:                The period between successive calls to Com_MainFunct
                             Com_MainFunctionRx is scheduled according to the value configuredhere
 Range:                                  0 ---> 3600                                         **
 **************************************************************************************************/
-#define ComRxTimeBase   (uint16)    0.1
+#define ComRxTimeBase   (float32)    0.1
 
 
 /**************************************************************************************************
@@ -95,7 +95,7 @@ Description:                The period between successive calls to Com_MainFunct
                             Com_MainFunctionTx is scheduled according to the value configured here
 Range:                                  0 ---> 3600
 **************************************************************************************************/
-#define ComTxTimeBase   (uint16)    0.1
+#define ComTxTimeBase   (float32)    0.1
 
 
 /**************************************************************************************************
