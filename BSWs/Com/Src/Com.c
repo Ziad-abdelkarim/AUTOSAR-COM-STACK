@@ -455,7 +455,7 @@ uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
 
 
 
-   return ;
+   return 0;
 }
 
 
@@ -701,8 +701,6 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 
 
 
-   return ;
-}
 
 
 
@@ -766,7 +764,7 @@ void Com_TxConfirmation(PduIdType TxPduId)
 
 
 
-   return ;
+
 }
 
 
@@ -831,7 +829,6 @@ void Com_MainFunctionTx(void)
 
 
 
-   return ;
 }
 
 
@@ -927,7 +924,7 @@ void Com_MainFunctionRx(void)
 		
 	}
 	
-	return ;
+
 }
 
 
@@ -996,7 +993,7 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
 
 
 
-   return ;
+   return 0 ;
 }
 
 
@@ -1065,7 +1062,7 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 
 
 
-   return ;
+   return 0 ;
 }
 /*********************************************************************************************************************************
  Service name:               Com_MainFunctionTx
@@ -1079,45 +1076,104 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 *******************************************************************************************************************************/
 Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 {
-	if ( PduId > PduIdMax)
-	{
-		return E_NOT_OK ;
+    PduInfoType* pduinfo;
+    uint8 ComSignalIndex, ComSignalGroupIndex, ComUpdateBitPositionLocal;
+
+    if ( PduId > ComMaxIPduCnt)
+    {
+        return E_NOT_OK ;
 #if (ComConfigurationUseDet == true )
-Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_PARAM);
+        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_PARAM);
 #endif
-	}
-	else if (ComState == COM_UNINIT){
-			return E_NOT_OK ;
+    }
+    else if (ComState == COM_UNINIT){
+        return E_NOT_OK ;
 #if (ComConfigurationUseDet == true )
-Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_UNINIT);
+        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_UNINIT);
 #endif	
-	}
-	else {
+    }
+    else {
 #if (ComEnableMDTForCyclicTransmission == true)
-				if(MinimumDelayTime == 0){
- #endif
-								if(Com.ComConfig.ComIPdu[PduId].ComTxIpdu.ComTxIPduClearUpdateBit == Transmit) {
-									if( PduR_ComTransmit(PduId,const PduInfoType* info)
-									
-								}
-								else if(Com.ComConfig.ComIPdu[PduId].ComTxIpdu.ComTxIPduClearUpdateBit == Confirmation){
-									
-								}
-								else {
-									/* Misra */
-								}
-#if (ComEnableMDTForCyclicTransmission == true)
-				}
-				else {
-				return E_NOT_OK;
-				}
+        if(MinimumDelayTime == 0){
 #endif
-		
-	}
-		
-	
-	
-	
+            if(Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit == Transmit)
+            {
+                if( PduR_ComTransmit(PduId,pduinfo) == E_OK)
+                {
+
+                    /* Loop over all Signals in this IPDU */
+                    for(ComSignalIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+                    {
+                        ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
+
+                        /* Check if update bit is set*/
+                        if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+                        {
+
+                            /* Clear update bit */
+                            Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+                        }
+                        else
+                        {
+
+                        }
+                    }
+                    /* Loop over all Signal groups in this IPDU */
+                    for(ComSignalGroupIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+                    {
+                        ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
+
+                        /* Check if update bit is set*/
+                        if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+                        {
+                            /* Clear update bit */
+                            Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+                        }
+                        else
+                        {
+
+                        }
+                    }
+
+
+
+                    return E_OK;
+                }
+                else if (PduR_ComTransmit(PduId,pduinfo) == E_NOT_OK)
+                {
+
+                    return E_NOT_OK;
+
+                }
+
+            }
+            else if(Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit  == Confirmation)
+            {
+
+                if( PduR_ComTransmit(PduId,pduinfo) == E_OK)
+                {
+
+                    return E_OK;
+
+                }
+                else if (PduR_ComTransmit(PduId,pduinfo) == E_NOT_OK)
+                {
+
+                    return E_NOT_OK;
+
+                }
+            }
+            else {
+                /* Misra */
+            }
+#if (ComEnableMDTForCyclicTransmission == true)
+        }
+        else {
+            return E_NOT_OK;
+        }
+#endif
+
+    }
 
 
 
@@ -1166,11 +1222,15 @@ Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_UNINIT);
 
 
 
-   return ;
+
+
+
+
+   return E_OK;
 }
 
 
 void main(void)
 {
-test
+
 }

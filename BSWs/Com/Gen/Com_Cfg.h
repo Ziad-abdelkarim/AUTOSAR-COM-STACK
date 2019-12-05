@@ -17,7 +17,7 @@ AUTOSAR Version:                                          4.2.2
 #define ComMaxGroupSignalCnt   (uint8)2
 #define ComMaxSignalCnt   (uint8)4
 #define ComMaxIPduGroupCnt (uint8)2
-
+#define ComMaxIPduCnt (uint8)2
 
 
 /**************************************************************************************************
