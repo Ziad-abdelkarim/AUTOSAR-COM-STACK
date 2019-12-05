@@ -681,21 +681,22 @@ void Com_TxConfirmation(PduIdType TxPduId)
 void Com_MainFunctionTx(void)
 {
     uint8 IPduIdIndex;
-    
-	ComIPdu_type *ComIPduLoc;
-	ComTeamIPdu_type *ComTeamIPduLoc;
+    uint8 SignalIdIndex;
+	uint8 SignalGroupIdIndex;
+	
 	uint8   ComTeamTxIPduNumberOfRepetitionsLoc;
 	float32 ComTeamTxModeRepetitionPeriodLoc;
 	float32 ComTeamTxModeTimePeriodLoc;
 	float32 ComTeamMinimumDelayTimerLoc;
+	
+	ComIPdu_type *ComIPduLoc;
+	ComTeamIPdu_type *ComTeamIPduLoc;
     
-	for ( IPduIdIndex = 0; IPduIdIndex < COM_MAX_IPDU_CNT; IPduIdIndex++)
-	{
-		
+	for ( IPduIdIndex = 0; IPduIdIndex < ComMaxIPduCnt; IPduIdIndex++)
+	{		
 		ComIPduLoc =&Com.ComConfig.ComIPdu[IPduIdIndex]
 		ComTeamIPduLoc = &ComTeamConfig.ComTeamIPdu[IPduIdIndex];
 	
-		
 		/* check if  IPdu Direction should be transmitted */
 		if (ComIPduLoc->ComIPduDirection == SEND) 
 		{
@@ -703,6 +704,7 @@ void Com_MainFunctionTx(void)
 			ComTeamTxModeRepetitionPeriodLoc    = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod; 
 			ComTeamTxModeTimePeriodLoc          = ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod;
 			ComTeamMinimumDelayTimerLoc         = ComTeamIPduLoc->ComTeamTxMode.ComTeamMinimumDelayTimer;
+		
 			if(ComTeamMinimumDelayTimerLoc > 0)
 				{
 					ComTeamMinimumDelayTimerLoc	-= Com.ComConfig.ComTimeBase.ComTxTimeBase;	
@@ -817,11 +819,56 @@ void Com_MainFunctionTx(void)
 			{
 				/* Don't send!*/
 			}					
+			if(Com.ComConfig.ComIPdu[IPduIdIndex].ComIPduSignalProcessing==DEFERRED)
+			{
+				for ( SignalIdIndex = 0; Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalRef[SignalIdIndex] !=NULL; SignalIdIndex++)
+					{
+					 if(ComTeamConfig.ComTeamSignal[SignalIdIndex].ComTeamSignalConfirmed)
+					 {
+						 if(Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalRef[SignalIdIndex]->ComNotification !=NULL)
+						 {
+							 Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalRef[SignalIdIndex]->ComNotification();
+						 }
+						 else
+						 {
+							 /*misra*/
+						 }
+						 ComTeamConfig.ComTeamSignal[SignalIdIndex].ComTeamSignalConfirmed=false;
+					 }
+                     else
+					 {
+						 /*misra*/
+					 }						 
+					}
+				for ( SignalGroupIdIndex = 0; Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalGroupRef[SignalGroupIdIndex] !=NULL; SignalGroupIdIndex++)
+					{
+					 if(ComTeamConfig.ComTeamSignalGroup[SignalGroupIdIndex].ComTeamSignalGroupConfirmed)
+					 {
+						 if(Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalGroupRef[SignalGroupIdIndex]->ComNotification !=NULL)
+						 {
+							 Com.ComConfig.ComIPdu[IPduIdIndex]. ComIPduSignalGroupRef[SignalGroupIdIndex]->ComNotification();
+						 }
+						 else
+						 {
+							 /*misra*/
+						 }
+						 ComTeamConfig.ComTeamSignalGroup[SignalGroupIdIndex].ComTeamSignalGroupConfirmed=false;
+					 }
+                     else
+					 {
+						 /*misra*/
+					 }						 
+					}	
+			else
+			{
+				/*misra*/
+			}	
 		}
 		else
 		{
 		 /*IPdu Direction is not send*/	
-		}	
+		}
+		
 	}
 	return;
 }
