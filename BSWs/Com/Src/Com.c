@@ -348,6 +348,20 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
         return COM_SERVICE_NOT_AVAILABLE;
     }
 
+  uint8 ApiId=0x0a;
+    
+    /*
+     [SWS_Com_00804] ⌈Error code if any other API service, except Com_GetStatus, is called before the AUTOSAR COM module was initialized with Com_Init
+     or after a call to Com_Deinit:
+     error code: COM_E_UNINIT
+     value [hex]: 0x02
+     (SRS_BSW_00337)
+   */
+    if(Com_StateType==COM_UNINIT)
+    {
+        Det_ReportError(ModuleId,InstanceId,ApiId,COM_E_UNINIT);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
 
     /*
       [SWS_Com_00803] ⌈API service called with wrong parameter:
@@ -381,11 +395,24 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
            (SRS_Com_02037)
          */
 
+    /*
+      [SWS_Com_00805] ⌈NULL pointer checking:
+      error code: COM_E_PARAM_POINTER
+      value [hex]: 0x03
+      (SRS_BSW_00414)
+    */
+    else if(SignalDataPtr==NULL)
+    {
+        Det_ReportError(ModuleId,InstanceId,ApiId,COM_E_PARAM_POINTER);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
 
 		Com_SignalType* ComSignalLocal;
 		Com_IPduType* ComIPduLocal;
 		ComTeamIPdu_type* ComTeamIPduLocal;
 
+    else
+    {
 
 		/*
 		 * [SWS_Com_00625] ⌈If the updated signal has the ComTransferProperty TRIG-GERED and it is assigned to an I-PDU with ComTxModeMode DIRECT or MIXED,
@@ -438,6 +465,8 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 							}
 							break;
 
+                switch (Signal -> ComTransferProperty)
+                {
 
                         /*
                          * SWS_Com_00768] ⌈At a send request of a signal with ComTransferProperty TRIG-GERED_ON_CHANGE_WITHOUT_REPETITION assigned to an I-PDU with ComTxModeMode DIRECT or MIXED,
@@ -484,11 +513,6 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 
     return COM_SERVICE_NOT_AVAILABLE;
 }
-
-
-
-
-
 
 
 /*********************************************************************************************************************************
