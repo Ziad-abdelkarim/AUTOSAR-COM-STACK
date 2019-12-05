@@ -1049,6 +1049,108 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 
    return ;
 }
+/*********************************************************************************************************************************
+ Service name:               Com_MainFunctionTx
+ Service ID:                    0x17
+ Parameters (in):               None
+ Parameters (inout):            PduId
+ Parameters (out):              None
+ Return value:                  Std_ReturnType
+ Description:      
+						By a call to Com_TriggerIPDUSend the I-PDU with the given ID is triggered for transmission.
+*******************************************************************************************************************************/
+Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
+{
+	if ( PduId > PduIdMax)
+	{
+		return E_NOT_OK ;
+#if (ComConfigurationUseDet == true )
+Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_PARAM);
+#endif
+	}
+	else if (ComState == COM_UNINIT){
+			return E_NOT_OK ;
+#if (ComConfigurationUseDet == true )
+Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_UNINIT);
+#endif	
+	}
+	else {
+#if (ComEnableMDTForCyclicTransmission == true)
+				if(MinimumDelayTime == 0){
+ #endif
+								if(Com.ComConfig.ComIPdu[PduId].ComTxIpdu.ComTxIPduClearUpdateBit == Transmit) {
+									if( PduR_ComTransmit(PduId,const PduInfoType* info)
+									
+								}
+								else if(Com.ComConfig.ComIPdu[PduId].ComTxIpdu.ComTxIPduClearUpdateBit == Confirmation){
+									
+								}
+								else {
+									/* Misra */
+								}
+#if (ComEnableMDTForCyclicTransmission == true)
+				}
+				else {
+				return E_NOT_OK;
+				}
+#endif
+		
+	}
+		
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   return ;
+}
+
 
 void main(void)
 {
