@@ -344,7 +344,9 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
    */
     if(ComState==COM_UNINIT)
     {
-        Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_UNINIT);
+		#if ComConfigurationUseDet == true
+			Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_UNINIT);
+		#endif
         return COM_SERVICE_NOT_AVAILABLE;
     }
 
@@ -356,7 +358,9 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
    */
     else if(SignalId >= ComMaxSignalCnt)
     {
-        Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_PARAM);
+		#if ComConfigurationUseDet == true
+			Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_PARAM);
+		#endif
         return COM_SERVICE_NOT_AVAILABLE;
     }
 
@@ -368,8 +372,10 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
     */
     else if(SignalDataPtr == NULL)
     {
-        Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_PARAM_POINTER);
-        return COM_SERVICE_NOT_AVAILABLE;
+		#if ComConfigurationUseDet == true
+			Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_PARAM_POINTER);
+        #endif
+		return COM_SERVICE_NOT_AVAILABLE;
     }
 
     else
@@ -500,8 +506,9 @@ uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
 		value [hex]: 0x02
 		(SRS_BSW_00337)
 		*/
-		Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_UNINIT);
-		return COM_SERVICE_NOT_AVAILABLE;
+		#if ComConfigurationUseDet == true
+			Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_UNINIT);
+		#endif
   
 	}
 	else
@@ -514,8 +521,9 @@ uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
 			  value [hex]: 0x03
 			  (SRS_BSW_00414)
 			*/
-			Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_PARAM_POINTER);
-			return COM_SERVICE_NOT_AVAILABLE; 
+			#if ComConfigurationUseDet == true
+				Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_PARAM_POINTER);
+			#endif
 		}
 		else
 		{
@@ -527,8 +535,9 @@ uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
 				value [hex]: 0x01
 				(SRS_BSW_00337)
 				*/
-				Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_PARAM);
-				return COM_SERVICE_NOT_AVAILABLE;
+				#if ComConfigurationUseDet == true
+					Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_PARAM);
+				#endif
 			}
 			else
 			{	
@@ -1231,7 +1240,7 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
 
 
 
-   return ;
+   return COM_SERVICE_NOT_AVAILABLE;
 }
 
 
@@ -1280,7 +1289,7 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 *******************************************************************************************************************************/
 Std_ReturnType Com_TriggerIPDUSend(PduIdType PduId)
 {
-	return;
+	return E_NOT_OK;
 }
 
 void main(void)
