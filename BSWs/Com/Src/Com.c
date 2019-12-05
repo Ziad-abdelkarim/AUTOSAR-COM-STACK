@@ -1076,7 +1076,7 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 *******************************************************************************************************************************/
 Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 {
-    PduInfoType* pduinfo;
+    PduInfoType* pduinfo = Com. ;
     uint8 ComSignalIndex, ComSignalGroupIndex, ComUpdateBitPositionLocal;
 
     if ( PduId > ComMaxIPduCnt)
@@ -1096,73 +1096,59 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 #if (ComEnableMDTForCyclicTransmission == true)
         if(MinimumDelayTime == 0){
 #endif
-            if(Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit == Transmit)
-            {
+            
                 if( PduR_ComTransmit(PduId,pduinfo) == E_OK)
                 {
 
-                    /* Loop over all Signals in this IPDU */
-                    for(ComSignalIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
-                    {
-                        ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
+					if(Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit == Transmit)
+					{
+						/* Loop over all Signals in this IPDU */
+						for(ComSignalIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+						{
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
 
-                        /* Check if update bit is set*/
-                        if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
-                        {
+							/* Check if update bit is set*/
+							if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+							{
 
-                            /* Clear update bit */
-                            Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
-                        }
-                        else
-                        {
+								/* Clear update bit */
+								Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+							}
+							else
+							{
 
-                        }
-                    }
-                    /* Loop over all Signal groups in this IPDU */
-                    for(ComSignalGroupIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
-                    {
-                        ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
+							}
+						}
+						/* Loop over all Signal groups in this IPDU */
+						for(ComSignalGroupIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+						{
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
 
-                        /* Check if update bit is set*/
-                        if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
-                        {
-                            /* Clear update bit */
-                            Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
-                        }
-                        else
-                        {
+							/* Check if update bit is set*/
+							if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+							{
+								/* Clear update bit */
+								Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+							}
+							else
+							{
 
-                        }
-                    }
-
+							}
+						}
+					}
 
 
                     return E_OK;
                 }
-                else if (PduR_ComTransmit(PduId,pduinfo) == E_NOT_OK)
+                else
                 {
 
                     return E_NOT_OK;
 
                 }
 
-            }
-            else if(Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit  == Confirmation)
-            {
-
-                if( PduR_ComTransmit(PduId,pduinfo) == E_OK)
-                {
-
-                    return E_OK;
-
-                }
-                else if (PduR_ComTransmit(PduId,pduinfo) == E_NOT_OK)
-                {
-
-                    return E_NOT_OK;
-
-                }
-            }
+            
+           
             else {
                 /* Misra */
             }
