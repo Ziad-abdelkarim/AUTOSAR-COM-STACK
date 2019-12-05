@@ -13,6 +13,7 @@ AUTOSAR Version:                            4.2.2
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 
 #include <inc/hw_ints.h>
 #include <inc/hw_types.h>

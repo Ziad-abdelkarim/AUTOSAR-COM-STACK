@@ -18,6 +18,7 @@ Can.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdbool.
 Can.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stddef.h
 Can.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_ti_config.h
 Can.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/linkage.h
+Can.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/string.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h
@@ -53,6 +54,7 @@ C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdbool.h:
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stddef.h: 
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/_ti_config.h: 
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/linkage.h: 
+C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/string.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h: 

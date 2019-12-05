@@ -22,7 +22,7 @@ typedef struct {
 	uint8  ComTeamTxIPduNumberOfRepetitions;
 	float32 ComTeamTxModeRepetitionPeriod;
 	float32 ComTeamTxModeTimePeriod;
-	float32ComTeamMinimumDelayTimer;
+	float32 ComTeamMinimumDelayTimer;
 }ComTeamTxMode_type;
 
 typedef struct 

@@ -14,6 +14,31 @@ AUTOSAR Version:                                    4.2.2
 /*******************************************************************************************************************************
 **                                   Variables Definitions                                                                    **
 ********************************************************************************************************************************/
+#define COM_MODULE_ID            (uint16)1
+#define COM_INSTANCE_ID          (uint8)1
+/*********************************************************************************************************************************
+**                                                                  Development Errors                                                                           **
+*********************************************************************************************************************************/
+/* [SWS_Com_00803] ⌈API service
+called with wrong parameter⌋(SRS_BSW_00337) */
+#define COM_E_PARAM (uint8)0x01
+
+/* [SWS_Com_00804] ⌈Error code if
+any other API service, except
+Com_GetStatus, is called before the
+AUTOSAR COM module was initialized with Com_Init or after a call to
+Com_Deinit⌋(SRS_BSW_00337) */
+#define COM_E_UNINIT (uint8)0x02
+
+/* [SWS_Com_00805] ⌈NULL pointer
+checking⌋(SRS_BSW_00414) */
+#define COM_E_PARAM_POINTER (uint8)0x03
+
+/* [SWS_Com_00837] ⌈Invalid configuration set selection (SRS_BSW_00414) */
+#define COM_E_INIT_FAILED   (uint8)0x04
+
+/* [SWS_Com_00864] ⌈Transmission request was skipped (SRS_BSW_00452) */
+#define COM_E_SKIPPED_TRANSMISSION  (uint8)0x05
 
 
 /*******************************************************************************************************************************

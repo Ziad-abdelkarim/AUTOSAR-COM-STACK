@@ -607,7 +607,7 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
     if(ControllerId >= NUMBER_OF_CONTROLLERS)
     {
 #if(CanIfPublicDevErrorDetect== true)
-       Det_ReportError(Canif_ModuleID, , Canif_SetControllerModeId, CANIF_E_PARAM_CONTROLLERID);
+       Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, (uint8)0x03, CANIF_E_PARAM_CONTROLLERID);
 #endif
        return E_NOT_OK;
     }
@@ -626,7 +626,7 @@ Std_ReturnType CanIf_SetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
     if((ControllerMode != CANIF_CS_STARTED)&&(ControllerMode != CANIF_CS_STOPPED)&&(ControllerMode != CANIF_CS_SLEEP))
     {
 #if(CanIfPublicDevErrorDetect == true)
-         Det_ReportError(Canif_ModuleID, 0, Canif_SetControllerModeId, CANIF_E_PARAM_CTRLMODE);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, (uint8)0x03, CANIF_E_PARAM_CTRLMODE);
 #endif
          return E_NOT_OK;
     }
@@ -766,7 +766,7 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
     if(ControllerId >= NUMBER_OF_CONTROLLERS)
     {
 #if(CanIfPublicDevErrorDetect == true)
-         Det_ReportError(Canif_ModuleID, , Canif_SetControllerModeId, CANIF_E_PARAM_CONTROLLERID);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, (uint8)0x04, CANIF_E_PARAM_CONTROLLERID);
 #endif
          return E_NOT_OK;
     }
@@ -785,7 +785,7 @@ Std_ReturnType CanIf_GetControllerMode(uint8 ControllerId,CanIf_ControllerModeTy
     if(ControllerModePtr == NULL)
     {
 #if (CanIfPublicDevErrorDetect == true)
-         Det_ReportError(Canif_ModuleID, 0, Canif_GetControllerModeID, CANIF_E_PARAM_POINTER);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, (uint8)0x04, CANIF_E_PARAM_POINTER);
 #endif
          return E_NOT_OK;
     }
@@ -903,7 +903,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
                             if (CanIfTxInfoPtr == NULL)
                             {
 #if(CanIfPublicDevErrorDetect == true)
-                                Det_ReportError(MODULE_ID, INSTANCE_ID, 0x05, CANIF_E_PARAM_POINTER);
+                                Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x05, CANIF_E_PARAM_POINTER);
 #endif
                                 return E_NOT_OK;
                             }
@@ -915,7 +915,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
                                 if (CanIfTxSduId >= CanIfMaxTxPduCfg)
                                 {
 #if(CanIfPublicDevErrorDetect == true)
-                                    Det_ReportError(MODULE_ID, INSTANCE_ID, 0x05, CANIF_E_INVALID_TXPDUID);
+                                    Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x05, CANIF_E_INVALID_TXPDUID);
 #endif
                                     return E_NOT_OK;
                                 }
@@ -931,7 +931,7 @@ Std_ReturnType CanIf_Transmit(PduIdType CanIfTxSduId,
                                     if (CanIfTxInfoPtr->SduLength > 8)
                                     {
 #if(CanIfPublicDevErrorDetect == true)
-                                        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x05, CANIF_E_DATA_LENGTH_MISMATCH);
+                                        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x05, CANIF_E_DATA_LENGTH_MISMATCH);
 #endif
                                         return E_NOT_OK;
                                     }
@@ -1068,7 +1068,7 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
                             > 8|| (RxBuffer[CanIfRxSduId].SduDataPtr)== NULL)
                     {
 #if(CanIfPublicDevErrorDetect == true)
-                        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x06, CANIF_E_PARAM_POINTER);
+                        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x06, CANIF_E_PARAM_POINTER);
 #endif
                         return E_NOT_OK;
                     }
@@ -1138,14 +1138,14 @@ CanIf_NotifStatusType CanIf_ReadTxNotifStatus(PduIdType CanIfTxSduId){
         {
             /*THE ERROR TO BE RAISED HERE*/
 #if(CanIfPublicDevErrorDetect == true)
-        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_INVALID_RXPDUID);
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x07, CANIF_E_INVALID_RXPDUID);
 #endif
         }
     }
     else
     {
 #if(CanIfPublicDevErrorDetect == true)
-        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_UNINIT);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x07, CANIF_API_ID,CANIF_E_UNINIT);
 #endif
         /*MISRA*/
     }
@@ -1231,7 +1231,7 @@ CanIf_NotifStatusType CanIf_ReadRxNotifStatus(PduIdType CanIfRxSduId)
         else
         {
 #if(CanIfPublicDevErrorDetect == true)
-        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_UNINIT);
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x08, CANIF_E_UNINIT);
 #endif
             /*MISRA*/
         }
@@ -1265,7 +1265,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
     if (CanIfState == CANIF_UNINIT)
     {
 #if(CanIfPublicDevErrorDetect == true)
-        Det_ReportError(MODULE_ID, INSTACE_ID, 0x09, CANIF_E_UNINIT);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x09, CANIF_E_UNINIT);
 #endif
         return E_NOT_OK;
     }
@@ -1278,7 +1278,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
         if (ControllerId >= NUMBER_OF_CONTROLLERS)
         {
 #if(CanIfPublicDevErrorDetect == true)
-            Det_ReportError(MODULE_ID, INSTACE_ID, 0x09, CANIF_E_PARAM_CONTROLLERID);
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x09, CANIF_E_PARAM_CONTROLLERID);
 #endif
             return E_NOT_OK;
         }
@@ -1312,7 +1312,7 @@ Std_ReturnType CanIf_SetPduMode(uint8 ControllerId,
                             && PduModeRequest != CANIF_ONLINE)
                     {
 #if(CanIfPublicDevErrorDetect == true)
-                        Det_ReportError(MODULE_ID, INSTACE_ID, 0x09, CANIF_E_PARAM_PDU_MODE);
+                        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x09, CANIF_E_PARAM_PDU_MODE);
 #endif
                         return E_NOT_OK;
 
@@ -1360,7 +1360,7 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,
         if (ControllerId >= NUMBER_OF_CONTROLLERS)
         {
 #if(CanIfPublicDevErrorDetect == true)
-            Det_ReportError(MODULE_ID, INSTANCE_ID, 0x0A, CANIF_E_PARAM_CONTROLLERID);
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x0A, CANIF_E_PARAM_CONTROLLERID);
 #endif
             return E_NOT_OK;
         }
@@ -1372,7 +1372,7 @@ Std_ReturnType CanIf_GetPduMode(uint8 ControllerId,
             if (PduModePtr == NULL)
             {
 #if(CanIfPublicDevErrorDetect == true)
-                Det_ReportError(MODULE_ID, INSTANCE_ID, 0x0A, CANIF_E_PARAM_POINTER);
+                Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x0A, CANIF_E_PARAM_POINTER);
 #endif
                 return E_NOT_OK;
             }
@@ -1413,7 +1413,7 @@ Std_ReturnType CanIf_SetBaudrate(uint8 ControllerId, uint16 BaudRateConfigID)
          to the Det_ReportError service of the
          DET module */
 #if(CanIfPublicDevErrorDetect == true)
-        Det_ReportError(CANIF_MODULE_ID,CANIF_INSTANCE_ID,CANIF_API_ID,CANIF_E_PARAM_CONTROLLERID);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x27, CANIF_E_PARAM_CONTROLLERID);
 #endif
         return E_NOT_OK;
     }
@@ -1450,7 +1450,7 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
     if (CanIfState == CANIF_UNINIT)
     {
 #if(CanIfPublicDevErrorDetect == true)
-        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x13, CANIF_E_UNINIT);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x13, CANIF_E_UNINIT);
 #endif
     }
     else
@@ -1462,7 +1462,7 @@ void CanIf_TxConfirmation(PduIdType CanTxPduId)
         if (CanTxPduId > CanIfMaxTxPduCfg)
         {
 #if(CanIfPublicDevErrorDetect == true)
-            Det_ReportError(MODULE_ID, INSTANCE_ID, 0x13, CANIF_E_INVALID_TXPDUID);
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x13, CANIF_E_INVALID_TXPDUID);
 #endif
         }
         else
@@ -1594,7 +1594,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
             if (PduInfoPtr->SduLength > 8)
             {
 #if (CanIfPublicDevErrorDetect == true)
-                Det_ReportError(MODULE_ID, INSTANCE_ID, 0x14,CANIF_E_INVALID_DLC);
+                Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x14, CANIF_E_INVALID_DLC);
 #endif
             }
             else
@@ -1715,7 +1715,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                                  CanIf shall report development error code CANIF_E_INVALID_DLC to the Det_ReportError()
                                  service of the DET module.*/
 #if (CanIfPublicDevErrorDetect == true)
-                                Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_INVALID_DLC);
+                                Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x14, CANIF_E_INVALID_DLC);
 #endif
                             }
 
@@ -1795,7 +1795,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                              to the Det_ReportError service of the DET module, when CanIf_RxIndication()
                              is called. c(SRS_BSW_00323)*/
 #if (CanIfPublicDevErrorDetect == true)
-                            Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_PARAM_CANID);
+                            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x14, CANIF_E_PARAM_CANID);
 #endif
                         }
                     }
@@ -1807,7 +1807,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                      to the Det_ReportError service of the DET module, when CanIf_RxIndication()
                      is called. c(SRS_BSW_00323)*/
 #if (CanIfPublicDevErrorDetect == true)
-                    Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_PARAM_HOH);
+                    Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x14, CANIF_E_PARAM_HOH);
 #endif
                 }
             }
@@ -1819,7 +1819,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
              to the Det_ReportError service of the DET module, when CanIf_RxIndication()
              is called. c(SRS_BSW_00323)*/
 #if (CanIfPublicDevErrorDetect == true)
-            Det_ReportError(MODULE_ID,INSTANCE_ID,0x14,CANIF_E_PARAM_POINTER);
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x14, CANIF_E_PARAM_POINTER);
 #endif
         }
     }
@@ -1827,7 +1827,7 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
 
 /*********************************************************************************************************************************
  Service name:                                         CanIf_ControllerBusOff
- Service ID[hex]:                                               0x14
+ Service ID[hex]:                                               0x16
  Sync/Async:                                                 Synchronous
  Reentrancy:                                                 Reentrant
  Parameters (in):                                            ControllerId      -->Abstracted CanIf ControllerId which is assigned to a
@@ -1863,7 +1863,7 @@ void CanIf_ControllerBusOff(uint8 ControllerId)
         if (ControllerId >= NUMBER_OF_CONTROLLERS)
         {
 #if(CanIfPublicDevErrorDetect == true)
-            Det_ReportError(MODULE_ID, INSTANCE_ID, 0x14, CANIF_E_PARAM_CONTROLLER);
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x16, CANIF_E_PARAM_CONTROLLER);
 #endif
         }
         else
@@ -1948,7 +1948,7 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
     if (CanIfState == CANIF_UNINIT)
     {
 #if (CanIfPublicDevErrorDetect == true)
-        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, CANIF_E_UNINIT);
+        Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x17, CANIF_E_UNINIT);
 #endif
     }
     else
@@ -1960,7 +1960,7 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
         if (ControllerId >= NUMBER_OF_CONTROLLERS)
         {
 #if (CanIfPublicDevErrorDetect == true)
-            Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, CANIF_E_PARAM_CONTROLLERID);
+            Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x17, CANIF_E_PARAM_CONTROLLERID);
 #endif
         }
         else
@@ -1976,7 +1976,7 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
                     && ControllerMode != CANIF_CS_STOPPED)
             {
 #if (CanIfPublicDevErrorDetect == true)
-                Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, CANIF_E_PARAM_CTRLMODE);
+                Det_ReportError(CANIF_MODULE_ID, CANIF_INSTANCE_ID, 0x17, CANIF_E_PARAM_CTRLMODE);
 #endif
             }
             else

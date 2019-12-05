@@ -27,12 +27,12 @@ ComTeamConfig_type ComTeamConfig;
  **                                                        Local Functions                                                                                        **
  *********************************************************************************************************************************/
 
-static void Com_WriteSignalToIPdu(Com_SignalIdType SignalId, void *SignalDataPtr);
+static void Com_WriteSignalToIPdu(Com_SignalIdType SignalId,const void *SignalDataPtr);
 static void Com_ReadSignalFromIPdu(Com_SignalIdType SignalId, void* SignalDataPtr);
 static void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId);
 static void Com_CopySignalGroupToShadowBuffer(Com_SignalGroupIdType SignalGroupId);
 
-void Com_WriteSignalToIPdu(Com_SignalIdType SignalId, void *SignalDataPtr)
+void Com_WriteSignalToIPdu(Com_SignalIdType SignalId,const void *SignalDataPtr)
 {
 	Com_SignalType *ComSignalLocal;
 	Com_IPduType *ComIPduLocal;
@@ -334,55 +334,155 @@ void Com_Init( const Com_ConfigType* config)
 *******************************************************************************************************************************/
 uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 {
+	uint8 ComIPduIndex, ComSignalIndex;
+    /*
+     [SWS_Com_00804] ⌈Error code if any other API service, except Com_GetStatus, is called before the AUTOSAR COM module was initialized with Com_Init
+     or after a call to Com_Deinit:
+     error code: COM_E_UNINIT
+     value [hex]: 0x02
+     (SRS_BSW_00337)
+   */
+    if(ComState == COM_UNINIT)
+    {
+        Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_UNINIT);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
 
 
+    /*
+      [SWS_Com_00803] ⌈API service called with wrong parameter:
+      error code: COM_E_PARAM
+      value [hex]: 0x01
+      (SRS_BSW_00337)
+   */
+    else if(SignalId >= ComMaxSignalCnt)
+    {
+        Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_PARAM);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
+
+    /*
+      [SWS_Com_00805] ⌈NULL pointer checking:
+      error code: COM_E_PARAM_POINTER
+      value [hex]: 0x03
+      (SRS_BSW_00414)
+    */
+    else if(SignalDataPtr == NULL)
+    {
+        Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_PARAM_POINTER);
+        return COM_SERVICE_NOT_AVAILABLE;
+    }
+
+    else
+    {
+        /*
+         *  [SWS_Com_00624] ⌈The service Com_SendSignal shall update the signal object identified by SignalId with the signal referenced by
+           the SignalDataPtr parameter.
+           (SRS_Com_02037)
+         */
 
 
+		Com_SignalType* ComSignalLocal;
+		Com_IPduType* ComIPduLocal;
+		ComTeamIPdu_type* ComTeamIPduLocal;
 
 
+		/*
+		 * [SWS_Com_00625] ⌈If the updated signal has the ComTransferProperty TRIG-GERED and it is assigned to an I-PDU with ComTxModeMode DIRECT or MIXED,
+		   then Com_SendSignal shall perform an immediate transmission (within the next main function at the latest)
+		   of that I-PDU, unless the sending is delayed or prevented by other COM mechanisms.⌋ (SRS_Com_02037)
+		 */
+
+		for (ComIPduIndex=0; ComIPduIndex < ComMaxIPduCnt; ComIPduIndex++)
+		{
+			for (ComSignalIndex=0; Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+			{
+				if (Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex]->ComHandleId == SignalId)
+				{
+					ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
+					ComSignalLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex];
+					ComTeamIPduLocal = &ComTeamConfig.ComTeamIPdu[ComIPduIndex];
+					
+					ComTeamIPduLocal->ComTeamTxMode.ComTeamTxModeRepetitionPeriod = 0;
+
+					switch (ComSignalLocal->ComTransferProperty)
+					{
+						 /*[SWS_Com_00330] At any send request of a signal with ComTransferProperty TRIGGERED assigned to an I-PDU with ComTxModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately
+							(within the next main function at the lat-est) initiate ComTxModeNumberOfRepetitions plus one transmissions
+							of the as-signed I-PDU.
+							(SRS_Com_02083)
+						  */
+
+						case TRIGGERED:
+							ComTeamIPduLocal->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = ComIPduLocal->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions+1;
+							break;
 
 
+                         /*
+                          * [SWS_Com_00734] ⌈At a send request of a signal with ComTransferProperty TRIGGERED_ON_CHANGE assigned to an I-PDU with ComTxModeMode
+                             DIRECT or MIXED, the AUTOSAR COM module shall immediately (within the next main func-tion at the latest)
+                             initiate ComTxModeNumberOfRepetitions plus one transmissions of the assigned I-PDU,
+                             if the new sent signal differs to the locally stored
+                             (last sent or init) in length or value.
+                             (SRS_Com_02083)
+                          */
+
+						case TRIGGERED_ON_CHANGE:
+							if(memcmp(ComSignalLocal->ComBufferRef, SignalDataPtr, ComSignalLocal->ComSignalLength))
+							{
+								ComTeamIPduLocal->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = ComIPduLocal->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions + 1;
+							}
+							else
+							{
+							
+							}
+							break;
 
 
+                        /*
+                         * SWS_Com_00768] ⌈At a send request of a signal with ComTransferProperty TRIG-GERED_ON_CHANGE_WITHOUT_REPETITION assigned to an I-PDU with ComTxModeMode DIRECT or MIXED,
+                           the AUTOSAR COM module shall immediate-ly (within the next main function at the latest) initiate one transmission of the as-signed I-PDU,
+                           if the new sent signal differs to the locally stored (last sent or init) in length or value.
+                           (SRS_Com_02083)
+                         */
+						case TRIGGERED_ON_CHANGE_WITHOUT_REPETITION:
+							if(memcmp(ComSignalLocal->ComBufferRef, SignalDataPtr, ComSignalLocal->ComSignalLength))
+							{
+								ComTeamIPduLocal->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = 1;
+							}
+							else
+							{
+							
+							}
+							break;
 
+                        /*
+                         * SWS_Com_00767] ⌈At any send request of a signal with ComTransferProperty TRIGGERED_WITHOUT_REPETITION assigned to an I-PDU with ComTx-ModeMode DIRECT or MIXED,
+                           the AUTOSAR COM module shall immediately (with-in the next main function at the latest) initiate one transmission of the assigned I-PDU.
+                           (SRS_Com_02083)
+                         */
 
+						case TRIGGERED_WITHOUT_REPETITION:
+							ComTeamIPduLocal->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = 1;
+							break;
+					
+						default:
+							return COM_SERVICE_NOT_AVAILABLE;
+					}
+					
+					Com_WriteSignalToIPdu(SignalId,SignalDataPtr);
+					
+					return E_OK;
+				}
+				else
+				{
 
+				}
+			}		
+		}
+	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   return ;
+    return COM_SERVICE_NOT_AVAILABLE;
 }
 
 
@@ -1171,8 +1271,8 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
 *******************************************************************************************************************************/
 uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 {
-	/*[SWS_Com_00638] ⌈The service Com_ReceiveSignalGroup shall copy the received
-	signal group from the I-PDU to the shadow buffer.⌋ (SRS_Com_02041)*/
+	/*[SWS_Com_00638] âŒˆThe service Com_ReceiveSignalGroup shall copy the received
+	signal group from the I-PDU to the shadow buffer.âŒ‹ (SRS_Com_02041)*/
 	if(SignalGroupId < ComMaxSignalGroupCnt)
 	{	
 	 /*After this call, the group signals could be copied from the shadow buffer to the RTE
@@ -1199,7 +1299,7 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 *******************************************************************************************************************************/
 Std_ReturnType Com_TriggerIPDUSend(PduIdType PduId)
 {
-	
+	return;
 }
 
 void main(void)
