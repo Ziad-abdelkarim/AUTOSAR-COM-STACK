@@ -28,7 +28,8 @@ typedef              unsigned char                                              
 
 #define		          STD_ON															    	0x01u        /* Logical state ON*/
 #define 			     STD_OFF                                                                  0x00u        /* Logical state OFF */
-
+#define     COM_SERVICE_NOT_AVAILABLE   0x01u
+#define     COM_BUSY    0x02u
 /***************************************************************************************************
 **                                        Types Declerations                                                                       **
 ***************************************************************************************************/

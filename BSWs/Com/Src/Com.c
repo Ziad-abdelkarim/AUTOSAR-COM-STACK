@@ -1171,55 +1171,19 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
 *******************************************************************************************************************************/
 uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   return;
+	/*[SWS_Com_00638] ⌈The service Com_ReceiveSignalGroup shall copy the received
+	signal group from the I-PDU to the shadow buffer.⌋ (SRS_Com_02041)*/
+	if(SignalGroupId < ComMaxSignalGroupCnt)
+	{	
+	 /*After this call, the group signals could be copied from the shadow buffer to the RTE
+		by calling Com_ReceiveSignal.*/
+		Com_CopySignalGroupToShadowBuffer(SignalGroupId);
+		return E_OK;
+	}
+	else
+	{
+		return COM_SERVICE_NOT_AVAILABLE;
+	}
 }
 
 /*********************************************************************************************************************************
