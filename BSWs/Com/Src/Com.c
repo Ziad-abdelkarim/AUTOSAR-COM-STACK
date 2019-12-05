@@ -342,24 +342,9 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
      value [hex]: 0x02
      (SRS_BSW_00337)
    */
-    if(ComState == COM_UNINIT)
+    if(ComState==COM_UNINIT)
     {
         Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0A, COM_E_UNINIT);
-        return COM_SERVICE_NOT_AVAILABLE;
-    }
-
-  uint8 ApiId=0x0a;
-    
-    /*
-     [SWS_Com_00804] ⌈Error code if any other API service, except Com_GetStatus, is called before the AUTOSAR COM module was initialized with Com_Init
-     or after a call to Com_Deinit:
-     error code: COM_E_UNINIT
-     value [hex]: 0x02
-     (SRS_BSW_00337)
-   */
-    if(Com_StateType==COM_UNINIT)
-    {
-        Det_ReportError(ModuleId,InstanceId,ApiId,COM_E_UNINIT);
         return COM_SERVICE_NOT_AVAILABLE;
     }
 
@@ -389,31 +374,9 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 
     else
     {
-        /*
-         *  [SWS_Com_00624] ⌈The service Com_SendSignal shall update the signal object identified by SignalId with the signal referenced by
-           the SignalDataPtr parameter.
-           (SRS_Com_02037)
-         */
-
-    /*
-      [SWS_Com_00805] ⌈NULL pointer checking:
-      error code: COM_E_PARAM_POINTER
-      value [hex]: 0x03
-      (SRS_BSW_00414)
-    */
-    else if(SignalDataPtr==NULL)
-    {
-        Det_ReportError(ModuleId,InstanceId,ApiId,COM_E_PARAM_POINTER);
-        return COM_SERVICE_NOT_AVAILABLE;
-    }
-
-		Com_SignalType* ComSignalLocal;
-		Com_IPduType* ComIPduLocal;
-		ComTeamIPdu_type* ComTeamIPduLocal;
-
-    else
-    {
-
+        Com_SignalType* ComSignalLocal;
+        Com_IPduType* ComIPduLocal;
+        ComTeamIPdu_type* ComTeamIPduLocal;
 		/*
 		 * [SWS_Com_00625] ⌈If the updated signal has the ComTransferProperty TRIG-GERED and it is assigned to an I-PDU with ComTxModeMode DIRECT or MIXED,
 		   then Com_SendSignal shall perform an immediate transmission (within the next main function at the latest)
@@ -464,10 +427,6 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 							
 							}
 							break;
-
-                switch (Signal -> ComTransferProperty)
-                {
-
                         /*
                          * SWS_Com_00768] ⌈At a send request of a signal with ComTransferProperty TRIG-GERED_ON_CHANGE_WITHOUT_REPETITION assigned to an I-PDU with ComTxModeMode DIRECT or MIXED,
                            the AUTOSAR COM module shall immediate-ly (within the next main function at the latest) initiate one transmission of the as-signed I-PDU,
@@ -533,55 +492,53 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 *******************************************************************************************************************************/
 uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
 {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   return ;
+	if(ComState == COM_UNINIT)
+	{
+		/*[SWS_Com_00804] ⌈Error code if any other API service, except Com_GetStatus, is called before the AUTOSAR COM module was initialized with Com_Init
+		or after a call to Com_Deinit:
+		error code: COM_E_UNINIT
+		value [hex]: 0x02
+		(SRS_BSW_00337)
+		*/
+		Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_UNINIT);
+		return COM_SERVICE_NOT_AVAILABLE;
+  
+	}
+	else
+	{	
+		if(SignalDataPtr==NULL)
+		{
+			/*
+			  [SWS_Com_00805] ⌈NULL pointer checking:
+			  error code: COM_E_PARAM_POINTER
+			  value [hex]: 0x03
+			  (SRS_BSW_00414)
+			*/
+			Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_PARAM_POINTER);
+			return COM_SERVICE_NOT_AVAILABLE; 
+		}
+		else
+		{
+			if(SignalId >= ComMaxSignalCnt)
+			{
+				/* 
+				[SWS_Com_00803] ⌈API service called with wrong parameter:
+				error code: COM_E_PARAM
+				value [hex]: 0x01
+				(SRS_BSW_00337)
+				*/
+				Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_PARAM);
+				return COM_SERVICE_NOT_AVAILABLE;
+			}
+			else
+			{	
+				Com_ReadSignalFromIPdu(SignalId, SignalDataPtr);
+				return E_OK;	
+			}
+		} 
+	}
+	
+	return COM_SERVICE_NOT_AVAILABLE; 
 }
 
 
