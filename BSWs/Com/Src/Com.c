@@ -465,7 +465,9 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 					}
 					
 					Com_WriteSignalToIPdu(SignalId,SignalDataPtr);
+					ComTeamConfig.ComTeamSignal[ComSignalLocal->ComHandleId].ComTeamSignalUpdated = true;
 					
+
 					return E_OK;
 				}
 				else
