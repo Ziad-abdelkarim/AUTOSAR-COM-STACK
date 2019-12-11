@@ -260,6 +260,37 @@ void Com_CopySignalGroupToShadowBuffer(Com_SignalGroupIdType SignalGroupId)
 *******************************************************************************************************************************/
 void Com_Init( const Com_ConfigType* config)
 {
+    uint8 com_iteration1 , com_iteration2 , com_iteration3;
+    com_iteration1=com_iteration2=com_iteration3=0;
+
+    /*Initializing IPDUs The Whole Buffer by Unused Area Default*/
+    for (com_iteration1=0;com_iteration1<ComMaxIPduCnt;com_iteration1++)
+    {
+        for(com_iteration2=0; com_iteration2<Com.ComConfig.ComIPdu[com_iteration1].ComBufferSize;com_iteration2++){
+            Com.ComConfig.ComIPdu[com_iteration1].ComBufferRef[com_iteration2]=COM_TX_IPDU_UNUSED_AREAS_DEFAULT;
+        }
+    }
+
+
+    /*Initializing Signals Buffer By Init Values Of The Signal*/
+    for(com_iteration1=0;com_iteration1<ComMaxSignalCnt;com_iteration1++)
+    {
+        for(com_iteration2=0; com_iteration2<Com.ComConfig.ComSignal[com_iteration1].ComSignalLength;com_iteration2++){
+            Com.ComConfig.ComSignal[com_iteration1].ComBufferRef[com_iteration2]=Com.ComConfig.ComSignal[com_iteration1].ComSignalInitValue;
+        }
+        Com_WriteSignalToIPdu(Com.ComConfig.ComSignal[com_iteration1].ComHandleId, Com.ComConfig.ComSignal[com_iteration1].ComBufferRef);
+    }
+
+
+
+    /*Initializing Group Signals Buffer By Init Values Of The Signal*/
+    for(com_iteration1=0;com_iteration1<ComMaxGroupSignalCnt;com_iteration1++)
+    {
+        for(com_iteration2=0;com_iteration2<Com.ComConfig.ComGroupSignal[com_iteration1].ComSignalLength;com_iteration2++){
+            Com.ComConfig.ComGroupSignal[com_iteration1].ComBufferRef[com_iteration2]=Com.ComConfig.ComGroupSignal[com_iteration1].ComSignalInitValue;
+        }
+
+    }
 
 
 
@@ -301,10 +332,7 @@ void Com_Init( const Com_ConfigType* config)
 
 
 
-
-
-
-
+    ComState = COM_READY;
 
 
 
