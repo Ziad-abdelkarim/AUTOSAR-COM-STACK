@@ -15,7 +15,7 @@
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
 extern PduR_Type PduR;
-static PduR_StateType PduRState;
+static PduR_StateType PduRState = PDUR_UNINIT;
 
 
 

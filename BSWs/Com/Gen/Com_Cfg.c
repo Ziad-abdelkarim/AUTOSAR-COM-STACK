@@ -32,8 +32,8 @@ uint8 ComGroupSignal0Buffer[2];
 uint8 ComGroupSignal1Buffer[2];
 
 /* Com IPdu Buffers */
-uint8 ComIPdu0Buffer[8];
-uint8 ComIPdu1Buffer[8];
+uint8 ComIPdu0Buffer[5];
+uint8 ComIPdu1Buffer[5];
 
 Com_Type Com =
 {
@@ -152,6 +152,7 @@ Com_Type Com =
         .ComIPdu=
         {
             {
+			   .ComIPduLength = 5,
                .ComIPduDirection = SEND,
                .ComIPduHandleId= 0,
                .ComIPduSignalProcessing = DEFERRED,
@@ -191,6 +192,7 @@ Com_Type Com =
                 .ComBufferRef = ComIPdu0Buffer
             },
             {
+				.ComIPduLength = 5,
                 .ComIPduDirection = RECEIVE,
                 .ComIPduHandleId= 1,
                 .ComIPduSignalProcessing = IMMEDIATE,
