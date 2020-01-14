@@ -19,9 +19,9 @@
  ********************************************************************************************************************************/
 extern Com_Type Com;
 
-static Com_StateType ComState = COM_UNINIT;
+static ComState_Type ComState = COM_UNINIT;
 
-ComTeamConfig_type ComTeamConfig;
+ComTeamConfig_Type ComTeamConfig;
 
 /********************************************************************************************************************************
  **                                                        Local Functions                                                                                        **
@@ -187,7 +187,7 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
     {
         Com_SignalType* ComSignalLocal;
         Com_IPduType* ComIPduLocal;
-        ComTeamIPdu_type* ComTeamIPduLocal;
+        ComTeamIPdu_Type* ComTeamIPduLocal;
 		/*
 		 * [SWS_Com_00625] ⌈If the updated signal has the ComTransferProperty TRIG-GERED and it is assigned to an I-PDU with ComTxModeMode DIRECT or MIXED,
 		   then Com_SendSignal shall perform an immediate transmission (within the next main function at the latest)
@@ -731,7 +731,7 @@ void Com_MainFunctionTx(void)
     uint8 SignalIdIndex;
     uint8 SignalGroupIdIndex;
     Com_IPduType *ComIPduLoc;
-    ComTeamIPdu_type *ComTeamIPduLoc;
+    ComTeamIPdu_Type *ComTeamIPduLoc;
     boolean MinimumDelayTimerLoc=true;
 
     if(ComState == COM_READY)
@@ -1062,12 +1062,9 @@ void Com_MainFunctionRx(void)
  *******************************************************************************************************************************/
 uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
 {
-    uint8 DataValueStatus,
-		ComIPduIndex,
+    uint8 ComIPduIndex,
 		ComSignalGroupIndex,
 		ComGroupSignalIndex,
-		GroupSignalBufferRefCnt,
-		IPduBufferRefCnt,
 		BitIndex;
 
 	boolean ComCopySignalGroup = false;
@@ -1196,7 +1193,7 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
 							
                         }
 
-                        if(ComCopySignalGroup = true)
+                        if(ComCopySignalGroup)
                         {
                             for(ComGroupSignalIndex = 0; Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex] != NULL; ComGroupSignalIndex++)
                             {

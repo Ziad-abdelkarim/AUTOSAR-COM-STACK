@@ -23,27 +23,27 @@ typedef struct {
 	float32 ComTeamTxModeRepetitionPeriod;
 	float32 ComTeamTxModeTimePeriod;
 	float32 ComTeamMinimumDelayTimer;
-}ComTeamTxMode_type;
+}ComTeamTxMode_Type;
 
 typedef struct 
 {
-	ComTeamTxMode_type ComTeamTxMode;
-}ComTeamIPdu_type;
+	ComTeamTxMode_Type ComTeamTxMode;
+}ComTeamIPdu_Type;
 
 typedef struct{
 	boolean ComTeamSignalUpdated;
 	boolean ComTeamSignalConfirmed;
-}ComTeamSignal_type;
+}ComTeamSignal_Type;
 
 typedef struct{
 	boolean ComTeamSignalGroupUpdated;
 	boolean ComTeamSignalGroupConfirmed;
-}ComTeamSignalGroup_type;
+}ComTeamSignalGroup_Type;
 
 typedef struct {
-	ComTeamIPdu_type ComTeamIPdu[ComMaxIPduCnt];
-	ComTeamSignal_type ComTeamSignal[ComMaxSignalCnt];
-	ComTeamSignalGroup_type ComTeamSignalGroup[ComMaxSignalGroupCnt];
-}ComTeamConfig_type;
+	ComTeamIPdu_Type ComTeamIPdu[ComMaxIPduCnt];
+	ComTeamSignal_Type ComTeamSignal[ComMaxSignalCnt];
+	ComTeamSignalGroup_Type ComTeamSignalGroup[ComMaxSignalGroupCnt];
+}ComTeamConfig_Type;
 
 #endif /* COMTEAM_TYPES_H_ */

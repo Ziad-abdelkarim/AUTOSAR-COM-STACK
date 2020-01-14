@@ -53,7 +53,7 @@ typedef uint16 Com_SignalGroupIdType;
 
 /********************************************************************************************************************************
 
-Name:                                Com_StatusType
+Name:                                ComState_Type
 
 Type:                                EcucEnumerationParamDef
 
@@ -68,7 +68,7 @@ typedef enum{
 
     /*The AUTOSAR COM module is initialized and usable.*/
     COM_READY
-}Com_StateType;
+}ComState_Type;
 
 
 /********************************************************************************************************************************
