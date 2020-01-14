@@ -8,8 +8,10 @@
  **                                                          Includes                                                                                                **
  ********************************************************************************************************************************/
 #include "Com.h"
+#include "ComTeam_Types.h"
 #include "Det.h"
 #include "PduR.h"
+#include "Std_Types.h"
 
 //#include "CanSM.h"
 /********************************************************************************************************************************
@@ -61,7 +63,7 @@ boolean Com_GroupSignalDataCmp(uint8 ComIPduIndex,uint8 ComGroupSignalIndex)
  Description:                  This service initializes internal and external interfaces and variables of the AUTOSAR COM module
                                layer for the further processing.After calling this function the inter-ECU communication is still
                                disabled.
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 void Com_Init( const Com_ConfigType* config)
 {
 
@@ -112,7 +114,7 @@ void Com_Init( const Com_ConfigType* config)
 
 
 
-   return ;
+    return ;
 }
 
 
@@ -133,7 +135,7 @@ void Com_Init( const Com_ConfigType* config)
                                      handling
  Description:        The service Com_SendSignal updates the signal object identified by SignalId with the signal
                      referenced by the SignalDataPtr parameter
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 {
 	uint8 ComIPduIndex, ComSignalIndex, BitIndex;
@@ -327,7 +329,7 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
                                      handling
  Description:        Com_ReceiveSignal copies the data of the signal identified by SignalId to the
                      location specified by SignalDataPtr.
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
 {
 	Com_SignalType *ComSignalLocal;
@@ -429,10 +431,10 @@ uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
  Parameters (out):              None
  Return value:                  None
  Description:        The service Com_UpdateShadowSignal updates a group signal with the data referenced by SignalDataPtr.
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 void Com_UpdateShadowSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 {
-	uint8 ComGroupSignalIndex;
+    uint8 ComGroupSignalIndex;
 
 	/* Check that the group signal ID is a valid ID*/
 	if(SignalId < ComMaxGroupSignalCnt)
@@ -469,10 +471,10 @@ void Com_UpdateShadowSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
  Parameters (out):              None
  Return value:                  None
  Description:        The service Com_ReceiveShadowSignal updates the group signal which is referenced by SignalDataPtr with the data in the shadow buffer.
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 void Com_ReceiveShadowSignal(Com_SignalIdType SignalId, void* SignalDataPtr)
 {
-	uint8 ComGroupSignalIndex;
+    uint8 ComGroupSignalIndex;
 
 	/* Check that the group signal ID is a valid ID*/
 	if(SignalId < ComMaxGroupSignalCnt)
@@ -511,7 +513,7 @@ void Com_ReceiveShadowSignal(Com_SignalIdType SignalId, void* SignalDataPtr)
  Parameters (out):              None
  Return value:                  None
  Description:        Indication of a received I-PDU from a lower layer communication interface module.
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 {
 
@@ -562,7 +564,7 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 
 
 
-   return ;
+    return ;
 }
 
 
@@ -576,7 +578,7 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
  Parameters (out):              None
  Return value:                  None
  Description:        The lower layer communication interface module confirms the transmission of an IPDU.
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 void Com_TxConfirmation(PduIdType TxPduId)
 {
     uint8 ComIPduIndex,
@@ -722,7 +724,7 @@ void Com_TxConfirmation(PduIdType TxPduId)
  Description:        This function performs the processing of the AUTOSAR COM module's transmission activities
                      that are not directly handled within the COM's function invoked by the RTE,
                      for example Com_SendSignal
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 void Com_MainFunctionTx(void)
 {
     uint8 IPduIdIndex;
@@ -957,7 +959,7 @@ void Com_MainFunctionTx(void)
  Description:        This function performs the processing of the AUTOSAR COM module's receive
                      processing that are not directly handled within the COM's functions invoked by the
                      PDU-R, for example Com_RxIndication
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 void Com_MainFunctionRx(void)
 {
 	if(ComState == COM_READY)
@@ -1057,7 +1059,7 @@ void Com_MainFunctionRx(void)
                                      handling
  Description:        The service Com_SendSignalGroup copies the content of the associated shadow
                      buffer to the associated I-PDU
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
 {
     uint8 DataValueStatus,
@@ -1237,8 +1239,6 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
         }
         return COM_SERVICE_NOT_AVAILABLE;
 }
-
-
 /*********************************************************************************************************************************
  Service name:               Com_ReceiveSignalGroup
  Service ID:                    0x0e
@@ -1253,7 +1253,7 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
                                      handling
  Description:        The service Com_ReceiveSignalGroup copies the received signal group from the
                      I-PDU to the shadow buffer.
-*******************************************************************************************************************************/
+ *******************************************************************************************************************************/
 uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 {
 	uint8 ComIPduIndex, ComSignalGroupIndex, ComGroupSignalIndex, BitIndex;
