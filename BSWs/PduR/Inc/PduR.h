@@ -25,8 +25,9 @@ AUTOSAR Version:          								  4.2.2
 /*******************************************************************************************************************************
 **                                               				    Function prototypes                                                                       **
 ********************************************************************************************************************************/
+void PduR_Init(const PduR_PBConfigType* ConfigPtr);
+Std_ReturnType PduR_ComTransmit(PduIdType id,const PduInfoType* info);
 void PduR_CanIfRxIndication(PduIdType RxPduId, const PduInfoType* PduInfoPtr);
 void PduR_CanIfTxConfirmation(PduIdType TxPduId);
-
 
 #endif /*PDUR_H*/
