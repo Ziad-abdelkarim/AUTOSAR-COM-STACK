@@ -34,6 +34,7 @@ CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
 CanIf_Cfg.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h
+CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_PBCfg.h
 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.c: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h: 
@@ -69,3 +70,4 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h: 
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_PBCfg.h: 

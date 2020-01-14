@@ -21,6 +21,7 @@ E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/Com/Src/Com.c \
 E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/Com/Gen/Com_Cfg.c \
 E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/Det/Src/Det.c \
 E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/PduR/Src/PduR.c \
+E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_PBCfg.c \
 ../tm4c123gh6pm_startup_ccs.c \
 C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.c 
 
@@ -34,6 +35,7 @@ C_DEPS += \
 ./Com_Cfg.d \
 ./Det.d \
 ./PduR.d \
+./PduR_PBCfg.d \
 ./tm4c123gh6pm_startup_ccs.d \
 ./uartstdio.d 
 
@@ -47,6 +49,7 @@ OBJS += \
 ./Com_Cfg.obj \
 ./Det.obj \
 ./PduR.obj \
+./PduR_PBCfg.obj \
 ./tm4c123gh6pm_startup_ccs.obj \
 ./uartstdio.obj 
 
@@ -60,6 +63,7 @@ OBJS__QUOTED += \
 "Com_Cfg.obj" \
 "Det.obj" \
 "PduR.obj" \
+"PduR_PBCfg.obj" \
 "tm4c123gh6pm_startup_ccs.obj" \
 "uartstdio.obj" 
 
@@ -73,6 +77,7 @@ C_DEPS__QUOTED += \
 "Com_Cfg.d" \
 "Det.d" \
 "PduR.d" \
+"PduR_PBCfg.d" \
 "tm4c123gh6pm_startup_ccs.d" \
 "uartstdio.d" 
 
@@ -86,6 +91,7 @@ C_SRCS__QUOTED += \
 "E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/Com/Gen/Com_Cfg.c" \
 "E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/Det/Src/Det.c" \
 "E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/PduR/Src/PduR.c" \
+"E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_PBCfg.c" \
 "../tm4c123gh6pm_startup_ccs.c" \
 "C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.c" 
 

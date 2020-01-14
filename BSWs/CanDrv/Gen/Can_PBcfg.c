@@ -97,7 +97,8 @@ Can_ConfigType Can =
 			{
                 .CanTriggerTransmitEnable = false,
 				.CanHandleType = FULL,
-                .CanObjectType = TRANSMIT, .CanControllerRef = &Can.CanConfigSet.CanController[0],
+                .CanObjectType = TRANSMIT,
+				.CanControllerRef = &Can.CanConfigSet.CanController[0],
                 .CanIdType = STANDARD,
 				.CanObjectId = 0U,
                 .CanHwObjectCount = 1U
@@ -113,7 +114,7 @@ Can_ConfigType Can =
 				},
                 .CanHandleType = FULL,
 				.CanObjectType = RECEIVE,
-                .CanControllerRef &Can.CanConfigSet.CanController[0],
+                .CanControllerRef = &Can.CanConfigSet.CanController[0],
                 .CanIdType = STANDARD,
 				.CanObjectId = 1U,
                 .CanHwObjectCount = 1U

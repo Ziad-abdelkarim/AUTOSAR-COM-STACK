@@ -30,6 +30,17 @@ PduR.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
 PduR.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
 PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/ComStack_Types.h
 PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Std_Types.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_Cfg.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Inc/PduR_Types.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Com/Inc/Com.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Com/Gen/Com_Cfg.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Com/Inc/Com_Types.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Com/Inc/ComTeam_Types.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Can_GeneralTypes.h
+PduR.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Det/Inc/Det.h
 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Src/PduR.c: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Inc/PduR.h: 
@@ -61,3 +72,14 @@ C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h:
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/ComStack_Types.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Std_Types.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_Cfg.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Inc/PduR_Types.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Com/Inc/Com.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Com/Gen/Com_Cfg.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Com/Inc/Com_Types.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Com/Inc/ComTeam_Types.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Can_GeneralTypes.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Det/Inc/Det.h: 

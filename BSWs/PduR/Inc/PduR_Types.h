@@ -141,7 +141,7 @@ Description:           	Represents one table of routing paths.
 						link-time for variant handling.
 *********************************************************************************************************************************/
 typedef struct{
-	PduRRoutingTable_Type PduRRoutingTable;
+	PduRRoutingTable_Type PduRRoutingTable[PduRMaxRoutingTableCnt];
 }PduRRoutingTables_Type;
 
 /********************************************************************************************************************************

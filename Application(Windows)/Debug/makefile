@@ -19,6 +19,7 @@ ORDERED_OBJS += \
 "./Com_Cfg.obj" \
 "./Det.obj" \
 "./PduR.obj" \
+"./PduR_PBCfg.obj" \
 "./tm4c123gh6pm_startup_ccs.obj" \
 "./uartstdio.obj" \
 "C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/ccs/Debug/driverlib.lib" \
@@ -165,8 +166,8 @@ Application(Windows).hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(BIN_OUTPUTS__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "Can.obj" "CanIf.obj" "CanIf_Cfg.obj" "CanSM.obj" "Can_PBcfg.obj" "Com.obj" "Com_Cfg.obj" "Det.obj" "PduR.obj" "tm4c123gh6pm_startup_ccs.obj" "uartstdio.obj" 
-	-$(RM) "Can.d" "CanIf.d" "CanIf_Cfg.d" "CanSM.d" "Can_PBcfg.d" "Com.d" "Com_Cfg.d" "Det.d" "PduR.d" "tm4c123gh6pm_startup_ccs.d" "uartstdio.d" 
+	-$(RM) "Can.obj" "CanIf.obj" "CanIf_Cfg.obj" "CanSM.obj" "Can_PBcfg.obj" "Com.obj" "Com_Cfg.obj" "Det.obj" "PduR.obj" "PduR_PBCfg.obj" "tm4c123gh6pm_startup_ccs.obj" "uartstdio.obj" 
+	-$(RM) "Can.d" "CanIf.d" "CanIf_Cfg.d" "CanSM.d" "Can_PBcfg.d" "Com.d" "Com_Cfg.d" "Det.d" "PduR.d" "PduR_PBCfg.d" "tm4c123gh6pm_startup_ccs.d" "uartstdio.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

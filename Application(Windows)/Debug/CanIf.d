@@ -36,6 +36,8 @@ CanIf.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Can
 CanIf.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h
 CanIf.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h
 CanIf.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Inc/PduR.h
+CanIf.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_Cfg.h
+CanIf.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Inc/PduR_Types.h
 CanIf.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanSM/Inc/CanSM.h
 CanIf.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Det/Inc/Det.h
 
@@ -75,5 +77,7 @@ E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanI
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Inc/PduR.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_Cfg.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Inc/PduR_Types.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanSM/Inc/CanSM.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/Det/Inc/Det.h: 

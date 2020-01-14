@@ -24,68 +24,33 @@ ComTeamConfig_type ComTeamConfig;
 /********************************************************************************************************************************
  **                                                        Local Functions                                                                                        **
  *********************************************************************************************************************************/
+static boolean Com_GroupSignalDataCmp(uint8 ComIPduIndex,uint8 ComGroupSignalIndex);
 
-static void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId);
-
-void Com_CopyShadowBufferToIPdu(Com_SignalIdType SignalGroupId)
+boolean Com_GroupSignalDataCmp(uint8 ComIPduIndex,uint8 ComGroupSignalIndex)
 {
-	uint8 ComIPduIndex, ComSignalGroupIndex, ComGroupSignalIndex, BitIndex;
-	Com_GroupSignalType* ComGroupSignalLocal;
-	Com_SignalGroupType* ComSignalGroupLocal;
-	Com_IPduType* ComIPduLocal;
-
-	if(SignalGroupId < ComMaxSignalGroupCnt)
-	{
-		/* Find the IPdu which contains this signal */
-		for(ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt; ComIPduIndex++)
-		{
-			for(ComSignalGroupIndex = 0; Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
-			{
-				if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComHandleId == SignalGroupId)
-				{
-				    /* Get SignalGroup */
-				    ComSignalGroupLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex];
-
-					/* Get IPdu */
-					ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
-
-					for(ComGroupSignalIndex = 0; Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex] != NULL; ComGroupSignalIndex++)
-					{
-						/*Get Group Signal*/
-						ComGroupSignalLocal = Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex];
-
-						/* Write data from signal buffer to IPdu*/
-						for(BitIndex = 0; BitIndex < ComGroupSignalLocal->ComBitSize; BitIndex++)
-						{
-							if((ComGroupSignalLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
-							{
-								ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8);
-							}
-							else
-							{
-								ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8));
-							}
-						}
-					}
-				}
-				else
-				{
-				}
-
-				/*Set update bit*/
-                ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] |= 1 << (ComSignalGroupLocal->ComUpdateBitPosition % 8);
-                return;
-			}
+	uint8 BitIndex, ComGroupSignalBufferBit, ComIPduBufferBit;
+	Com_GroupSignalType* ComGroupSignalLocal = &Com.ComConfig.ComGroupSignal[ComGroupSignalIndex];
+    Com_IPduType* ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
+	
+    for(BitIndex = 0; BitIndex < ComGroupSignalLocal->ComBitSize; BitIndex++)
+    {
+		/*Get the bits from GroupSignalBuffer and IPduBuffer*/
+		ComGroupSignalBufferBit = (ComGroupSignalLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1;
+		ComIPduBufferBit = (ComIPduLocal->ComBufferRef[(ComGroupSignalLocal->ComBitPosition + BitIndex) / 8] >> ((ComGroupSignalLocal->ComBitPosition + BitIndex) % 8)) & 1;
+        if(ComGroupSignalBufferBit != ComIPduBufferBit)
+        {
+            return true;
+        }
+        else
+        {
+			
 		}
-	}
-	else
-	{
-
-	}
+    }
+	return false;
 }
-
-
-
+/********************************************************************************************************************************
+ **                                                        Local Functions                                                                                        **
+ *********************************************************************************************************************************/
 /*********************************************************************************************************************************
  Service name:                  Com_Init
  Service ID:                      0x01
@@ -171,7 +136,7 @@ void Com_Init( const Com_ConfigType* config)
 *******************************************************************************************************************************/
 uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
 {
-	uint8 ComIPduIndex, ComSignalIndex;
+	uint8 ComIPduIndex, ComSignalIndex, BitIndex;
 	boolean ComCopySignal = false;
     /*
      [SWS_Com_00804] ⌈Error code if any other API service, except Com_GetStatus, is called before the AUTOSAR COM module was initialized with Com_Init
@@ -1095,55 +1060,182 @@ void Com_MainFunctionRx(void)
 *******************************************************************************************************************************/
 uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
 {
+    uint8 DataValueStatus,
+		ComIPduIndex,
+		ComSignalGroupIndex,
+		ComGroupSignalIndex,
+		GroupSignalBufferRefCnt,
+		IPduBufferRefCnt,
+		BitIndex;
 
+	boolean ComCopySignalGroup = false;
+		
+    Com_GroupSignalType* ComGroupSignalLocal;
+    Com_SignalGroupType* ComSignalGroupLocal;
+    Com_IPduType* ComIPduLocal;
 
+    /*[SWS_Com_00804] Error code if any other API service, except Com_GetStatus, is called before the AUTOSAR COM module was initialized with Com_Init
+	 or after a call to Com_Deinit:
+	 error code: COM_E_UNINIT
+	 value [hex]: 0x02
+	 (SRS_BSW_00337)*/
+	if(ComState==COM_UNINIT)
+	{
+		#if ComConfigurationUseDet == true
+			Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0D, COM_E_UNINIT);
+		#endif
+		return COM_SERVICE_NOT_AVAILABLE;
+	}
 
+	/*[SWS_Com_00803] API service called with wrong parameter:
+	  error code: COM_E_PARAM
+	  value [hex]: 0x01
+	  (SRS_BSW_00337)*/
+	else if(SignalGroupId >= ComMaxSignalGroupCnt)
+	{
+		#if ComConfigurationUseDet == true
+			Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0D, COM_E_PARAM);
+		#endif
+		return COM_SERVICE_NOT_AVAILABLE;
+	}
+    else if(SignalGroupId < ComMaxSignalGroupCnt)
+	{
+		/* Find the IPdu which contains this signal */
+		for(ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt; ComIPduIndex++)
+		{
+            for(ComSignalGroupIndex = 0; Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+			{
+				if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComHandleId == SignalGroupId)
+				{
+					/* Get SignalGroup */
+					ComSignalGroupLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex];
 
+					/* Get IPdu */
+					ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
 
+					if((Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT)||\
+						(Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED))
+					{
+						switch(ComSignalGroupLocal->ComTransferProperty)
+						{
+                            /*At any send request of a signal group with ComTransferProperty TRIGGERED assigned to an I-PDU with
+                             *ComTxModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately (within the next main function at the latest)
+                             *initiate ComTxModeNumberOfRepetitions plus one transmissions of the as-signed I-PDU.*/
+                            case TRIGGERED:
+                            {
+                                ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions +1 ;
+                                ComCopySignalGroup = true;
+                                break;
+                            }
 
+                            /*At any send request of a signal group with ComTransferProperty TRIGGERED_WITHOUT_REPETITION assigned to an I-PDU
+                             *with ComTx-ModeMode DIRECT or MIXED, the AUTOSAR COM module shall initiate one transmission of the assigned I-PDU
+                             *within the next main function at the latest.*/
+                            case TRIGGERED_WITHOUT_REPETITION:
+                            {
+                                ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = 1;
+                                ComCopySignalGroup = true;
+                                break;
+                            }
 
+                            /*At a send request of a signal group with ComTransferProperty TRIGGERED_ON_CHANGE_WITHOUT_REPETITION assigned to an I-PDU
+                             *with ComTxModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately (within the next main function at the latest)
+                             *initiate one transmission of the as-signed I-PDU, if at least one new sent group signal differs to the locally
+                             *stored (last sent or init) in length or value.*/
+                            case TRIGGERED_ON_CHANGE_WITHOUT_REPETITION:
+                            {
+                                for(ComGroupSignalIndex=0;Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex]!= NULL; ComGroupSignalIndex++)
+                                {
+                                    /* Compare data value between ComIPduBuffer and ComGroupSignalBuffer */
+                                    if(Com_GroupSignalDataCmp(ComIPduIndex, ComGroupSignalIndex))
+                                    {
+                                        ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = 1;
+                                        ComCopySignalGroup = true;
+										break;
+                                    }
+                                    else
+                                    {
 
+                                    }
 
+                                }
+                                break;
+                            }
+                            /*Regarding signal groups with ComTransferProperty TRIG-GERED_ON_CHANGE which do not contain any signals
+                             *that have an own ComTransferProperty configured: At any send request of such a signal group assigned to an I-PDU
+                             *with ComTx-ModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately (with-in the next main function at the latest)
+                             *initiate ComTxModeNumberOfRepetitions plus one transmissions of the assigned I-PDU, if at least one new sent group signal
+                             *differs to the locally stored (last sent or init) in length or value.*/
+                            case TRIGGERED_ON_CHANGE:
+                            {
+                                for(ComGroupSignalIndex=0;Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex]!= NULL; ComGroupSignalIndex++)
+                                {
+                                    /* Compare data value between ComIPduBuffer and ComGroupSignalBuffer */
+                                    if(Com_GroupSignalDataCmp(ComIPduIndex, ComGroupSignalIndex))
+                                    {
+                                        ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions + 1;
+                                        ComCopySignalGroup = true;
+										break;
+                                    }
+                                    else
+                                    {
 
+                                    }
+                                }
+                                break;
+                            }
+							
+                            default:
+                                break;
+                            }
+                        }
+                        else
+                        {
+							
+                        }
 
+                        if(ComCopySignalGroup = true)
+                        {
+                            for(ComGroupSignalIndex = 0; Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex] != NULL; ComGroupSignalIndex++)
+                            {
+                                /*Get Group Signal*/
+                                ComGroupSignalLocal = Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex];
+                                /*The service Com_SendSignalGroup shall copy the content of the shadow buffer referenced by parameter SignalGroupId
+                                 *to the associated I-PDU.*/
+                                for(BitIndex = 0; BitIndex < ComGroupSignalLocal->ComBitSize; BitIndex++)
+								{
+									if((ComGroupSignalLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
+									{
+										ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8);
+									}
+									else
+									{
+										ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8));
+									}
 
+								}
+                            }
+							/*Set update bit*/
+							ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] |= 1 << (ComSignalGroupLocal->ComUpdateBitPosition % 8);
+                        }
+                        else
+                        {
 
+                        }
+                        return E_OK;
+                    }
+                    else
+                    {
+                    }
 
+                }
+            }
+        }
+        else
+        {
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   return COM_SERVICE_NOT_AVAILABLE;
+        }
+        return COM_SERVICE_NOT_AVAILABLE;
 }
 
 
