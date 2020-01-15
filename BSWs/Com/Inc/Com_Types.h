@@ -213,8 +213,8 @@ Type:                                EcucEnumerationParamDef
 Description:    The direction defines if this I-PDU, and therefore the contributing signals and signal groups,shall be sent or received.
 *********************************************************************************************************************************/
 typedef enum{
-    RECEIVE,
-    SEND
+    Receive,
+    Send
 }Com_IPduDirectionType;
 
 /********************************************************************************************************************************
@@ -590,9 +590,6 @@ typedef struct{
 	/* Autosar Extension */
 	uint8 ComIPduLength;
 
-    /* Reference to the IPdu buffer */
-    /* Note: Autosar extension */
-    uint8* ComBufferRef;
 
 }Com_IPduType;
 

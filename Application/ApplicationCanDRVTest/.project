@@ -131,6 +131,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/BSWs/PduR/Inc/PduR.h</locationURI>
 		</link>
 		<link>
+			<name>PduR_Cfg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/PduR/Gen/PduR_Cfg.h</locationURI>
+		</link>
+		<link>
 			<name>Platform_Types.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanDrv/Inc/Platform_Types.h</locationURI>

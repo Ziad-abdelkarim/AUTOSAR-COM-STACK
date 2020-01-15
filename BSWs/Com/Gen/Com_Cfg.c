@@ -153,7 +153,7 @@ Com_Type Com =
         {
             {
 			   .ComIPduLength = 5,
-               .ComIPduDirection = SEND,
+               .ComIPduDirection = Send,
                .ComIPduHandleId= 0,
                .ComIPduSignalProcessing = DEFERRED,
                .ComIPduType = NORMAL,
@@ -193,7 +193,7 @@ Com_Type Com =
             },
             {
 				.ComIPduLength = 5,
-                .ComIPduDirection = RECEIVE,
+                .ComIPduDirection = Receive,
                 .ComIPduHandleId= 1,
                 .ComIPduSignalProcessing = IMMEDIATE,
                 .ComIPduType = NORMAL,

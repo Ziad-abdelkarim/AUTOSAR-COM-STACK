@@ -524,7 +524,7 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 		{
 			if(PduInfoPtr != NULL)
 			{  
-				if (Com.ComConfig.ComIPdu[RxPduId].ComIPduDirection == RECEIVE)
+				if (Com.ComConfig.ComIPdu[RxPduId].ComIPduDirection == Receive)
 				{
 					/*[SWS_Com_00574] ?When unpacking an I-PDU, 
 					  the AUTOSAR COM module shall check the received data length (PduInfoPtr->SduLength) and unpack 
@@ -546,17 +546,17 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 						  and signal groups within the Com_RxIndication,or Com_TpRxIndication function respectively.(SRS_Com_02046)*/
 					 
 						/* Loop over all Signals in this IPDU */		
-						for(SignalBufferIndex = 0 ; Com.ComConfig.ComIPdu[RxPduId].ComIpduSignalRef[SignalBufferIndex] != NULL ; SignalBufferIndex++)
+						for(SignalBufferIndex = 0 ; Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalRef[SignalBufferIndex] != NULL ; SignalBufferIndex++)
 						{
-							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIpduSignalRef[SignalBufferIndex] -> ComUpdateBitPosition;
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalRef[SignalBufferIndex] -> ComUpdateBitPosition;
 						
 							/* Check if UpdateBit is set*/
 							if((Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8]) & (1 << (ComUpdateBitPositionLocal % 8)))
 							{	
 								/*invoke the configured ComNotifications for the included signals to RTE*/
-								Com.ComConfig.ComIPdu[RxPduId].ComIpduSignalRef[SignalBufferIndex] -> ComNotification();
+								Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalRef[SignalBufferIndex] -> ComNotification();
 								/* Clear UpdateBit */
-								Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal  / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8))
+								Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal  / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
 							}
 							else
 							{
@@ -595,7 +595,7 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 				}
 				else
 				{
-					/*Com.ComConfig.ComIPdu[RxPduId].ComIPduDirection != RECEIVE*/
+					/*Com.ComConfig.ComIPdu[RxPduId].ComIPduDirection != Receive*/
 				}
 			}
 			else
@@ -649,7 +649,7 @@ void Com_TxConfirmation(PduIdType TxPduId)
             if(ComIPduLocal->ComIPduHandleId == TxPduId)
             {
                 /* Check if the IPdu direction is send */
-                if(ComIPduLocal->ComIPduDirection == SEND)
+                if(ComIPduLocal->ComIPduDirection == Send)
                 {
                     /* Loop over all signals which belong to this IPdu */
                     for (ComSignalIndex = 0; ComIPduLocal->ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
@@ -791,7 +791,7 @@ void Com_MainFunctionTx(void)
 			ComTeamIPduLoc = &ComTeamConfig.ComTeamIPdu[IPduIdIndex];
 
 			/* check if  IPdu Direction should be transmitted */
-			if (ComIPduLoc->ComIPduDirection == SEND)
+			if (ComIPduLoc->ComIPduDirection == Send)
 			{
 				#if(ComEnableMDTForCyclicTransmission == true)
 				
@@ -1017,8 +1017,8 @@ void Com_MainFunctionRx(void)
 		/* Loop over all IPdus */
 		for(ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt; ComIPduIndex++)
 		{
-			/* Check if IPdu direction is RECEIVE */
-			if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduDirection == RECEIVE)
+			/* Check if IPdu direction is Receive */
+			if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduDirection == Receive)
 			{
 				/* Check if IPdu Signal Processing is DEFERRED*/
 				if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalProcessing == DEFERRED)
@@ -1365,7 +1365,7 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 *******************************************************************************************************************************/
 Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 {
-    PduInfoType* pduinfo = Com. ;
+    PduInfoType* pduinfo ;
     uint8 ComSignalIndex, ComSignalGroupIndex, ComUpdateBitPositionLocal;
 
     if ( PduId > ComMaxIPduCnt)
@@ -1385,62 +1385,67 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 #if (ComEnableMDTForCyclicTransmission == true)
         if(MinimumDelayTime == 0){
 #endif
-            
-                if( PduR_ComTransmit(PduId,pduinfo) == E_OK)
+
+        if (PduR_ComTransmit(PduId, pduinfo) == E_OK)
+        {
+
+            if (Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit
+                    == Transmit)
+            {
+                /* Loop over all Signals in this IPDU */
+                for (ComSignalIndex = 0;
+                        Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]
+                                != NULL; ComSignalIndex++)
                 {
+                    ComUpdateBitPositionLocal =
+                            Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
 
-					if(Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit == Transmit)
-					{
-						/* Loop over all Signals in this IPDU */
-						for(ComSignalIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
-						{
-							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
+                    /* Check if update bit is set*/
+                    if (Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal
+                            / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+                    {
 
-							/* Check if update bit is set*/
-							if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
-							{
+                        /* Clear update bit */
+                        Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal
+                                / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+                    }
+                    else
+                    {
 
-								/* Clear update bit */
-								Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
-							}
-							else
-							{
-
-							}
-						}
-						/* Loop over all Signal groups in this IPDU */
-						for(ComSignalGroupIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
-						{
-							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
-
-							/* Check if update bit is set*/
-							if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
-							{
-								/* Clear update bit */
-								Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
-							}
-							else
-							{
-
-							}
-						}
-					}
-
-
-                    return E_OK;
+                    }
                 }
-                else
+                /* Loop over all Signal groups in this IPDU */
+                for (ComSignalGroupIndex = 0;
+                        Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]
+                                != NULL; ComSignalGroupIndex++)
                 {
+                    ComUpdateBitPositionLocal =
+                            Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
 
-                    return E_NOT_OK;
+                    /* Check if update bit is set*/
+                    if (Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal
+                            / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+                    {
+                        /* Clear update bit */
+                        Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal
+                                / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+                    }
+                    else
+                    {
 
+                    }
                 }
-
-            
-           
-            else {
-                /* Misra */
             }
+
+            return E_OK;
+        }
+        else
+        {
+
+            return E_NOT_OK;
+
+        }
+
 #if (ComEnableMDTForCyclicTransmission == true)
         }
         else {
@@ -1451,18 +1456,3 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
     }
 
 }
-/*********************************************************************************************************************************
- Service name:               Com_MainFunctionTx
- Service ID:                    0x17
- Parameters (in):               None
- Parameters (inout):            PduId
- Parameters (out):              None
- Return value:                  Std_ReturnType
- Description:      
-						By a call to Com_TriggerIPDUSend the I-PDU with the given ID is triggered for transmission.
-*******************************************************************************************************************************/
-Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
-{
-    PduInfoType* pduinfo = Com. ;
-    uint8 ComSignalIndex, ComSignalGroupIndex, ComUpdateBitPositionLocal;
-
