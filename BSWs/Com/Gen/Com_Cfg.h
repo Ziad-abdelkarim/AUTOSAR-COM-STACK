@@ -11,7 +11,7 @@ AUTOSAR Version:                                          4.2.2
 **                                                                        Defines                                                                                **
 ********************************************************************************************************************************/
 #define   COM_TX_IPDU_UNUSED_AREAS_DEFAULT   (uint8)255
-#define   COM_MINIMUM_DELAY_TIME (float32)0.01
+#define   COM_MINIMUM_DELAY_TIME (float32)1
 
 #define ComMaxSignalGroupCnt   (uint8)2
 #define ComMaxGroupSignalCnt   (uint8)2

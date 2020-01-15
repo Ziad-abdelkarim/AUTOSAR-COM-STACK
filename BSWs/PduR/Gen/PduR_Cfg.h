@@ -25,7 +25,7 @@ Description:                Switches the Default Error Tracer (Det) detection an
 							 true: enabled (ON).
 							 false: disabled (OFF).                        					**
 **************************************************************************************************/
-#define PduRDevErrorDetect	true
+#define PduRDevErrorDetect	false
 
 /**************************************************************************************************
 **

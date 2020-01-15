@@ -367,6 +367,11 @@ Description:          This container contains the configuration parameters of gr
 
 *********************************************************************************************************************************/
 typedef struct{
+    /*Initial value for this signal. In case of UINT8_N the default value is a string
+    of length ComSignalLength with all bytes set to 0x00. In case of UINT8_DYN
+    the initial size shall be 0*/
+    uint8 ComSignalInitValue;
+
     /*Starting position within the I-PDU. This parameter refers to the position in the I-PDU and not in the shadow buffer.
      *If the endianness conversion is configured to Opaque the parameter ComBitPosition shall define the bit0 of the first byte
      *like in little endian byte order*/
@@ -509,6 +514,11 @@ typedef struct{
      *This setting must be consistently on sender and on receiver side. Range: 0..63 for CAN and LIN,
      *0..511 for CAN FD, 0..2031 for FlexRay, 0..4294967295 for TP.*/
     uint8 ComUpdateBitPosition;
+
+    /*Initial value for this signal. In case of UINT8_N the default value is a string
+    of length ComSignalLength with all bytes set to 0x00. In case of
+    UINT8_DYN the initial size shall be 0.*/
+    uint8 ComSignalInitValue;
 
     /* Reference to the signal buffer */
     /* Note: Autosar extension */
