@@ -10,6 +10,7 @@
 #include "Com.h"
 #include "Det.h"
 #include "PduR.h"
+#include "ComteamTypes.h"
 
 //#include "CanSM.h"
 /********************************************************************************************************************************
@@ -258,80 +259,161 @@ void Com_CopySignalGroupToShadowBuffer(Com_SignalGroupIdType SignalGroupId)
                                layer for the further processing.After calling this function the inter-ECU communication is still
                                disabled.
 *******************************************************************************************************************************/
-void Com_Init( const Com_ConfigType* config)
+void Com_Init(const Com_ConfigType* config)
 {
-    uint8 com_iteration1 , com_iteration2 , com_iteration3;
-    com_iteration1=com_iteration2=com_iteration3=0;
+    /*Local Variables For indexing Used Mainly In Loops*/
+    uint8 ComInitIPduIndex;
+    uint8 ComInitByteIndex;
+    uint8 ComInitGroupSignalIndex;
+    uint8 ComInitSignalGroupIndex;
+    uint8 ComInitSignalIndex;
+    uint8 ComInitBitIndex;
 
-    /*Initializing IPDUs The Whole Buffer by Unused Area Default*/
-    for (com_iteration1=0;com_iteration1<ComMaxIPduCnt;com_iteration1++)
-    {
-        for(com_iteration2=0; com_iteration2<Com.ComConfig.ComIPdu[com_iteration1].ComBufferSize;com_iteration2++){
-            Com.ComConfig.ComIPdu[com_iteration1].ComBufferRef[com_iteration2]=COM_TX_IPDU_UNUSED_AREAS_DEFAULT;
-        }
-    }
+    Com_SignalType *ComSignalLocal;
+    Com_IPduType *ComIPduLocal;
+    Com_GroupSignalType* ComGroupSignalLocal;
+    Com_SignalGroupType* ComSignalGroupLocal;
 
 
     /*Initializing Signals Buffer By Init Values Of The Signal*/
-    for(com_iteration1=0;com_iteration1<ComMaxSignalCnt;com_iteration1++)
+
+    for (ComInitSignalIndex = 0; ComInitSignalIndex < ComMaxSignalCnt ;
+            ComInitSignalIndex++)
     {
-        for(com_iteration2=0; com_iteration2<Com.ComConfig.ComSignal[com_iteration1].ComSignalLength;com_iteration2++){
-            Com.ComConfig.ComSignal[com_iteration1].ComBufferRef[com_iteration2]=Com.ComConfig.ComSignal[com_iteration1].ComSignalInitValue;
+        for (ComInitByteIndex = 0;
+                ComInitByteIndex
+                        < Com.ComConfig.ComSignal[ComInitSignalIndex].ComSignalLength;
+                ComInitByteIndex++)
+        {
+            Com.ComConfig.ComSignal[ComInitSignalIndex].ComBufferRef[ComInitByteIndex] =
+                    Com.ComConfig.ComSignal[ComInitSignalIndex].ComSignalInitValue;
         }
-        Com_WriteSignalToIPdu(Com.ComConfig.ComSignal[com_iteration1].ComHandleId, Com.ComConfig.ComSignal[com_iteration1].ComBufferRef);
     }
 
 
+    /*Initializing Group Signals Buffer By Init Values Of The Group Signal*/
 
-    /*Initializing Group Signals Buffer By Init Values Of The Signal*/
-    for(com_iteration1=0;com_iteration1<ComMaxGroupSignalCnt;com_iteration1++)
+    for (ComInitGroupSignalIndex = 0;
+            ComInitGroupSignalIndex < ComMaxGroupSignalCnt ;
+            ComInitGroupSignalIndex++)
     {
-        for(com_iteration2=0;com_iteration2<Com.ComConfig.ComGroupSignal[com_iteration1].ComSignalLength;com_iteration2++){
-            Com.ComConfig.ComGroupSignal[com_iteration1].ComBufferRef[com_iteration2]=Com.ComConfig.ComGroupSignal[com_iteration1].ComSignalInitValue;
+        for (ComInitByteIndex = 0;
+                ComInitByteIndex
+                        < Com.ComConfig.ComGroupSignal[ComInitGroupSignalIndex].ComSignalLength;
+                ComInitByteIndex++)
+        {
+            Com.ComConfig.ComGroupSignal[ComInitGroupSignalIndex].ComBufferRef[ComInitByteIndex] =
+                    Com.ComConfig.ComGroupSignal[ComInitGroupSignalIndex].ComSignalInitValue;
         }
-
     }
 
 
+    /* Initializing IPDUs And Copying Signals And Group Signals To IPDUs  */
+    for (ComInitIPduIndex = 0; ComInitIPduIndex < ComMaxIPduCnt ;
+            ComInitIPduIndex++)
+    {
+
+        /* Get Pdu */
+        ComIPduLocal = &Com.ComConfig.ComIPdu[ComInitIPduIndex];
+
+        /*Fill IPDUs With Default Unused Area */
+        for (ComInitByteIndex = 0;
+                ComInitByteIndex
+                        < Com.ComConfig.ComIPdu[ComInitIPduIndex].ComBufferSize;
+                ComInitByteIndex++)
+        {
+            Com.ComConfig.ComIPdu[ComInitIPduIndex].ComBufferRef[ComInitByteIndex] =
+            COM_TX_IPDU_UNUSED_AREAS_DEFAULT;
+        }
+
+        /*Copy Signals Referenced In IPDUs to IPDUs Buffers */
+        for (ComInitSignalIndex = 0;
+                Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalRef[ComInitSignalIndex]
+                        != NULL; ComInitSignalIndex++)
+        {
+            /*Get Signal*/
+            ComSignalLocal =
+                    Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalRef[ComInitSignalIndex];
+
+            /* Write data from signal buffer to IPdu*/
+            for (ComInitBitIndex = 0; ComInitBitIndex < ComSignalLocal->ComBitSize;
+                    ComInitBitIndex++)
+            {
+                if ((ComSignalLocal->ComBufferRef[ComInitBitIndex / 8]
+                        >> (ComInitBitIndex % 8)) & 1)
+                {
+                    ComIPduLocal->ComBufferRef[(ComInitBitIndex
+                            + ComSignalLocal->ComBitPosition) / 8] |=
+                            1
+                                    << ((ComInitBitIndex
+                                            + ComSignalLocal->ComBitPosition)
+                                            % 8);
+                }
+                else
+                {
+                    ComIPduLocal->ComBufferRef[(ComInitBitIndex
+                            + ComSignalLocal->ComBitPosition) / 8] &=
+                            ~(1
+                                    << ((ComInitBitIndex
+                                            + ComSignalLocal->ComBitPosition)
+                                            % 8));
+                }
+            }
+            /*Clear update bit*/
+            ComIPduLocal->ComBufferRef[ComSignalLocal->ComUpdateBitPosition / 8] &=
+                    ~(1 << (ComSignalLocal->ComUpdateBitPosition % 8));
+        }
 
 
+        /*Copy Group Signals Referenced In SignalGroups Referenced In IPDUs to IPDUs Buffers */
+
+        for (ComInitSignalGroupIndex = 0;
+                Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalGroupRef[ComInitSignalGroupIndex]
+                        != NULL; ComInitSignalGroupIndex++)
+        {
+            /* Get SignalGroup */
+            ComSignalGroupLocal =
+                    Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalGroupRef[ComInitSignalGroupIndex];
+            for (ComInitGroupSignalIndex = 0;
+                    Com.ComConfig.ComSignalGroup[ComInitSignalGroupIndex].ComGroupSignalRef[ComInitGroupSignalIndex]
+                            != NULL; ComInitGroupSignalIndex++)
+            {
+                /*Get Group Signal*/
+                ComGroupSignalLocal =
+                        Com.ComConfig.ComSignalGroup[ComInitSignalGroupIndex].ComGroupSignalRef[ComInitGroupSignalIndex];
+
+                /* Write data from signal buffer to IPdu*/
+                for (ComInitBitIndex = 0; ComInitBitIndex < ComGroupSignalLocal->ComBitSize;
+                        ComInitBitIndex++)
+                {
+                    if ((ComGroupSignalLocal->ComBufferRef[ComInitBitIndex / 8]
+                            >> (ComInitBitIndex % 8)) & 1)
+                    {
+                        ComIPduLocal->ComBufferRef[(ComInitBitIndex
+                                + ComGroupSignalLocal->ComBitPosition) / 8] |= 1
+                                << ((ComInitBitIndex
+                                        + ComGroupSignalLocal->ComBitPosition)
+                                        % 8);
+                    }
+                    else
+                    {
+                        ComIPduLocal->ComBufferRef[(ComInitBitIndex
+                                + ComGroupSignalLocal->ComBitPosition) / 8] &=
+                                ~(1
+                                        << ((ComInitBitIndex
+                                                + ComGroupSignalLocal->ComBitPosition)
+                                                % 8));
+                    }
+                }
+            }
+            /*Clear update bit*/
+            ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition
+                    / 8] &= ~(1
+                    << (ComSignalGroupLocal->ComUpdateBitPosition % 8));
+        }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    }
     ComState = COM_READY;
 
 
