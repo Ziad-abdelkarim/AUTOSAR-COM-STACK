@@ -1451,4 +1451,18 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
     }
 
 }
+/*********************************************************************************************************************************
+ Service name:               Com_MainFunctionTx
+ Service ID:                    0x17
+ Parameters (in):               None
+ Parameters (inout):            PduId
+ Parameters (out):              None
+ Return value:                  Std_ReturnType
+ Description:      
+						By a call to Com_TriggerIPDUSend the I-PDU with the given ID is triggered for transmission.
+*******************************************************************************************************************************/
+Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
+{
+    PduInfoType* pduinfo = Com. ;
+    uint8 ComSignalIndex, ComSignalGroupIndex, ComUpdateBitPositionLocal;
 

@@ -81,9 +81,54 @@
 			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanDrv/Gen/Can_PBcfg.c</locationURI>
 		</link>
 		<link>
+			<name>Com.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/Com/Src/Com.c</locationURI>
+		</link>
+		<link>
+			<name>Com.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/Com/Inc/Com.h</locationURI>
+		</link>
+		<link>
+			<name>ComStack_Cfg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/Com/Inc/ComStack_Cfg.h</locationURI>
+		</link>
+		<link>
 			<name>ComStack_Types.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanDrv/Inc/ComStack_Types.h</locationURI>
+		</link>
+		<link>
+			<name>Com_Cbk.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/Com/Inc/Com_Cbk.h</locationURI>
+		</link>
+		<link>
+			<name>Com_Cfg.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/Com/Gen/Com_Cfg.c</locationURI>
+		</link>
+		<link>
+			<name>Com_Cfg.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/Com/Gen/Com_Cfg.h</locationURI>
+		</link>
+		<link>
+			<name>Com_Types.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/Com/Inc/Com_Types.h</locationURI>
+		</link>
+		<link>
+			<name>PduR.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/PduR/Src/PduR.c</locationURI>
+		</link>
+		<link>
+			<name>PduR.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/PduR/Inc/PduR.h</locationURI>
 		</link>
 		<link>
 			<name>Platform_Types.h</name>

@@ -153,6 +153,7 @@ MODULE SUMMARY
        Com.obj                        3676    0         45     
        CanIf.obj                      1868    0         15     
        uartstdio.obj                  1180    46        5      
+       Com.obj                        848     0         1      
        tm4c123gh6pm_startup_ccs.obj   12      620       0      
        Com_Cfg.obj                    4       0         364    
        Can_PBcfg.obj                  0       0         152    

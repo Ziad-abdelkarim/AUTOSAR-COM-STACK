@@ -590,6 +590,10 @@ typedef struct{
 	/* Autosar Extension */
 	uint8 ComIPduLength;
 
+    /* Reference to the IPdu buffer */
+    /* Note: Autosar extension */
+    uint8* ComBufferRef;
+
 }Com_IPduType;
 
 
