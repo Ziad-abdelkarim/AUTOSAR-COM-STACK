@@ -1,7 +1,7 @@
 ******************************************************************************
                   TI ARM Linker PC v18.12.3                    
 ******************************************************************************
->> Linked Wed Jan 15 15:57:20 2020
+>> Linked Wed Jan 15 16:03:00 2020
 
 OUTPUT FILE NAME:   <Application(Windows).out>
 ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 0000480d
@@ -11,23 +11,23 @@ MEMORY CONFIGURATION
 
          name            origin    length      used     unused   attr    fill
 ----------------------  --------  ---------  --------  --------  ----  --------
-  FLASH                 00000000   00040000  00004c2c  0003b3d4  R  X
-  SRAM                  20000000   00008000  000004e1  00007b1f  RW X
+  FLASH                 00000000   00040000  00004c34  0003b3cc  R  X
+  SRAM                  20000000   00008000  000004e9  00007b17  RW X
 
 
 SEGMENT ALLOCATION MAP
 
 run origin  load origin   length   init length attrs members
 ----------  ----------- ---------- ----------- ----- -------
-00000000    00000000    00004c30   00004c30    r-x
+00000000    00000000    00004c38   00004c38    r-x
   00000000    00000000    0000026c   0000026c    r-- .intvecs
   0000026c    0000026c    00004744   00004744    r-x .text
   000049b0    000049b0    00000124   00000124    r-- .const
-  00004ad8    00004ad8    00000158   00000158    r-- .cinit
-20000000    20000000    000004e4   00000000    rw-
-  20000000    20000000    0000026d   00000000    rw- .data
-  20000270    20000270    00000200   00000000    rw- .stack
-  20000470    20000470    00000074   00000000    rw- .bss
+  00004ad8    00004ad8    00000160   00000160    r-- .cinit
+20000000    20000000    000004ec   00000000    rw-
+  20000000    20000000    00000275   00000000    rw- .data
+  20000278    20000278    00000200   00000000    rw- .stack
+  20000478    20000478    00000074   00000000    rw- .bss
 
 
 SECTION ALLOCATION MAP
@@ -99,49 +99,51 @@ section   page    origin      length       input sections
                   00004ac8    00000008     Can.obj (.const:$P$T3$4)
                   00004ad0    00000004     uartstdio.obj (.const)
 
-.cinit     0    00004ad8    00000158     
-                  00004ad8    00000134     (.cinit..data.load) [load image, compression = lzss]
-                  00004c0c    0000000c     (__TI_handler_table)
-                  00004c18    00000008     (.cinit..bss.load) [load image, compression = zero_init]
-                  00004c20    00000010     (__TI_cinit_table)
+.cinit     0    00004ad8    00000160     
+                  00004ad8    00000135     (.cinit..data.load) [load image, compression = lzss]
+                  00004c0d    00000003     --HOLE-- [fill = 0]
+                  00004c10    0000000c     (__TI_handler_table)
+                  00004c1c    00000004     --HOLE-- [fill = 0]
+                  00004c20    00000008     (.cinit..bss.load) [load image, compression = zero_init]
+                  00004c28    00000010     (__TI_cinit_table)
 
 .init_array 
 *          0    00000000    00000000     UNINITIALIZED
 
-.data      0    20000000    0000026d     UNINITIALIZED
-                  20000000    0000014c     Com_Cfg.obj (.data:Com)
-                  2000014c    00000098     Can_PBcfg.obj (.data:Can)
-                  200001e4    00000064     CanIf_Cfg.obj (.data:CanIf)
-                  20000248    00000014     PduR_PBCfg.obj (.data:PduR)
-                  2000025c    00000005     uartstdio.obj (.data)
-                  20000261    00000002     Can.obj (.data:CanControllerState)
-                  20000263    00000002     CanIf.obj (.data:CanIfControllerMode)
-                  20000265    00000002     Can.obj (.data:InterruptDisableCount)
-                  20000267    00000002     Can.obj (.data:InterruptEnableCount)
-                  20000269    00000001     Can.obj (.data)
-                  2000026a    00000001     CanIf.obj (.data)
-                  2000026b    00000001     Com.obj (.data)
-                  2000026c    00000001     PduR.obj (.data)
+.data      0    20000000    00000275     UNINITIALIZED
+                  20000000    00000154     Com_Cfg.obj (.data:Com)
+                  20000154    00000098     Can_PBcfg.obj (.data:Can)
+                  200001ec    00000064     CanIf_Cfg.obj (.data:CanIf)
+                  20000250    00000014     PduR_PBCfg.obj (.data:PduR)
+                  20000264    00000005     uartstdio.obj (.data)
+                  20000269    00000002     Can.obj (.data:CanControllerState)
+                  2000026b    00000002     CanIf.obj (.data:CanIfControllerMode)
+                  2000026d    00000002     Can.obj (.data:InterruptDisableCount)
+                  2000026f    00000002     Can.obj (.data:InterruptEnableCount)
+                  20000271    00000001     Can.obj (.data)
+                  20000272    00000001     CanIf.obj (.data)
+                  20000273    00000001     Com.obj (.data)
+                  20000274    00000001     PduR.obj (.data)
 
-.bss       0    20000470    00000074     UNINITIALIZED
-                  20000470    0000002c     (.common:ComTeamConfig)
-                  2000049c    0000000c     Can.obj (.bss:MessageObject)
-                  200004a8    00000008     CanIf.obj (.bss:RxBuffer)
-                  200004b0    00000008     (.common:ComIPdu0Buffer)
-                  200004b8    00000008     (.common:ComIPdu1Buffer)
-                  200004c0    00000004     CanIf.obj (.bss:CanIfPduMode)
-                  200004c4    00000004     Can.obj (.bss:LogicalSleep)
-                  200004c8    00000004     (.common:ComGroupSignal0Buffer)
-                  200004cc    00000004     (.common:ComGroupSignal1Buffer)
-                  200004d0    00000004     (.common:ComSignal0Buffer)
-                  200004d4    00000004     (.common:ComSignal1Buffer)
-                  200004d8    00000004     (.common:ComSignal2Buffer)
-                  200004dc    00000004     (.common:ComSignal3Buffer)
-                  200004e0    00000004     (.common:CurrentCanState)
+.bss       0    20000478    00000074     UNINITIALIZED
+                  20000478    0000002c     (.common:ComTeamConfig)
+                  200004a4    0000000c     Can.obj (.bss:MessageObject)
+                  200004b0    00000008     CanIf.obj (.bss:RxBuffer)
+                  200004b8    00000008     (.common:ComIPdu0Buffer)
+                  200004c0    00000008     (.common:ComIPdu1Buffer)
+                  200004c8    00000004     CanIf.obj (.bss:CanIfPduMode)
+                  200004cc    00000004     Can.obj (.bss:LogicalSleep)
+                  200004d0    00000004     (.common:ComGroupSignal0Buffer)
+                  200004d4    00000004     (.common:ComGroupSignal1Buffer)
+                  200004d8    00000004     (.common:ComSignal0Buffer)
+                  200004dc    00000004     (.common:ComSignal1Buffer)
+                  200004e0    00000004     (.common:ComSignal2Buffer)
+                  200004e4    00000004     (.common:ComSignal3Buffer)
+                  200004e8    00000004     (.common:CurrentCanState)
 
-.stack     0    20000270    00000200     UNINITIALIZED
-                  20000270    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.stack)
-                  20000274    000001fc     --HOLE--
+.stack     0    20000278    00000200     UNINITIALIZED
+                  20000278    00000004     rtsv7M4_T_le_v4SPD16_eabi.lib : boot_cortex_m.c.obj (.stack)
+                  2000027c    000001fc     --HOLE--
 
 MODULE SUMMARY
 
@@ -154,13 +156,13 @@ MODULE SUMMARY
        uartstdio.obj                  1180    46        5      
        tm4c123gh6pm_startup_ccs.obj   12      620       0      
        PduR.obj                       428     0         1      
-       Com_Cfg.obj                    4       0         372    
+       Com_Cfg.obj                    4       0         380    
        Can_PBcfg.obj                  0       0         152    
        CanIf_Cfg.obj                  0       0         100    
        PduR_PBCfg.obj                 0       0         20     
        CanSM.obj                      12      0         0      
     +--+------------------------------+-------+---------+---------+
-       Total:                         15848   692       737    
+       Total:                         15848   692       745    
                                                                
     C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/ccs/Debug/driverlib.lib
        can.obj                        972     0         0      
@@ -186,21 +188,21 @@ MODULE SUMMARY
        Total:                         532     0         0      
                                                                
        Stack:                         0       0         512    
-       Linker Generated:              0       344       0      
+       Linker Generated:              0       345       0      
     +--+------------------------------+-------+---------+---------+
-       Grand Total:                   18238   1256      1249   
+       Grand Total:                   18238   1257      1257   
 
 
 LINKER GENERATED COPY TABLES
 
-__TI_cinit_table @ 00004c20 records: 2, size/record: 8, table size: 16
-	.data: load addr=00004ad8, load size=00000134 bytes, run addr=20000000, run size=0000026d bytes, compression=lzss
-	.bss: load addr=00004c18, load size=00000008 bytes, run addr=20000470, run size=00000074 bytes, compression=zero_init
+__TI_cinit_table @ 00004c28 records: 2, size/record: 8, table size: 16
+	.data: load addr=00004ad8, load size=00000135 bytes, run addr=20000000, run size=00000275 bytes, compression=lzss
+	.bss: load addr=00004c20, load size=00000008 bytes, run addr=20000478, run size=00000074 bytes, compression=zero_init
 
 
 LINKER GENERATED HANDLER TABLE
 
-__TI_handler_table @ 00004c0c records: 3, size/record: 4, table size: 12
+__TI_handler_table @ 00004c10 records: 3, size/record: 4, table size: 12
 	index: 0, handler: __TI_decompress_lzss
 	index: 1, handler: __TI_decompress_none
 	index: 2, handler: __TI_zero_init
@@ -222,10 +224,10 @@ address   name
 00004281  CANMessageGet                  
 00004039  CANMessageSet                  
 000046ad  CANStatusGet                   
-2000014c  Can                            
+20000154  Can                            
 00001f95  Can0_InterruptHandler          
 00001fb9  Can1_InterruptHandler          
-200001e4  CanIf                          
+200001ec  CanIf                          
 0000384f  CanIf_ControllerBusOff         
 000038a5  CanIf_ControllerModeIndication 
 0000346d  CanIf_GetControllerMode        
@@ -252,15 +254,15 @@ address   name
 000025e5  Can_SetControllerMode          
 00002ae9  Can_Write                      
 20000000  Com                            
-200004c8  ComGroupSignal0Buffer          
-200004cc  ComGroupSignal1Buffer          
-200004b0  ComIPdu0Buffer                 
-200004b8  ComIPdu1Buffer                 
-200004d0  ComSignal0Buffer               
-200004d4  ComSignal1Buffer               
-200004d8  ComSignal2Buffer               
-200004dc  ComSignal3Buffer               
-20000470  ComTeamConfig                  
+200004d0  ComGroupSignal0Buffer          
+200004d4  ComGroupSignal1Buffer          
+200004b8  ComIPdu0Buffer                 
+200004c0  ComIPdu1Buffer                 
+200004d8  ComSignal0Buffer               
+200004dc  ComSignal1Buffer               
+200004e0  ComSignal2Buffer               
+200004e4  ComSignal3Buffer               
+20000478  ComTeamConfig                  
 000049a7  Com_CbkRxAck                   
 000049a5  Com_CbkTxAck                   
 00000321  Com_Init                       
@@ -275,11 +277,11 @@ address   name
 00001a7b  Com_TriggerIPDUSend            
 00000ea1  Com_TxConfirmation             
 00000ba5  Com_UpdateShadowSignal         
-200004e0  CurrentCanState                
+200004e8  CurrentCanState                
 0000442d  IntDisable                     
 00004495  IntEnable                      
 00004565  IntIsEnabled                   
-20000248  PduR                           
+20000250  PduR                           
 00003efd  PduR_CanIfRxIndication         
 00003f69  PduR_CanIfTxConfirmation       
 00003e9d  PduR_ComTransmit               
@@ -300,13 +302,13 @@ address   name
 00003e57  UARTprintf                     
 00003b5d  UARTvprintf                    
 00003a37  UARTwrite                      
-20000470  __STACK_END                    
+20000478  __STACK_END                    
 00000200  __STACK_SIZE                   
-20000470  __STACK_TOP                    
-00004c20  __TI_CINIT_Base                
-00004c30  __TI_CINIT_Limit               
-00004c0c  __TI_Handler_Table_Base        
-00004c18  __TI_Handler_Table_Limit       
+20000478  __STACK_TOP                    
+00004c28  __TI_CINIT_Base                
+00004c38  __TI_CINIT_Limit               
+00004c10  __TI_Handler_Table_Base        
+00004c1c  __TI_Handler_Table_Limit       
 00004669  __TI_auto_init_nobinit_nopinit 
 000044fd  __TI_decompress_lzss           
 00004945  __TI_decompress_none           
@@ -325,7 +327,7 @@ ffffffff  __TI_prof_data_start
 ffffffff  __binit__                      
 ffffffff  __c_args__                     
 UNDEFED   __mpu_init                     
-20000270  __stack                        
+20000278  __stack                        
 0000480d  _c_int00_noargs                
 UNDEFED   _system_post_cinit             
 000049a9  _system_pre_init               
@@ -437,27 +439,27 @@ address   name
 000049a9  _system_pre_init               
 000049ad  C$$EXIT                        
 000049ad  abort                          
-00004c0c  __TI_Handler_Table_Base        
-00004c18  __TI_Handler_Table_Limit       
-00004c20  __TI_CINIT_Base                
-00004c30  __TI_CINIT_Limit               
+00004c10  __TI_Handler_Table_Base        
+00004c1c  __TI_Handler_Table_Limit       
+00004c28  __TI_CINIT_Base                
+00004c38  __TI_CINIT_Limit               
 20000000  Com                            
-2000014c  Can                            
-200001e4  CanIf                          
-20000248  PduR                           
-20000270  __stack                        
-20000470  ComTeamConfig                  
-20000470  __STACK_END                    
-20000470  __STACK_TOP                    
-200004b0  ComIPdu0Buffer                 
-200004b8  ComIPdu1Buffer                 
-200004c8  ComGroupSignal0Buffer          
-200004cc  ComGroupSignal1Buffer          
-200004d0  ComSignal0Buffer               
-200004d4  ComSignal1Buffer               
-200004d8  ComSignal2Buffer               
-200004dc  ComSignal3Buffer               
-200004e0  CurrentCanState                
+20000154  Can                            
+200001ec  CanIf                          
+20000250  PduR                           
+20000278  __stack                        
+20000478  ComTeamConfig                  
+20000478  __STACK_END                    
+20000478  __STACK_TOP                    
+200004b8  ComIPdu0Buffer                 
+200004c0  ComIPdu1Buffer                 
+200004d0  ComGroupSignal0Buffer          
+200004d4  ComGroupSignal1Buffer          
+200004d8  ComSignal0Buffer               
+200004dc  ComSignal1Buffer               
+200004e0  ComSignal2Buffer               
+200004e4  ComSignal3Buffer               
+200004e8  CurrentCanState                
 ffffffff  __TI_pprof_out_hndl            
 ffffffff  __TI_prof_data_size            
 ffffffff  __TI_prof_data_start           

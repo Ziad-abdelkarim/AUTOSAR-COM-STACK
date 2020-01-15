@@ -22,14 +22,14 @@ void Com_CbkRxAck(void)
 }
 
 /* ComSignal Buffers */
-uint8 ComSignal0Buffer[COM_SIGNAL_BUFFER_SIZE];
-uint8 ComSignal1Buffer[COM_SIGNAL_BUFFER_SIZE];
-uint8 ComSignal2Buffer[COM_SIGNAL_BUFFER_SIZE];
-uint8 ComSignal3Buffer[COM_SIGNAL_BUFFER_SIZE];
+uint8 ComSignal0Buffer[1];
+uint8 ComSignal1Buffer[1];
+uint8 ComSignal2Buffer[1];
+uint8 ComSignal3Buffer[1];
 
 /* ComGroupSignal Buffers */
-uint8 ComGroupSignal0Buffer[COM_GROUP_SIGNAL_BUFFER_SIZE];
-uint8 ComGroupSignal1Buffer[COM_GROUP_SIGNAL_BUFFER_SIZE];
+uint8 ComGroupSignal0Buffer[2];
+uint8 ComGroupSignal1Buffer[2];
 
 /* Com IPdu Buffers */
 uint8 ComIPdu0Buffer[5];
@@ -47,13 +47,11 @@ Com_Type Com =
              .ComHandleId=0,
              .ComNotification = &Com_CbkTxAck,
              .ComSignalEndianness = LITTLE_ENDIAN,
-             .ComSignalLength = COM_GROUP_SIGNAL_BUFFER_SIZE,
+             .ComSignalLength = 1,
              .ComSignalType= UINT8,
              .ComTransferProperty =  PENDING,
              .ComUpdateBitPosition = 8,
-             .ComSignalInitValue=0,
-             .ComBufferRef = ComSignal0Buffer,
-
+             .ComBufferRef = ComSignal0Buffer
             },
             {
              .ComBitPosition = 9,
@@ -61,13 +59,11 @@ Com_Type Com =
              .ComHandleId=1,
              .ComNotification = &Com_CbkTxAck,
              .ComSignalEndianness = LITTLE_ENDIAN,
-             .ComSignalLength = COM_GROUP_SIGNAL_BUFFER_SIZE,
+             .ComSignalLength = 1,
              .ComSignalType= UINT8,
              .ComTransferProperty =  TRIGGERED,
              .ComUpdateBitPosition = 17,
-             .ComSignalInitValue=0,
-             .ComBufferRef = ComSignal1Buffer,
-
+             .ComBufferRef = ComSignal1Buffer
             },
             {
              .ComBitPosition = 0,
@@ -75,12 +71,11 @@ Com_Type Com =
              .ComHandleId=2,
              .ComNotification = &Com_CbkRxAck,
              .ComSignalEndianness = LITTLE_ENDIAN,
-             .ComSignalLength = COM_GROUP_SIGNAL_BUFFER_SIZE,
+             .ComSignalLength = 1,
              .ComSignalType= UINT8,
              .ComTransferProperty =  TRIGGERED_ON_CHANGE,
              .ComUpdateBitPosition = 8,
-             .ComSignalInitValue=0,
-             .ComBufferRef = ComSignal2Buffer,
+             .ComBufferRef = ComSignal2Buffer
             },
             {
              .ComBitPosition = 9,
@@ -88,12 +83,11 @@ Com_Type Com =
              .ComHandleId=3,
              .ComNotification = &Com_CbkRxAck,
              .ComSignalEndianness = LITTLE_ENDIAN,
-             .ComSignalLength = COM_GROUP_SIGNAL_BUFFER_SIZE,
+             .ComSignalLength = 1,
              .ComSignalType= UINT8,
              .ComTransferProperty =  TRIGGERED_WITHOUT_REPETITION,
              .ComUpdateBitPosition = 17,
-             .ComSignalInitValue=0,
-             .ComBufferRef = ComSignal3Buffer,
+             .ComBufferRef = ComSignal3Buffer
             }
         },
         .ComIPduGroup=
@@ -114,10 +108,8 @@ Com_Type Com =
                 .ComSignalEndianness=LITTLE_ENDIAN,
                 .ComSignalLength=2,
                 .ComSignalType= UINT16,
-                .ComSignalInitValue=0,
                 .ComTransferProperty = PENDING,
-                .ComBufferRef = ComGroupSignal0Buffer,
-
+                .ComBufferRef = ComGroupSignal0Buffer
             },
             {
                 .ComBitPosition=18,
@@ -126,9 +118,8 @@ Com_Type Com =
                 .ComSignalEndianness=LITTLE_ENDIAN,
                 .ComSignalLength=2,
                 .ComSignalType= UINT16,
-                .ComSignalInitValue=0,
                 .ComTransferProperty = PENDING,
-                .ComBufferRef = ComGroupSignal1Buffer,
+                .ComBufferRef = ComGroupSignal1Buffer
             }
         },
         .ComSignalGroup=
@@ -161,7 +152,7 @@ Com_Type Com =
         .ComIPdu=
         {
             {
-			   .ComIPduLength = 5,
+               .ComIPduLength = 5,
                .ComIPduDirection = Send,
                .ComIPduHandleId= 0,
                .ComIPduSignalProcessing = DEFERRED,
@@ -198,11 +189,10 @@ Com_Type Com =
                         }
                     }
                 },
-                .ComBufferRef = ComIPdu0Buffer,
-                .ComBufferSize = 5
+                .ComBufferRef = ComIPdu0Buffer
             },
             {
-				.ComIPduLength = 5,
+                .ComIPduLength = 5,
                 .ComIPduDirection = Receive,
                 .ComIPduHandleId= 1,
                 .ComIPduSignalProcessing = IMMEDIATE,
@@ -223,8 +213,7 @@ Com_Type Com =
                     &Com.ComConfig.ComSignal[3],
                     NULL
                 },
-                .ComBufferRef = ComIPdu1Buffer,
-                .ComBufferSize=5
+                .ComBufferRef = ComIPdu1Buffer
             }
         }
     }
