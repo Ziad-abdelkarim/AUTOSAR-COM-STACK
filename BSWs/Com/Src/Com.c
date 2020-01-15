@@ -516,11 +516,13 @@ void Com_ReceiveShadowSignal(Com_SignalIdType SignalId, void* SignalDataPtr)
 *******************************************************************************************************************************/
 void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 {
-	uint8 IpduBufferIndex , SignalBufferIndex ,SignalGroupBufferIndex , ComUpdateBitPositionLocal;
+	uint8 ComSignalIndex,
+	ComSignalGroupIndex,
+	ComUpdateBitPositionLocal;
 	
 	if(ComState == COM_READY)
 	{
-		if(RxPduId <= ComMaxIPduCnt)
+		if(RxPduId < ComMaxIPduCnt)
 		{
 			if(PduInfoPtr != NULL)
 			{  
@@ -546,15 +548,15 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 						  and signal groups within the Com_RxIndication,or Com_TpRxIndication function respectively.(SRS_Com_02046)*/
 					 
 						/* Loop over all Signals in this IPDU */		
-						for(SignalBufferIndex = 0 ; Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalRef[SignalBufferIndex] != NULL ; SignalBufferIndex++)
+						for(ComSignalIndex = 0 ; Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalRef[ComSignalIndex] != NULL ; ComSignalIndex++)
 						{
-							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalRef[SignalBufferIndex] -> ComUpdateBitPosition;
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalRef[ComSignalIndex] -> ComUpdateBitPosition;
 						
 							/* Check if UpdateBit is set*/
 							if((Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8]) & (1 << (ComUpdateBitPositionLocal % 8)))
 							{	
 								/*invoke the configured ComNotifications for the included signals to RTE*/
-								Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalRef[SignalBufferIndex] -> ComNotification();
+								Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalRef[ComSignalIndex] -> ComNotification();
 								/* Clear UpdateBit */
 								Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal  / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
 							}
@@ -565,15 +567,15 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 						}
 						
 						/* Loop over all Signal groups in the current IPDU */
-						for(SignalGroupBufferIndex=0; Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[SignalGroupBufferIndex] != NULL; SignalGroupBufferIndex++)
+						for(ComSignalGroupIndex=0; Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
 						{
-							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[SignalGroupBufferIndex]->ComUpdateBitPosition;
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
 						
 							/* Check if UpdateBit is set*/
 							if(Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8]  &  (1 << (ComUpdateBitPositionLocal % 8)))
 							{
 								/*invoke the configured ComNotifications for the included signal groups to RTE*/
-								Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[SignalGroupBufferIndex]->ComNotification();
+								Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComNotification();
 								/* Clear UpdateBit */
 								Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
 							}
@@ -614,8 +616,6 @@ void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 		/*ComState != COM_READY*/
 	}
 }
-
-
 
 
 
@@ -1365,21 +1365,25 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 *******************************************************************************************************************************/
 Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 {
-    PduInfoType* pduinfo ;
+    PduInfoType* pduinfo = &(PduInfoType){
+                            .SduDataPtr = Com.ComConfig.ComIPdu[PduId].ComBufferRef,
+                            .SduLength = Com.ComConfig.ComIPdu[PduId].ComIPduLength
+    };
     uint8 ComSignalIndex, ComSignalGroupIndex, ComUpdateBitPositionLocal;
 
     if ( PduId > ComMaxIPduCnt)
     {
-        return E_NOT_OK ;
 #if (ComConfigurationUseDet == true )
         Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_PARAM);
 #endif
-    }
-    else if (ComState == COM_UNINIT){
         return E_NOT_OK ;
+    }
+    else if (ComState == COM_UNINIT)
+    {
 #if (ComConfigurationUseDet == true )
         Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_UNINIT);
-#endif	
+#endif
+        return E_NOT_OK ;
     }
     else {
 #if (ComEnableMDTForCyclicTransmission == true)
@@ -1455,4 +1459,8 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 
     }
 
+}
+
+void main()
+{
 }
