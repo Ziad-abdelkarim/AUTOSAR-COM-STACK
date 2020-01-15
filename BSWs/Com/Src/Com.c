@@ -513,59 +513,108 @@ void Com_ReceiveShadowSignal(Com_SignalIdType SignalId, void* SignalDataPtr)
  Parameters (out):              None
  Return value:                  None
  Description:        Indication of a received I-PDU from a lower layer communication interface module.
- *******************************************************************************************************************************/
+*******************************************************************************************************************************/
 void Com_RxIndication(PduIdType RxPduId,const PduInfoType* PduInfoPtr)
 {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    return ;
+	uint8 IpduBufferIndex , SignalBufferIndex ,SignalGroupBufferIndex , ComUpdateBitPositionLocal;
+	
+	if(ComState == COM_READY)
+	{
+		if(RxPduId <= ComMaxIPduCnt)
+		{
+			if(PduInfoPtr != NULL)
+			{  
+				if (Com.ComConfig.ComIPdu[RxPduId].ComIPduDirection == RECEIVE)
+				{
+					/*[SWS_Com_00574] ?When unpacking an I-PDU, 
+					  the AUTOSAR COM module shall check the received data length (PduInfoPtr->SduLength) and unpack 
+					  and notify only completely received signals via ComNotification. (SRS_Com_02046)*/
+				
+					if(PduInfoPtr -> SduLength <= 8)  
+					{
+						memcpy(Com.ComConfig.ComIPdu[RxPduId].ComBufferRef , PduInfoPtr -> SduDataPtr , PduInfoPtr -> SduLength);
+					}	  
+					else
+					{
+						/*Misra*/	
+					}	
+					
+					if(Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalProcessing == IMMEDIATE)
+					{
+						/*[SWS_Com_00300] If ComIPduSignalProcessing for an I-PDU is configured to IM-MEDIATE, 
+						  the AUTOSAR COM module shall invoke the configured ComNotifications for the included signals 
+						  and signal groups within the Com_RxIndication,or Com_TpRxIndication function respectively.(SRS_Com_02046)*/
+					 
+						/* Loop over all Signals in this IPDU */		
+						for(SignalBufferIndex = 0 ; Com.ComConfig.ComIPdu[RxPduId].ComIpduSignalRef[SignalBufferIndex] != NULL ; SignalBufferIndex++)
+						{
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIpduSignalRef[SignalBufferIndex] -> ComUpdateBitPosition;
+						
+							/* Check if UpdateBit is set*/
+							if((Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8]) & (1 << (ComUpdateBitPositionLocal % 8)))
+							{	
+								/*invoke the configured ComNotifications for the included signals to RTE*/
+								Com.ComConfig.ComIPdu[RxPduId].ComIpduSignalRef[SignalBufferIndex] -> ComNotification();
+								/* Clear UpdateBit */
+								Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal  / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8))
+							}
+							else
+							{
+								/*Misra*/
+							}
+						}
+						
+						/* Loop over all Signal groups in the current IPDU */
+						for(SignalGroupBufferIndex=0; Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[SignalGroupBufferIndex] != NULL; SignalGroupBufferIndex++)
+						{
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[SignalGroupBufferIndex]->ComUpdateBitPosition;
+						
+							/* Check if UpdateBit is set*/
+							if(Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8]  &  (1 << (ComUpdateBitPositionLocal % 8)))
+							{
+								/*invoke the configured ComNotifications for the included signal groups to RTE*/
+								Com.ComConfig.ComIPdu[RxPduId].ComIPduSignalGroupRef[SignalGroupBufferIndex]->ComNotification();
+								/* Clear UpdateBit */
+								Com.ComConfig.ComIPdu[RxPduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+							}
+							else
+							{
+								/*Misra*/
+							}		
+					
+						}
+					}	
+					else 
+					{
+						/*[SWS_Com_00301] ?If ComIPduSignalProcessing for an I-PDU is configured to DE-FERRED,
+						  the AUTOSAR COM module shall first copy the I-PDU\92s data within the Com_RxIndication function 
+						  or the related TP reception functions respectively from the PduR into COM. 
+						  Then the AUTOSAR COM module shall invoke the configured ComNotifications for the included signals 
+						  and signal groups asynchronously during the next call to Com_MainFunctionRx.(SRS_Com_02046)*/
+					}	
+				}
+				else
+				{
+					/*Com.ComConfig.ComIPdu[RxPduId].ComIPduDirection != RECEIVE*/
+				}
+			}
+			else
+			{
+				/*PduInfoPtr == NULL*/
+			}
+		
+		}
+		else
+		{
+			/* RxPduId > PduIdMax */
+		}
+	}
+	else
+	{
+		/*ComState != COM_READY*/
+	}
 }
+
 
 
 
@@ -1304,24 +1353,102 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
 		return COM_SERVICE_NOT_AVAILABLE;
 	}
 }
-
 /*********************************************************************************************************************************
- Service name:               Com_TriggerIPduSend
+ Service name:               Com_MainFunctionTx
  Service ID:                    0x17
- Parameters (in):               PduId -->  The I-PDU-ID of the I-PDU that shall be triggered for sending.
- Parameters (inout):            None
+ Parameters (in):               None
+ Parameters (inout):            PduId
  Parameters (out):              None
- Return value:                  Std_ReturnType  --->
-									E_OK: I-PDU was triggered for transmission
-									E_NOT_OK: I-PDU is stopped, the transmission could not be triggered
- Description:        			By a call to Com_TriggerIPDUSend the I-PDU with the given ID is triggered for transmission.
+ Return value:                  Std_ReturnType
+ Description:      
+						By a call to Com_TriggerIPDUSend the I-PDU with the given ID is triggered for transmission.
 *******************************************************************************************************************************/
-Std_ReturnType Com_TriggerIPDUSend(PduIdType PduId)
+Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 {
-	return E_NOT_OK;
+    PduInfoType* pduinfo = Com. ;
+    uint8 ComSignalIndex, ComSignalGroupIndex, ComUpdateBitPositionLocal;
+
+    if ( PduId > ComMaxIPduCnt)
+    {
+        return E_NOT_OK ;
+#if (ComConfigurationUseDet == true )
+        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_PARAM);
+#endif
+    }
+    else if (ComState == COM_UNINIT){
+        return E_NOT_OK ;
+#if (ComConfigurationUseDet == true )
+        Det_ReportError(MODULE_ID, INSTANCE_ID, 0x17, COM_E_UNINIT);
+#endif	
+    }
+    else {
+#if (ComEnableMDTForCyclicTransmission == true)
+        if(MinimumDelayTime == 0){
+#endif
+            
+                if( PduR_ComTransmit(PduId,pduinfo) == E_OK)
+                {
+
+					if(Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit == Transmit)
+					{
+						/* Loop over all Signals in this IPDU */
+						for(ComSignalIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+						{
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
+
+							/* Check if update bit is set*/
+							if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+							{
+
+								/* Clear update bit */
+								Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+							}
+							else
+							{
+
+							}
+						}
+						/* Loop over all Signal groups in this IPDU */
+						for(ComSignalGroupIndex=0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+						{
+							ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
+
+							/* Check if update bit is set*/
+							if(Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+							{
+								/* Clear update bit */
+								Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+							}
+							else
+							{
+
+							}
+						}
+					}
+
+
+                    return E_OK;
+                }
+                else
+                {
+
+                    return E_NOT_OK;
+
+                }
+
+            
+           
+            else {
+                /* Misra */
+            }
+#if (ComEnableMDTForCyclicTransmission == true)
+        }
+        else {
+            return E_NOT_OK;
+        }
+#endif
+
+    }
+
 }
 
-void main(void)
-{
-
-}
