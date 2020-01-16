@@ -70,8 +70,7 @@ Std_ReturnType PduR_ComTransmit(PduIdType id,const PduInfoType* info)
 		{
 			if (PduR.PduRRoutingTables.PduRRoutingTable[0].PduRRoutingPath[PduRRoutingPathIndex].PduRSrcPdu.PduRSourcePduHandleId == id)
 			{ 
-				CanIf_Transmit(PduR.PduRRoutingTables.PduRRoutingTable[0].PduRRoutingPath[PduRRoutingPathIndex].PduRDestPdu[0].PduRDestPduHandleId, info);
-				return E_OK;
+				return CanIf_Transmit(PduR.PduRRoutingTables.PduRRoutingTable[0].PduRRoutingPath[PduRRoutingPathIndex].PduRDestPdu[0].PduRDestPduHandleId, info);
 			}
 			else
 			{
@@ -103,7 +102,6 @@ void PduR_CanIfRxIndication(PduIdType RxPduId, const PduInfoType* PduInfoPtr)
      The reception of an I-PDU received from a communication interface module or from
      transport protocol module and forwarded to the COM module.
     */
-	UARTprintf("PduR_CanIfRxIndication PDU= %d Data= %d\n", RxPduId, *(PduInfoPtr->SduDataPtr));
     uint8 PduRRoutingPathIndex;
 	if (PduRState == PDUR_UNINIT) 
 	{ 
@@ -143,8 +141,6 @@ void PduR_CanIfRxIndication(PduIdType RxPduId, const PduInfoType* PduInfoPtr)
 *******************************************************************************************************************************/
 void PduR_CanIfTxConfirmation(PduIdType TxPduId) 
 {
-	UARTprintf("PduR_TxConfirmation PDU= %d\n", TxPduId);
-
 	uint8 PduRRoutingPathIndex;
 
 	if (PduRState == PDUR_UNINIT) 

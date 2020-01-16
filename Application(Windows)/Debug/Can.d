@@ -23,6 +23,7 @@ Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_can.h
+Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_timer.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/pin_map.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/can.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
@@ -31,7 +32,9 @@ Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h
 Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
 Can.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
+Can.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h
 Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h
+Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Can.h
 Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h
 Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h
 Can.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h
@@ -59,6 +62,7 @@ C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_can.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_timer.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/pin_map.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/can.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
@@ -67,7 +71,9 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h: 
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Can.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h: 

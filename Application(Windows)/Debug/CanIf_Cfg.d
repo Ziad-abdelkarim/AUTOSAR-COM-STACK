@@ -25,6 +25,7 @@ CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_can.h
+CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_timer.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/pin_map.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/can.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
@@ -33,6 +34,7 @@ CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
 CanIf_Cfg.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
+CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_Cfg.h
 
@@ -61,6 +63,7 @@ C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_can.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_timer.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/pin_map.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/can.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
@@ -69,5 +72,6 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h: 
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_Cfg.h: 

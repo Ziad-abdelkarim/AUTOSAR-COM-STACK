@@ -7,16 +7,19 @@
 /********************************************************************************************************************************
  **                                                          Includes                                                                                                **
  ********************************************************************************************************************************/
+#include "PduR.h"
 #include "Com.h"
 #include "ComTeam_Types.h"
 #include "Det.h"
-#include "PduR.h"
 #include "Std_Types.h"
 
 //#include "CanSM.h"
 /********************************************************************************************************************************
  **                                                       Global Variables                                                                                       **
  ********************************************************************************************************************************/
+extern Can_ConfigType Can;
+extern CanIf_ConfigType CanIf;
+extern PduR_PBConfigType PduR;
 extern Com_Type Com;
 
 static ComState_Type ComState = COM_UNINIT;
@@ -80,7 +83,6 @@ void Com_Init(const Com_ConfigType* config)
     Com_SignalGroupType* ComSignalGroupLocal;
 
     /*Initializing Signals Buffer By Init Values Of The Signal*/
-
     for (ComInitSignalIndex = 0; ComInitSignalIndex < ComMaxSignalCnt ;
             ComInitSignalIndex++)
     {
@@ -93,7 +95,6 @@ void Com_Init(const Com_ConfigType* config)
                     Com.ComConfig.ComSignal[ComInitSignalIndex].ComSignalInitValue;
         }
     }
-
 
     /*Initializing Group Signals Buffer By Init Values Of The Group Signal*/
 
@@ -111,7 +112,6 @@ void Com_Init(const Com_ConfigType* config)
         }
     }
 
-
     /* Initializing IPDUs And Copying Signals And Group Signals To IPDUs  */
     for (ComInitIPduIndex = 0; ComInitIPduIndex < ComMaxIPduCnt ;
             ComInitIPduIndex++)
@@ -120,16 +120,25 @@ void Com_Init(const Com_ConfigType* config)
         /* Get Pdu */
         ComIPduLocal = &Com.ComConfig.ComIPdu[ComInitIPduIndex];
 
+        ComTeamConfig.ComTeamIPdu[ComInitIPduIndex].ComTeamTxMode.ComTeamMinimumDelayTimer = Com.ComConfig.ComIPdu[ComInitIPduIndex].ComTxIPdu.ComMinimumDelayTime;
+        ComTeamConfig.ComTeamIPdu[ComInitIPduIndex].ComTeamTxMode.ComTeamTxModeTimePeriod = Com.ComConfig.ComIPdu[ComInitIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
         /* Initialize Signals and GroupSignals Update and Confirmation State*/
-        for(ComInitSignalIndex = 0; ComInitSignalIndex < ComMaxSignalCnt; ComInitSignalIndex++)
+        for (ComInitSignalIndex = 0; ComInitSignalIndex < ComMaxSignalCnt ;
+                ComInitSignalIndex++)
         {
-            ComTeamConfig.ComTeamSignal[ComInitSignalIndex].ComTeamSignalUpdated = false;
-            ComTeamConfig.ComTeamSignal[ComInitSignalIndex].ComTeamSignalConfirmed = false;
+            ComTeamConfig.ComTeamSignal[ComInitSignalIndex].ComTeamSignalUpdated =
+                    false;
+            ComTeamConfig.ComTeamSignal[ComInitSignalIndex].ComTeamSignalConfirmed =
+                    false;
         }
-        for(ComInitSignalGroupIndex = 0; ComInitSignalGroupIndex < ComMaxSignalGroupCnt; ComInitSignalGroupIndex++)
+        for (ComInitSignalGroupIndex = 0;
+                ComInitSignalGroupIndex < ComMaxSignalGroupCnt ;
+                ComInitSignalGroupIndex++)
         {
-            ComTeamConfig.ComTeamSignalGroup[ComInitSignalGroupIndex].ComTeamSignalGroupUpdated = false;
-            ComTeamConfig.ComTeamSignalGroup[ComInitSignalGroupIndex].ComTeamSignalGroupUpdated = false;
+            ComTeamConfig.ComTeamSignalGroup[ComInitSignalGroupIndex].ComTeamSignalGroupUpdated =
+                    false;
+            ComTeamConfig.ComTeamSignalGroup[ComInitSignalGroupIndex].ComTeamSignalGroupUpdated =
+                    false;
         }
 
         /*Fill IPDUs With Default Unused Area */
@@ -139,7 +148,7 @@ void Com_Init(const Com_ConfigType* config)
                 ComInitByteIndex++)
         {
             Com.ComConfig.ComIPdu[ComInitIPduIndex].ComBufferRef[ComInitByteIndex] =
-            COM_TX_IPDU_UNUSED_AREAS_DEFAULT;
+                    COM_TX_IPDU_UNUSED_AREAS_DEFAULT;
         }
 
         /*Copy Signals Referenced In IPDUs to IPDUs Buffers */
@@ -152,34 +161,30 @@ void Com_Init(const Com_ConfigType* config)
                     Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalRef[ComInitSignalIndex];
 
             /* Write data from signal buffer to IPdu*/
-            for (ComInitBitIndex = 0; ComInitBitIndex < ComSignalLocal->ComBitSize;
+            for (ComInitBitIndex = 0;
+                    ComInitBitIndex < ComSignalLocal->ComBitSize;
                     ComInitBitIndex++)
             {
                 if ((ComSignalLocal->ComBufferRef[ComInitBitIndex / 8]
                         >> (ComInitBitIndex % 8)) & 1)
                 {
                     ComIPduLocal->ComBufferRef[(ComInitBitIndex
-                            + ComSignalLocal->ComBitPosition) / 8] |=
-                            1
-                                    << ((ComInitBitIndex
-                                            + ComSignalLocal->ComBitPosition)
-                                            % 8);
+                            + ComSignalLocal->ComBitPosition) / 8] |= 1
+                            << ((ComInitBitIndex
+                                    + ComSignalLocal->ComBitPosition) % 8);
                 }
                 else
                 {
                     ComIPduLocal->ComBufferRef[(ComInitBitIndex
-                            + ComSignalLocal->ComBitPosition) / 8] &=
-                            ~(1
-                                    << ((ComInitBitIndex
-                                            + ComSignalLocal->ComBitPosition)
-                                            % 8));
+                            + ComSignalLocal->ComBitPosition) / 8] &= ~(1
+                            << ((ComInitBitIndex
+                                    + ComSignalLocal->ComBitPosition) % 8));
                 }
             }
             /*Clear update bit*/
             ComIPduLocal->ComBufferRef[ComSignalLocal->ComUpdateBitPosition / 8] &=
                     ~(1 << (ComSignalLocal->ComUpdateBitPosition % 8));
         }
-
 
         /*Copy Group Signals Referenced In SignalGroups Referenced In IPDUs to IPDUs Buffers */
 
@@ -199,7 +204,8 @@ void Com_Init(const Com_ConfigType* config)
                         Com.ComConfig.ComSignalGroup[ComInitSignalGroupIndex].ComGroupSignalRef[ComInitGroupSignalIndex];
 
                 /* Write data from signal buffer to IPdu*/
-                for (ComInitBitIndex = 0; ComInitBitIndex < ComGroupSignalLocal->ComBitSize;
+                for (ComInitBitIndex = 0;
+                        ComInitBitIndex < ComGroupSignalLocal->ComBitSize;
                         ComInitBitIndex++)
                 {
                     if ((ComGroupSignalLocal->ComBufferRef[ComInitBitIndex / 8]
@@ -228,13 +234,10 @@ void Com_Init(const Com_ConfigType* config)
                     << (ComSignalGroupLocal->ComUpdateBitPosition % 8));
         }
 
-
     }
     ComState = COM_READY;
 
-
-
-   return ;
+    return;
 }
 
 
@@ -757,7 +760,6 @@ void Com_TxConfirmation(PduIdType TxPduId)
     Com_IPduType *ComIPduLocal;
     Com_SignalType *ComSignalLocal;
     Com_SignalGroupType *ComSignalGroupLocal;
-
     if(TxPduId < ComMaxIPduCnt)
     {
         /* Loop over all IPdus*/
@@ -917,7 +919,7 @@ void Com_MainFunctionTx(void)
 
                     if(ComTeamIPduLoc->ComTeamTxMode.ComTeamMinimumDelayTimer> 0)
                     {
-                        ComTeamIPduLoc->ComTeamTxMode.ComTeamMinimumDelayTimer -= ComTxTimeBase;
+                        ComTeamIPduLoc->ComTeamTxMode.ComTeamMinimumDelayTimer -= ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod;
                     }
                     else
                     {
@@ -939,7 +941,7 @@ void Com_MainFunctionTx(void)
                 {
                     if(ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod> 0)
                     {
-                        ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod -= ComTxTimeBase;
+                        ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod -= ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod;
                     }
                     else if((ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeTimePeriod<= 0)&&(MinimumDelayTimerLoc))
                     {
@@ -968,13 +970,14 @@ void Com_MainFunctionTx(void)
                     {
                         if(ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod > 0)
                         {
-                            ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod    -= ComTxTimeBase;
+                            ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod -= ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod;
                         }
                         else if((ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod <= 0)&&(MinimumDelayTimerLoc))
                         {
                             if(Com_TriggerIPDUSend(IPduIdIndex) == E_OK)
                             {   /*Reset periodic timer.*/
-                                ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeRepetitionPeriod;
+                                UARTprintf("Com_TriggerIPDUSend\n");
+                                ComTeamIPduLoc->ComTeamTxMode.ComTeamTxModeRepetitionPeriod = ComIPduLoc->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
                                 ComTeamIPduLoc->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions--;
                                 #if(ComEnableMDTForCyclicTransmission == true)
                                     ComTeamMinimumDelayTimerLoc=ComIPduLoc->ComTxIPdu.ComMinimumDelayTime;
@@ -1560,8 +1563,8 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
                     }
                 }
             }
-            #if (ComEnableMDTForCyclicTransmission == true)
-            ComTeamConfig.ComTeamIPdu[PduId]ComTeamTxMode.ComTeamMinimumDelayTimer = COM_MINIMUM_DELAY_TIME;
+            #if ComEnableMDTForCyclicTransmission
+            ComTeamConfig.ComTeamIPdu[PduId]ComTeamTxMode.ComTeamMinimumDelayTimer = Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComMinimumDelayTime;
             #endif
             return E_OK;
         }
@@ -1583,6 +1586,103 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 
 }
 
+#define CONTROLLER_ID   (uint8)0
+#define SIGNAL_ID       (uint8)0
+#define GROUPSIGNAL_ID  (uint8)0
+#define SIGNALGROUP_ID  (uint8)0
+
+void Timer0IntHandler(void)
+{
+
+}
+
 void main()
 {
-}
+    uint32 Period;
+    Com_IPduType *ComIPduLoc = &Com.ComConfig.ComIPdu[0];
+    uint8 SignalData = 0x00;
+    uint16 GroupSignalData = 0xFFFF;
+    const void* SignalDataPtr = &SignalData;
+    const void* GroupSignalDataPtr = &GroupSignalData;
+
+    SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
+    /******************Setup UART for debugging*********************/
+    // Enable UART0 and GPIOA peripherals
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART0);
+
+    // Configure pins A0 and A1 as Rx and Tx
+    GPIOPinConfigure(GPIO_PA0_U0RX);
+    GPIOPinConfigure(GPIO_PA1_U0TX);
+    GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
+
+    // Set baudrate to 115200
+    UARTStdioConfig(0, 115200, SysCtlClockGet());
+    /***************************************************************/
+
+    /**************************Setup CAN0***************************/
+    // Enable CAN0 and GPIOB peripherals
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
+    // Configure pins B4 and B5 as Rx and Tx
+    GPIOPinConfigure(GPIO_PB4_CAN0RX);
+    GPIOPinConfigure(GPIO_PB5_CAN0TX);
+    GPIOPinTypeCAN(GPIO_PORTB_BASE, GPIO_PIN_4 | GPIO_PIN_5);
+    /***************************************************************/
+
+
+    Can_Init(&Can);
+    CanIf_Init(&CanIf);
+    PduR_Init(&PduR);
+    Com_Init(&(Com.ComConfig));
+
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+    /**********************Setup TIMER0*****************************/
+    /*while (!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0));
+    TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
+    Period = (SysCtlClockGet() / 2);
+    TimerLoadSet(TIMER0_BASE, TIMER_A, Period - 1);
+    IntEnable(INT_TIMER0A);
+    TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
+    IntMasterEnable();
+    TimerEnable(TIMER0_BASE, TIMER_A);
+    */
+    /***************************************************************/
+
+    CanIf_SetControllerMode(CONTROLLER_ID, CANIF_CS_STARTED);
+    //SysCtlDelay(SysCtlClockGet() / 3);
+    uint8 Counter = 0;
+
+    if(CanIf_SetControllerMode(CONTROLLER_ID, CANIF_CS_STARTED) == E_OK)
+    {
+        UARTprintf("CanIf_SetControllerMode E_OK\n");
+        Can_MainFunction_Mode();
+        while(1)
+        {
+            Com_MainFunctionTx();
+            Counter++;
+            if(Counter == 11)
+            {
+                if(Com_SendSignal(SIGNAL_ID, SignalDataPtr) == E_OK)
+                {
+                    SignalData ++;
+                    UARTprintf("Com_SendSignal\n");
+                }
+                Com_UpdateShadowSignal(GROUPSIGNAL_ID, GroupSignalDataPtr);
+                if(Com_SendSignalGroup(SIGNALGROUP_ID) == E_OK)
+                {
+                    UARTprintf("Com_SendSignalGroup\n");
+                }
+                GroupSignalData++;
+                Counter = 0;
+
+                UARTprintf("Send Data= %d %d %d %d %d\n", ComIPduLoc->ComBufferRef[0], ComIPduLoc->ComBufferRef[1], ComIPduLoc->ComBufferRef[2], ComIPduLoc->ComBufferRef[3], ComIPduLoc->ComBufferRef[4]);
+            }
+            SysCtlDelay(SysCtlClockGet() / 30);
+        }
+    }
+    else
+    {
+
+    }
+    }
+

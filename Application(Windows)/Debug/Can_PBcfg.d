@@ -23,6 +23,7 @@ Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_can.h
+Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_timer.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/pin_map.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/can.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
@@ -31,6 +32,7 @@ Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h
 Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
 Can_PBcfg.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
+Can_PBcfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h
 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_PBcfg.c: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h: 
@@ -55,6 +57,7 @@ C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_can.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_timer.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/pin_map.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/can.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
@@ -63,3 +66,4 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h: 
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h: 

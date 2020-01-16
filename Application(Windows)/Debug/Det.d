@@ -20,6 +20,7 @@ Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h
 Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h
 Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h
 Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_can.h
+Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_timer.h
 Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/pin_map.h
 Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/can.h
 Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h
@@ -28,6 +29,7 @@ Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h
 Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h
 Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
 Det.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
+Det.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h
 Det.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/ComStack_Types.h
 Det.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Std_Types.h
 
@@ -51,6 +53,7 @@ C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_ints.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_types.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_memmap.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_can.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/inc/hw_timer.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/pin_map.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/can.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/interrupt.h: 
@@ -59,5 +62,6 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/gpio.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h: 
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
+C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/ComStack_Types.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Std_Types.h: 

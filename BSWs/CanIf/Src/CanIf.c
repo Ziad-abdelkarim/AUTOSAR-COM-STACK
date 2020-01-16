@@ -1075,7 +1075,6 @@ Std_ReturnType CanIf_ReadRxPduData(PduIdType CanIfRxSduId,
                     else
                     {
                         *CanIfRxInfoPtr = RxBuffer[CanIfRxSduId];
-                        //UARTprintf("CanIf_ReadRxPduData %d\n", *(CanIfRxInfoPtr->SduDataPtr));
                         return E_OK;
                     }
                 }
@@ -1726,7 +1725,6 @@ void CanIf_RxIndication(const Can_HwType* Mailbox,
                              and if CanIf_RxIndication() is called,the CanIf shall set the notification status for the Received L-PDU. c()*/
 
                             RxBuffer[RxPduPtr->CanIfRxPduId] = *PduInfoPtr;
-                            UARTprintf("CanIf_RxIndication Message Received %d\n", *(PduInfoPtr->SduDataPtr));
 
 #if(CanIfPublicReadRxPduNotifyStatusApi == true)
                             if(RxPduPtr->CanIfRxPduReadNotifyStatus == true)
@@ -1985,15 +1983,12 @@ void CanIf_ControllerModeIndication(uint8 ControllerId,
                 {
                     case CANIF_CS_STARTED:
                         CanIfControllerMode[ControllerId] = CANIF_CS_STARTED;
-                        UARTprintf("CanIf_ControllerModeIndication CANIF_CS_STARTED\n");
                         break;
                     case CANIF_CS_STOPPED:
                         CanIfControllerMode[ControllerId] = CANIF_CS_STOPPED;
-                        UARTprintf("CanIf_ControllerModeIndication CANIF_CS_STOPPED\n");
                         break;
                     case CANIF_CS_SLEEP:
                         CanIfControllerMode[ControllerId] = CANIF_CS_SLEEP;
-                        UARTprintf("CanIf_ControllerModeIndication CANIF_CS_SLEEP\n");
                         break;
                     default:
                         break;

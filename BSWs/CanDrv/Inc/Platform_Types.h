@@ -19,6 +19,7 @@ AUTOSAR Version:                            4.2.2
 #include <inc/hw_types.h>
 #include <inc/hw_memmap.h>
 #include <inc/hw_can.h>
+#include <inc/hw_timer.h>
 
 #include <driverlib/pin_map.h>
 #include <driverlib/can.h>
@@ -27,6 +28,7 @@ AUTOSAR Version:                            4.2.2
 #include <driverlib/gpio.h>
 #include <driverlib/debug.h>
 #include <utils/uartstdio.h>
+#include <driverlib/timer.h>
 
 
 

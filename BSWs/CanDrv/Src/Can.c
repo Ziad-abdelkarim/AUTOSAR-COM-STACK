@@ -130,7 +130,6 @@ void Can_ISRHandler(uint8 Controller)
                                  Note: The service CanIf_TxConfirmation() is implemented in CanIf and called
                                  by the CanDrv after the CAN L-PDU has been TRANSMITted on the CAN network.
                                  */
-                                UARTprintf("CAN_ISRHandler Message Sent\n");
                                 CanIf_TxConfirmation(MessageObject[Controller][ui8NumberOfObjectHandler][ui8NumberOfObject].PduId);
                             }
                             else
@@ -164,7 +163,6 @@ void Can_ISRHandler(uint8 Controller)
                                 ReceiverMailBox.CanId = ReceivedMessage.ui32MsgID;
                                 ReceiverPduInfo.SduDataPtr = ReceivedMessage.pui8MsgData;
                                 ReceiverPduInfo.SduLength = ReceivedMessage.ui32MsgLen;
-                                UARTprintf("CAN_ISRHandler Message Received %d\n", *(ReceivedMessage.pui8MsgData));
                                 CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);
                             }
                             else
@@ -450,7 +448,6 @@ void Can_MainFunction_Write()
 
                                                 MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].Confirmation=true;
                                                 CanIf_TxConfirmation(MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].PduId);
-                                                UARTprintf("Can_MainFunction_Write Transmission Confirmed\n");
                                             }
                                             else
                                             {
@@ -468,7 +465,6 @@ void Can_MainFunction_Write()
 
                                                 MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].Confirmation=true;
                                                 CanIf_TxConfirmation(MessageObject[ControllerIndex][HardwareObjectIndex][ObjectIndex].PduId);
-                                                UARTprintf("Can_MainFunction_Write Transmission Confirmed\n");
                                             }
                                             else
                                             {
@@ -1121,7 +1117,6 @@ Can_ReturnType Can_Write(Can_HwHandleType Hth, const Can_PduType* PduInfo)
                                 CurrentHObj->CanControllerRef->CanControllerBaseAddress,
                                 MessageObject[CurrentHObj->CanControllerRef->CanControllerId][CurrentHObj->CanObjectId][Id].MessageObjectNumber,
                                 &sCANMessage, MSG_OBJ_TYPE_TX);
-                        UARTprintf("Can_Write Message Sent\n");
                         return CAN_OK;
                     }
                     else
@@ -1230,8 +1225,6 @@ void Can_MainFunction_Read(void)
                                     ReceiverPduInfo.SduLength = CanMsgReceived.ui32MsgLen;
 
                                     CanIf_RxIndication(&ReceiverMailBox, &ReceiverPduInfo);
-                                    UARTprintf("Can_MainFunction_Read Message Received %d\n", *(CanMsgReceived.pui8MsgData));
-
 
                                 }
                                 else
@@ -1445,21 +1438,6 @@ void Can_MainFunction_Mode(void)
                          */
 
                         CanIf_ControllerModeIndication(Iteration, temp_case);
-                        switch(temp_case)
-                        {
-                        case CANIF_CS_STARTED:
-                            UARTprintf("Can_MainFunction_Mode Started\n");
-                            break;
-                        case CANIF_CS_STOPPED:
-                            UARTprintf("Can_MainFunction_Mode Stopped\n");
-                            break;
-                        case CANIF_CS_SLEEP:
-                            UARTprintf("Can_MainFunction_Mode Sleep\n");
-                            break;
-                        default:
-                           UARTprintf("Can_MainFunction_Mode Error\n");
-                           break;
-                        }
                         CurrentCanState[Iteration] = temp_case;
                     }
             }

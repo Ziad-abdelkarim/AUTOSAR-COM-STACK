@@ -68,7 +68,7 @@ typedef struct{
 	and transport protocol modules for confirmation
 	(PduR_<Lo>TxConfirmation) and for TriggerTransmit
 	(PduR_<Lo>TriggerTransmit).*/ 
-	uint16 PduRDestPduHandleId;
+	uint8 PduRDestPduHandleId;
 	
 	/* This parameter is only for communication interfaces. Transport protocol
 	modules will always call the TxConfirmation function.
@@ -91,7 +91,7 @@ Description:           	This container is a subcontainer of PduRRoutingPath and 
 *********************************************************************************************************************************/
 typedef struct{
 	/* PDU identifier assigned by PDU Router. */
-	uint16 PduRSourcePduHandleId;
+	uint8 PduRSourcePduHandleId;
 	
 	/* When enabled, the TxConfirmation will be forwarded to the upper layer.
 	Prerequisites: Lower layer and upper layer support TxConfirmation. */

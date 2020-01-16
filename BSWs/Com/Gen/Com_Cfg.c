@@ -13,7 +13,7 @@ AUTOSAR Version:                                          4.2.2
 
 void Com_CbkTxAck(void)
 {
-
+    UARTprintf("Com_CbkTxAck\n");
 }
 
 void Com_CbkRxAck(void)
@@ -49,8 +49,9 @@ Com_Type Com =
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
-             .ComTransferProperty =  PENDING,
+             .ComTransferProperty =  TRIGGERED_WITHOUT_REPETITION,
              .ComUpdateBitPosition = 8,
+             .ComSignalInitValue = COM_SIGNAL_INIT_VALUE,
              .ComBufferRef = ComSignal0Buffer
             },
             {
@@ -61,8 +62,9 @@ Com_Type Com =
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
-             .ComTransferProperty =  TRIGGERED,
+             .ComTransferProperty =  TRIGGERED_ON_CHANGE_WITHOUT_REPETITION,
              .ComUpdateBitPosition = 17,
+             .ComSignalInitValue = COM_SIGNAL_INIT_VALUE,
              .ComBufferRef = ComSignal1Buffer
             },
             {
@@ -73,8 +75,9 @@ Com_Type Com =
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
-             .ComTransferProperty =  TRIGGERED_ON_CHANGE,
+             .ComTransferProperty =  TRIGGERED_WITHOUT_REPETITION,
              .ComUpdateBitPosition = 8,
+             .ComSignalInitValue = COM_SIGNAL_INIT_VALUE,
              .ComBufferRef = ComSignal2Buffer
             },
             {
@@ -85,8 +88,9 @@ Com_Type Com =
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
-             .ComTransferProperty =  TRIGGERED_WITHOUT_REPETITION,
+             .ComTransferProperty =  TRIGGERED_ON_CHANGE_WITHOUT_REPETITION,
              .ComUpdateBitPosition = 17,
+             .ComSignalInitValue = COM_SIGNAL_INIT_VALUE,
              .ComBufferRef = ComSignal3Buffer
             }
         },
@@ -109,6 +113,7 @@ Com_Type Com =
                 .ComSignalLength=2,
                 .ComSignalType= UINT16,
                 .ComTransferProperty = PENDING,
+                .ComSignalInitValue=COM_SIGNAL_INIT_VALUE,
                 .ComBufferRef = ComGroupSignal0Buffer
             },
             {
@@ -119,6 +124,7 @@ Com_Type Com =
                 .ComSignalLength=2,
                 .ComSignalType= UINT16,
                 .ComTransferProperty = PENDING,
+                .ComSignalInitValue=COM_SIGNAL_INIT_VALUE,
                 .ComBufferRef = ComGroupSignal1Buffer
             }
         },
@@ -175,7 +181,7 @@ Com_Type Com =
                 },
                .ComTxIPdu=
                 {
-                    .ComMinimumDelayTime=0.01,
+                    .ComMinimumDelayTime=0.5,
                     .ComTxIPduClearUpdateBit= Confirmation,
                     .ComTxIPduUnusedAreasDefault=255,
                     .ComTxModeFalse=
@@ -183,9 +189,9 @@ Com_Type Com =
                         .ComTxMode=
                         {
                             .ComTxModeMode = DIRECT,
-                            .ComTxModeNumberOfRepetitions = 2,
-                            .ComTxModeRepetitionPeriod = 0.05,
-                            .ComTxModeTimePeriod=0.1
+                            .ComTxModeNumberOfRepetitions = 1,
+                            .ComTxModeRepetitionPeriod = 0.1,
+                            .ComTxModeTimePeriod=1
                         }
                     }
                 },
