@@ -1587,7 +1587,7 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 }
 
 #define CONTROLLER_ID   (uint8)0
-#define SIGNAL_ID       (uint8)0
+#define SIGNAL_ID       (uint8)1
 #define GROUPSIGNAL_ID  (uint8)0
 #define SIGNALGROUP_ID  (uint8)0
 
@@ -1658,8 +1658,8 @@ void main()
         Can_MainFunction_Mode();
         while(1)
         {
-            Com_MainFunctionTx();
-            Counter++;
+            Com_MainFunctionRx();
+            /*Counter++;
             if(Counter == 11)
             {
                 if(Com_SendSignal(SIGNAL_ID, SignalDataPtr) == E_OK)
@@ -1675,14 +1675,14 @@ void main()
                 GroupSignalData++;
                 Counter = 0;
 
-                UARTprintf("Send Data= %d %d %d %d %d\n", ComIPduLoc->ComBufferRef[0], ComIPduLoc->ComBufferRef[1], ComIPduLoc->ComBufferRef[2], ComIPduLoc->ComBufferRef[3], ComIPduLoc->ComBufferRef[4]);
             }
             SysCtlDelay(SysCtlClockGet() / 30);
+            */
         }
     }
     else
     {
 
     }
-    }
+}
 

@@ -28,14 +28,7 @@ Description:
 					for referencing.
 																				                **
 **************************************************************************************************/
-
-#if    ( PDUIDTYPE == UINT8)
 typedef	uint8  PduIdType;
-#elif (PDUIDTYPE == UINT16)
-typedef	uint16  PduIdType;
-#else // default is uint8
-typedef	uint16  PduIdType;
-#endif	
 
 /**************************************************************************************************
 **
@@ -46,16 +39,7 @@ Description:
 					length information is provided in number of bytes.
 					                                                                                                                   **
 **************************************************************************************************/
-
-#if    ( PDULENGTHTYPE == UINT8)
 typedef	uint8  PduLengthType;
-#elif (PDULENGTHTYPE == UINT16)
-typedef	uint16  PduLengthType;
-#elif (PDULENGTHTYPE == UINT32)
-typedef	uint16  PduLengthType;
-#else // default is uint8
-typedef	uint16  PduLengthType;
-#endif	
 
 /**************************************************************************************************
 **

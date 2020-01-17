@@ -115,8 +115,7 @@ void PduR_CanIfRxIndication(PduIdType RxPduId, const PduInfoType* PduInfoPtr)
 		{
 			if(RxPduId==PduR.PduRRoutingTables.PduRRoutingTable[0].PduRRoutingPath[PduRRoutingPathIndex].PduRSrcPdu.PduRSourcePduHandleId)
 			{
-				Com_RxIndication(PduR.PduRRoutingTables.PduRRoutingTable[0].PduRRoutingPath[PduRRoutingPathIndex].PduRDestPdu[0].PduRDestPduHandleId,PduInfoPtr);
-				return;
+				return Com_RxIndication(PduR.PduRRoutingTables.PduRRoutingTable[0].PduRRoutingPath[PduRRoutingPathIndex].PduRDestPdu[0].PduRDestPduHandleId,PduInfoPtr);
 			}
 			else
 			{

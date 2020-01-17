@@ -159,13 +159,7 @@ Description:
                      00 CAN message with Standard CAN ID
                      01 CAN FD frame with Standard CAN ID                                             **
 **************************************************************************************************/
-#if    ( CAN_IDTYPE == UINT16)
 typedef uint16  Can_IdType;
-#elif (CAN_IDTYPE == UINT32)
-typedef uint32  Can_IdType;
-#else // default is uint16
-typedef uint16  Can_IdType;
-#endif
 
 /************************************************************************************
 Name:                                 CanHardwareObject
@@ -242,13 +236,7 @@ Description:
                       hardware units with more than 255 HW objects use extended range. 
 					                                                                                                                   **
 **************************************************************************************************/
-#if    ( CAN_HWHANDLETYPE == UINT8)
 typedef	uint8  Can_HwHandleType;
-#elif (CAN_HWHANDLETYPE == UINT16)
-typedef	uint16  Can_HwHandleType;
-#else // default is uint8
-typedef	uint16  Can_HwHandleType;
-#endif	
 /**************************************************************************************************
 **
 Name:                                     Can_PduType

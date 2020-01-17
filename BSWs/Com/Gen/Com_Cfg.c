@@ -11,14 +11,50 @@ AUTOSAR Version:                                          4.2.2
  **                                         Post-Build Configuration variables values                                       **
  *****************************************************************************************************************************/
 
-void Com_CbkTxAck(void)
+void Com_CbkSignal0TxAck(void)
 {
-    UARTprintf("Com_CbkTxAck\n");
+    UARTprintf("Com_CbkSignal0TxAck\n");
 }
 
-void Com_CbkRxAck(void)
+void Com_CbkSignal1TxAck(void)
 {
+    UARTprintf("Com_CbkSignal1TxAck\n");
+}
 
+void Com_CbkSignal2RxAck(void)
+{
+    uint8 SignalData;
+    uint8 * SignalDataPtr = &SignalData;
+    if(Com_ReceiveSignal(2, SignalDataPtr) == E_OK)
+    {
+        UARTprintf("Com_CbkSignal2RxAck = %d\n", SignalData);
+    }
+}
+
+void Com_CbkSignal3RxAck(void)
+{
+    uint8 SignalData;
+    uint8 * SignalDataPtr = &SignalData;
+    if(Com_ReceiveSignal(3, SignalDataPtr) == E_OK)
+    {
+        UARTprintf("Com_CbkSignal3RxAck = %d\n", SignalData);
+    }
+}
+
+void Com_CbkSignalGroup0TxAck(void)
+{
+    UARTprintf("Com_CbkSignalGroup0TxAck\n");
+}
+
+void Com_CbkSignalGroup1RxAck(void)
+{
+    uint8 SignalData;
+    uint8 * SignalDataPtr = &SignalData;
+    if(Com_ReceiveSignalGroup(1) == E_OK)
+    {
+        Com_ReceiveShadowSignal(1, SignalDataPtr);
+        UARTprintf("Com_CbkSignalGroup1RxAck = %d\n", SignalData);
+    }
 }
 
 /* ComSignal Buffers */
@@ -45,7 +81,7 @@ Com_Type Com =
              .ComBitPosition = 0,
              .ComBitSize= 8,
              .ComHandleId=0,
-             .ComNotification = &Com_CbkTxAck,
+             .ComNotification = &Com_CbkSignal0TxAck,
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
@@ -58,7 +94,7 @@ Com_Type Com =
              .ComBitPosition = 9,
              .ComBitSize= 8,
              .ComHandleId=1,
-             .ComNotification = &Com_CbkTxAck,
+             .ComNotification = &Com_CbkSignal1TxAck,
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
@@ -71,7 +107,7 @@ Com_Type Com =
              .ComBitPosition = 0,
              .ComBitSize= 8,
              .ComHandleId=2,
-             .ComNotification = &Com_CbkRxAck,
+             .ComNotification = &Com_CbkSignal2RxAck,
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
@@ -84,7 +120,7 @@ Com_Type Com =
              .ComBitPosition = 9,
              .ComBitSize= 8,
              .ComHandleId=3,
-             .ComNotification = &Com_CbkRxAck,
+             .ComNotification = &Com_CbkSignal3RxAck,
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
@@ -132,7 +168,7 @@ Com_Type Com =
         {
             {
                 .ComHandleId=0,
-                .ComNotification = &Com_CbkTxAck,
+                .ComNotification = &Com_CbkSignalGroup0TxAck,
                 .ComTransferProperty = TRIGGERED_ON_CHANGE,
                 .ComUpdateBitPosition =34,
                 /*.ComInitialValueOnly= false,*/
@@ -144,7 +180,7 @@ Com_Type Com =
             },
             {
                 .ComHandleId=1,
-                .ComNotification = &Com_CbkRxAck,
+                .ComNotification = &Com_CbkSignalGroup1RxAck,
                 .ComTransferProperty = TRIGGERED_ON_CHANGE,
                 .ComUpdateBitPosition =34,
                 /*.ComInitialValueOnly= false,*/

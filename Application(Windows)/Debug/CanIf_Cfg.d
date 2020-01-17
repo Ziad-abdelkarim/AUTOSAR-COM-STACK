@@ -2,8 +2,7 @@
 
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.c
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h
-CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h
-CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h
+CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Can.h
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Can_GeneralTypes.h
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/ComStack_Types.h
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Std_Types.h
@@ -35,13 +34,15 @@ CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h
 CanIf_Cfg.obj: C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h
 CanIf_Cfg.obj: C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h
+CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h
+CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h
+CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h
 CanIf_Cfg.obj: E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_Cfg.h
 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.c: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h: 
-E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h: 
-E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Can.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Can_GeneralTypes.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/ComStack_Types.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Inc/Std_Types.h: 
@@ -73,5 +74,8 @@ C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/debug.h:
 C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.h: 
 C:/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.3.LTS/include/stdarg.h: 
 C:/ti/TivaWare_C_Series-2.1.4.178/driverlib/timer.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_Cfg.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.h: 
+E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Inc/CanIf_Types.h: 
 E:/Engineering/Graduation//\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_Cfg.h: 
