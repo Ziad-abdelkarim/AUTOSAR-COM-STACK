@@ -474,70 +474,55 @@ uint8 Com_ReceiveSignal(Com_SignalIdType SignalId,void* SignalDataPtr)
     }
     else
     {
-        if(SignalDataPtr==NULL)
-        {
-            /*
-              [SWS_Com_00805] ⌈NULL pointer checking:
-              error code: COM_E_PARAM_POINTER
-              value [hex]: 0x03
-              (SRS_BSW_00414)
-            */
-            #if ComConfigurationUseDet == true
-                Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_PARAM_POINTER);
-            #endif
-        }
-        else
-        {
-            if(SignalId >= ComMaxSignalCnt)
-            {
-                /*
-                [SWS_Com_00803] ⌈API service called with wrong parameter:
-                error code: COM_E_PARAM
-                value [hex]: 0x01
-                (SRS_BSW_00337)
-                */
-                #if ComConfigurationUseDet == true
-                    Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_PARAM);
-                #endif
-            }
-            else
-            {
-                /* Find the IPdu which contains this signal */
-                for(ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt; ComIPduIndex++)
-                {
-                    for(ComSignalIndex = 0; Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
-                    {
-                        if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex]->ComHandleId == SignalId)
-                        {
-                            /* Get Pdu */
-                            ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
-                            /*Get Signal*/
-                            ComSignalLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex];
+		if(SignalId >= ComMaxSignalCnt)
+		{
+			/*
+			[SWS_Com_00803] ⌈API service called with wrong parameter:
+			error code: COM_E_PARAM
+			value [hex]: 0x01
+			(SRS_BSW_00337)
+			*/
+			#if ComConfigurationUseDet == true
+				Det_ReportError(COM_MODULE_ID, COM_INSTANCE_ID, 0x0B, COM_E_PARAM);
+			#endif
+		}
+		else
+		{
+			/* Find the IPdu which contains this signal */
+			for(ComIPduIndex = 0; ComIPduIndex < ComMaxIPduCnt; ComIPduIndex++)
+			{
+				for(ComSignalIndex = 0; Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+				{
+					if(Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex]->ComHandleId == SignalId)
+					{
+						/* Get Pdu */
+						ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
+						/*Get Signal*/
+						ComSignalLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex];
 
-                            /* Write data from IPdu buffer to Signal buffer*/
-                            for(BitIndex = ComSignalLocal->ComBitPosition; BitIndex < ComSignalLocal->ComBitPosition + ComSignalLocal->ComBitSize; BitIndex++)
-                            {
-                               if((ComIPduLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
-                               {
-                                   ComSignalLocal->ComBufferRef[(BitIndex - ComSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex - ComSignalLocal->ComBitPosition) % 8);
-                               }
-                               else
-                               {
-                                   ComSignalLocal->ComBufferRef[(BitIndex - ComSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex - ComSignalLocal->ComBitPosition) % 8));
-                               }
-                            }
-                        }
-                        else
-                        {
+						/* Write data from IPdu buffer to Signal buffer*/
+						for(BitIndex = ComSignalLocal->ComBitPosition; BitIndex < ComSignalLocal->ComBitPosition + ComSignalLocal->ComBitSize; BitIndex++)
+						{
+						   if((ComIPduLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
+						   {
+							   ComSignalLocal->ComBufferRef[(BitIndex - ComSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex - ComSignalLocal->ComBitPosition) % 8);
+						   }
+						   else
+						   {
+							   ComSignalLocal->ComBufferRef[(BitIndex - ComSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex - ComSignalLocal->ComBitPosition) % 8));
+						   }
+						}
 
-                        }
-                    }
+						memcpy(SignalDataPtr, ComSignalLocal->ComBufferRef, ComSignalLocal->ComSignalLength);
+						return E_OK;
+					}
+					else
+					{
 
-                    SignalDataPtr = ComSignalLocal->ComBufferRef;
-                }
-                return E_OK;
-            }
-        }
+					}
+				}
+			}
+		}
     }
 
     return COM_SERVICE_NOT_AVAILABLE;
@@ -607,7 +592,7 @@ void Com_ReceiveShadowSignal(Com_SignalIdType SignalId, void* SignalDataPtr)
         {
             if(Com.ComConfig.ComGroupSignal[ComGroupSignalIndex].ComHandleId == SignalId)
             {
-                SignalDataPtr = Com.ComConfig.ComGroupSignal[ComGroupSignalIndex].ComBufferRef;
+                memcpy(SignalDataPtr, Com.ComConfig.ComGroupSignal[ComGroupSignalIndex].ComBufferRef, Com.ComConfig.ComGroupSignal[ComGroupSignalIndex].ComSignalLength);
                 return;
             }
             else
@@ -1388,6 +1373,7 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
                             }
                             /*Set update bit*/
                             ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] |= 1 << (ComSignalGroupLocal->ComUpdateBitPosition % 8);
+                            ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupUpdated = true;
                         }
                         else
                         {
@@ -1445,12 +1431,12 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
                     /* Get IPdu */
                     ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
 
-                    for(ComGroupSignalIndex = 0; Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex] != NULL; ComGroupSignalIndex++)
+                    for(ComGroupSignalIndex = 0; ComIPduLocal->ComIPduSignalGroupRef[ComSignalGroupIndex]->ComGroupSignalRef[ComGroupSignalIndex] != NULL; ComGroupSignalIndex++)
                     {
                         /*Get Group Signal*/
-                        ComGroupSignalLocal = Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex];
+                        ComGroupSignalLocal = ComIPduLocal->ComIPduSignalGroupRef[ComSignalGroupIndex]->ComGroupSignalRef[ComGroupSignalIndex];
 
-                        /* Write data from signal buffer to IPdu*/
+                        /* Write data from IPdu to GroupSignal buffer to IPdu*/
                         for(BitIndex = ComGroupSignalLocal->ComBitPosition; BitIndex < ComGroupSignalLocal->ComBitPosition + ComGroupSignalLocal->ComBitSize; BitIndex++)
                         {
                             if((ComIPduLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
@@ -1462,6 +1448,7 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
                                ComGroupSignalLocal->ComBufferRef[(BitIndex - ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex - ComGroupSignalLocal->ComBitPosition) % 8));
                             }
                         }
+                        return E_OK;
                     }
                 }
                 else
@@ -1469,12 +1456,12 @@ uint8 Com_ReceiveSignalGroup(Com_SignalGroupIdType SignalGroupId)
                 }
             }
         }
-        return E_OK;
     }
     else
     {
-        return COM_SERVICE_NOT_AVAILABLE;
+
     }
+    return COM_SERVICE_NOT_AVAILABLE;
 }
 /*********************************************************************************************************************************
  Service name:               Com_MainFunctionTx
@@ -1586,6 +1573,7 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 
 }
 
+
 #define CONTROLLER_ID   (uint8)0
 #define SIGNAL_ID       (uint8)1
 #define GROUPSIGNAL_ID  (uint8)0
@@ -1685,4 +1673,5 @@ void main()
 
     }
 }
+
 
