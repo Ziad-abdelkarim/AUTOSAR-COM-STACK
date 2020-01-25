@@ -82,159 +82,101 @@ void Com_Init(const Com_ConfigType* config)
     Com_GroupSignalType* ComGroupSignalLocal;
     Com_SignalGroupType* ComSignalGroupLocal;
 
-    /*Initializing Signals Buffer By Init Values Of The Signal*/
-    for (ComInitSignalIndex = 0; ComInitSignalIndex < ComMaxSignalCnt ;
-            ComInitSignalIndex++)
+    for (ComInitSignalIndex = 0; ComInitSignalIndex < ComMaxSignalCnt; ComInitSignalIndex++)
     {
-        for (ComInitByteIndex = 0;
-                ComInitByteIndex
-                        < Com.ComConfig.ComSignal[ComInitSignalIndex].ComSignalLength;
-                ComInitByteIndex++)
+        /* Initialize Signals Update and Confirmation State*/
+        ComTeamConfig.ComTeamSignal[ComInitSignalIndex].ComTeamSignalUpdated = false;
+        ComTeamConfig.ComTeamSignal[ComInitSignalIndex].ComTeamSignalConfirmed = false;
+        /*Initializing Signals Buffer By Init Values Of The Signal*/
+        for (ComInitByteIndex = 0; ComInitByteIndex < Com.ComConfig.ComSignal[ComInitSignalIndex].ComSignalLength; ComInitByteIndex++)
         {
-            Com.ComConfig.ComSignal[ComInitSignalIndex].ComBufferRef[ComInitByteIndex] =
-                    Com.ComConfig.ComSignal[ComInitSignalIndex].ComSignalInitValue;
+            Com.ComConfig.ComSignal[ComInitSignalIndex].ComBufferRef[ComInitByteIndex] = Com.ComConfig.ComSignal[ComInitSignalIndex].ComSignalInitValue;
         }
     }
 
     /*Initializing Group Signals Buffer By Init Values Of The Group Signal*/
 
-    for (ComInitGroupSignalIndex = 0;
-            ComInitGroupSignalIndex < ComMaxGroupSignalCnt ;
-            ComInitGroupSignalIndex++)
+    for (ComInitGroupSignalIndex = 0; ComInitGroupSignalIndex < ComMaxGroupSignalCnt ; ComInitGroupSignalIndex++)
     {
-        for (ComInitByteIndex = 0;
-                ComInitByteIndex
-                        < Com.ComConfig.ComGroupSignal[ComInitGroupSignalIndex].ComSignalLength;
-                ComInitByteIndex++)
+        for (ComInitByteIndex = 0; ComInitByteIndex < Com.ComConfig.ComGroupSignal[ComInitGroupSignalIndex].ComSignalLength; ComInitByteIndex++)
         {
-            Com.ComConfig.ComGroupSignal[ComInitGroupSignalIndex].ComBufferRef[ComInitByteIndex] =
-                    Com.ComConfig.ComGroupSignal[ComInitGroupSignalIndex].ComSignalInitValue;
+            Com.ComConfig.ComGroupSignal[ComInitGroupSignalIndex].ComBufferRef[ComInitByteIndex] = Com.ComConfig.ComGroupSignal[ComInitGroupSignalIndex].ComSignalInitValue;
         }
     }
 
-    /* Initializing IPDUs And Copying Signals And Group Signals To IPDUs  */
-    for (ComInitIPduIndex = 0; ComInitIPduIndex < ComMaxIPduCnt ;
-            ComInitIPduIndex++)
+    /* Initialize GroupSignals Update and Confirmation State*/
+    for (ComInitSignalGroupIndex = 0; ComInitSignalGroupIndex < ComMaxSignalGroupCnt ; ComInitSignalGroupIndex++)
     {
+        ComTeamConfig.ComTeamSignalGroup[ComInitSignalGroupIndex].ComTeamSignalGroupUpdated = false;
+        ComTeamConfig.ComTeamSignalGroup[ComInitSignalGroupIndex].ComTeamSignalGroupUpdated = false;
+    }
 
+    /* Initializing IPDUs And Copying Signals And Group Signals To IPDUs  */
+    for (ComInitIPduIndex = 0; ComInitIPduIndex < ComMaxIPduCnt ; ComInitIPduIndex++)
+    {
         /* Get Pdu */
         ComIPduLocal = &Com.ComConfig.ComIPdu[ComInitIPduIndex];
 
         ComTeamConfig.ComTeamIPdu[ComInitIPduIndex].ComTeamTxMode.ComTeamMinimumDelayTimer = Com.ComConfig.ComIPdu[ComInitIPduIndex].ComTxIPdu.ComMinimumDelayTime;
         ComTeamConfig.ComTeamIPdu[ComInitIPduIndex].ComTeamTxMode.ComTeamTxModeTimePeriod = Com.ComConfig.ComIPdu[ComInitIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeTimePeriod;
-        /* Initialize Signals and GroupSignals Update and Confirmation State*/
-        for (ComInitSignalIndex = 0; ComInitSignalIndex < ComMaxSignalCnt ;
-                ComInitSignalIndex++)
-        {
-            ComTeamConfig.ComTeamSignal[ComInitSignalIndex].ComTeamSignalUpdated =
-                    false;
-            ComTeamConfig.ComTeamSignal[ComInitSignalIndex].ComTeamSignalConfirmed =
-                    false;
-        }
-        for (ComInitSignalGroupIndex = 0;
-                ComInitSignalGroupIndex < ComMaxSignalGroupCnt ;
-                ComInitSignalGroupIndex++)
-        {
-            ComTeamConfig.ComTeamSignalGroup[ComInitSignalGroupIndex].ComTeamSignalGroupUpdated =
-                    false;
-            ComTeamConfig.ComTeamSignalGroup[ComInitSignalGroupIndex].ComTeamSignalGroupUpdated =
-                    false;
-        }
 
         /*Fill IPDUs With Default Unused Area */
-        for (ComInitByteIndex = 0;
-                ComInitByteIndex
-                        < Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduLength;
-                ComInitByteIndex++)
+        for (ComInitByteIndex = 0; ComInitByteIndex < Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduLength; ComInitByteIndex++)
         {
-            Com.ComConfig.ComIPdu[ComInitIPduIndex].ComBufferRef[ComInitByteIndex] =
-                    COM_TX_IPDU_UNUSED_AREAS_DEFAULT;
+            Com.ComConfig.ComIPdu[ComInitIPduIndex].ComBufferRef[ComInitByteIndex] = COM_TX_IPDU_UNUSED_AREAS_DEFAULT;
         }
 
         /*Copy Signals Referenced In IPDUs to IPDUs Buffers */
-        for (ComInitSignalIndex = 0;
-                Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalRef[ComInitSignalIndex]
-                        != NULL; ComInitSignalIndex++)
+        for (ComInitSignalIndex = 0; Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalRef[ComInitSignalIndex] != NULL; ComInitSignalIndex++)
         {
             /*Get Signal*/
-            ComSignalLocal =
-                    Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalRef[ComInitSignalIndex];
+            ComSignalLocal = Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalRef[ComInitSignalIndex];
 
             /* Write data from signal buffer to IPdu*/
-            for (ComInitBitIndex = 0;
-                    ComInitBitIndex < ComSignalLocal->ComBitSize;
-                    ComInitBitIndex++)
+            for (ComInitBitIndex = 0; ComInitBitIndex < ComSignalLocal->ComBitSize; ComInitBitIndex++)
             {
-                if ((ComSignalLocal->ComBufferRef[ComInitBitIndex / 8]
-                        >> (ComInitBitIndex % 8)) & 1)
+                if ((ComSignalLocal->ComBufferRef[ComInitBitIndex / 8] >> (ComInitBitIndex % 8)) & 1)
                 {
-                    ComIPduLocal->ComBufferRef[(ComInitBitIndex
-                            + ComSignalLocal->ComBitPosition) / 8] |= 1
-                            << ((ComInitBitIndex
-                                    + ComSignalLocal->ComBitPosition) % 8);
+                    ComIPduLocal->ComBufferRef[(ComInitBitIndex + ComSignalLocal->ComBitPosition) / 8] |= 1 << ((ComInitBitIndex + ComSignalLocal->ComBitPosition) % 8);
                 }
                 else
                 {
-                    ComIPduLocal->ComBufferRef[(ComInitBitIndex
-                            + ComSignalLocal->ComBitPosition) / 8] &= ~(1
-                            << ((ComInitBitIndex
-                                    + ComSignalLocal->ComBitPosition) % 8));
+                    ComIPduLocal->ComBufferRef[(ComInitBitIndex + ComSignalLocal->ComBitPosition) / 8] &= ~(1 << ((ComInitBitIndex + ComSignalLocal->ComBitPosition) % 8));
                 }
             }
             /*Clear update bit*/
-            ComIPduLocal->ComBufferRef[ComSignalLocal->ComUpdateBitPosition / 8] &=
-                    ~(1 << (ComSignalLocal->ComUpdateBitPosition % 8));
+            ComIPduLocal->ComBufferRef[ComSignalLocal->ComUpdateBitPosition / 8] &= ~(1 << (ComSignalLocal->ComUpdateBitPosition % 8));
         }
 
         /*Copy Group Signals Referenced In SignalGroups Referenced In IPDUs to IPDUs Buffers */
-
-        for (ComInitSignalGroupIndex = 0;
-                Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalGroupRef[ComInitSignalGroupIndex]
-                        != NULL; ComInitSignalGroupIndex++)
+        for (ComInitSignalGroupIndex = 0; Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalGroupRef[ComInitSignalGroupIndex] != NULL; ComInitSignalGroupIndex++)
         {
             /* Get SignalGroup */
-            ComSignalGroupLocal =
-                    Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalGroupRef[ComInitSignalGroupIndex];
-            for (ComInitGroupSignalIndex = 0;
-                    Com.ComConfig.ComSignalGroup[ComInitSignalGroupIndex].ComGroupSignalRef[ComInitGroupSignalIndex]
-                            != NULL; ComInitGroupSignalIndex++)
+            ComSignalGroupLocal = Com.ComConfig.ComIPdu[ComInitIPduIndex].ComIPduSignalGroupRef[ComInitSignalGroupIndex];
+            for (ComInitGroupSignalIndex = 0; Com.ComConfig.ComSignalGroup[ComInitSignalGroupIndex].ComGroupSignalRef[ComInitGroupSignalIndex] != NULL; ComInitGroupSignalIndex++)
             {
                 /*Get Group Signal*/
-                ComGroupSignalLocal =
-                        Com.ComConfig.ComSignalGroup[ComInitSignalGroupIndex].ComGroupSignalRef[ComInitGroupSignalIndex];
+                ComGroupSignalLocal = Com.ComConfig.ComSignalGroup[ComInitSignalGroupIndex].ComGroupSignalRef[ComInitGroupSignalIndex];
 
                 /* Write data from signal buffer to IPdu*/
-                for (ComInitBitIndex = 0;
-                        ComInitBitIndex < ComGroupSignalLocal->ComBitSize;
-                        ComInitBitIndex++)
+                for (ComInitBitIndex = 0; ComInitBitIndex < ComGroupSignalLocal->ComBitSize; ComInitBitIndex++)
                 {
-                    if ((ComGroupSignalLocal->ComBufferRef[ComInitBitIndex / 8]
-                            >> (ComInitBitIndex % 8)) & 1)
+                    if ((ComGroupSignalLocal->ComBufferRef[ComInitBitIndex / 8] >> (ComInitBitIndex % 8)) & 1)
                     {
-                        ComIPduLocal->ComBufferRef[(ComInitBitIndex
-                                + ComGroupSignalLocal->ComBitPosition) / 8] |= 1
-                                << ((ComInitBitIndex
-                                        + ComGroupSignalLocal->ComBitPosition)
-                                        % 8);
+                        ComIPduLocal->ComBufferRef[(ComInitBitIndex + ComGroupSignalLocal->ComBitPosition) / 8] |= 1 << ((ComInitBitIndex + ComGroupSignalLocal->ComBitPosition) % 8);
                     }
                     else
                     {
-                        ComIPduLocal->ComBufferRef[(ComInitBitIndex
-                                + ComGroupSignalLocal->ComBitPosition) / 8] &=
-                                ~(1
-                                        << ((ComInitBitIndex
-                                                + ComGroupSignalLocal->ComBitPosition)
-                                                % 8));
+                        ComIPduLocal->ComBufferRef[(ComInitBitIndex + ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << ((ComInitBitIndex + ComGroupSignalLocal->ComBitPosition) % 8));
                     }
                 }
             }
             /*Clear update bit*/
-            ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition
-                    / 8] &= ~(1
-                    << (ComSignalGroupLocal->ComUpdateBitPosition % 8));
+            ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] &= ~(1 << (ComSignalGroupLocal->ComUpdateBitPosition % 8));
         }
 
     }
+
     ComState = COM_READY;
 
     return;
@@ -336,6 +278,9 @@ uint8 Com_SendSignal(Com_SignalIdType SignalId,const void* SignalDataPtr)
                             of the as-signed I-PDU.
                             (SRS_Com_02083)
                           */
+						case PENDING:
+							ComCopySignal = true;
+							break;
 
                         case TRIGGERED:
                             ComTeamIPduLocal->ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = ComIPduLocal->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions+1;
@@ -758,99 +703,108 @@ void Com_TxConfirmation(PduIdType TxPduId)
                 /* Check if the IPdu direction is send */
                 if(ComIPduLocal->ComIPduDirection == Send)
                 {
-                    /* Loop over all signals which belong to this IPdu */
-                    for (ComSignalIndex = 0; ComIPduLocal->ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
-                    {
-                        ComSignalLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex];
+					if( ComIPduLocal->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == PERIODIC ||
+						((ComIPduLocal->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT || ComIPduLocal->ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED)
+						&& ComTeamConfig.ComTeamIPdu[TxPduId].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions == 0))
+					{
+						/* Loop over all signals which belong to this IPdu */
+						for (ComSignalIndex = 0; ComIPduLocal->ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+						{
+							ComSignalLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalRef[ComSignalIndex];
 
-                        /* Check if the signal was updated */
-                        if(ComTeamConfig.ComTeamSignal[ComSignalIndex].ComTeamSignalUpdated)
-                        {
-                            /* Clear that the signal was updated */
-                            ComTeamConfig.ComTeamSignal[ComSignalIndex].ComTeamSignalUpdated = false;
+							/* Check if the signal was updated */
+							if(ComTeamConfig.ComTeamSignal[ComSignalIndex].ComTeamSignalUpdated)
+							{
+								/* Clear that the signal was updated */
+								ComTeamConfig.ComTeamSignal[ComSignalIndex].ComTeamSignalUpdated = false;
 
-                            if(ComIPduLocal->ComTxIPdu.ComTxIPduClearUpdateBit == Confirmation)
-                            {
-                                /* Clear update bit */
-                                ComIPduLocal->ComBufferRef[ComSignalLocal->ComUpdateBitPosition / 8] &= ~(1<< (ComSignalLocal->ComUpdateBitPosition % 8));
-                            }
-                            else
-                            {
+								if(ComIPduLocal->ComTxIPdu.ComTxIPduClearUpdateBit == Confirmation)
+								{
+									/* Clear update bit */
+									ComIPduLocal->ComBufferRef[ComSignalLocal->ComUpdateBitPosition / 8] &= ~(1<< (ComSignalLocal->ComUpdateBitPosition % 8));
+								}
+								else
+								{
 
-                            }
-                            if(ComIPduLocal->ComIPduSignalProcessing == IMMEDIATE)
-                            {
-                                /* Notify RTE */
-                                if(ComSignalLocal->ComNotification != NULL)
-                                {
-                                    ComSignalLocal->ComNotification();
-                                }
-                                else
-                                {
+								}
+								if(ComIPduLocal->ComIPduSignalProcessing == IMMEDIATE)
+								{
+									/* Notify RTE */
+									if(ComSignalLocal->ComNotification != NULL)
+									{
+										ComSignalLocal->ComNotification();
+									}
+									else
+									{
 
-                                }
-                            }
-                            else if(ComIPduLocal->ComIPduSignalProcessing == DEFERRED)
-                            {
-                                /* Set Flag so Com_MainFunctionTx can check it at a later cyclic call */
-                                ComTeamConfig.ComTeamSignal[ComSignalIndex].ComTeamSignalConfirmed = true;
-                            }
-                            else
-                            {
+									}
+								}
+								else if(ComIPduLocal->ComIPduSignalProcessing == DEFERRED)
+								{
+									/* Set Flag so Com_MainFunctionTx can check it at a later cyclic call */
+									ComTeamConfig.ComTeamSignal[ComSignalIndex].ComTeamSignalConfirmed = true;
+								}
+								else
+								{
 
-                            }
-                        }
-                        else
-                        {
+								}
+							}
+							else
+							{
 
-                        }
-                    }
-                    /* Loop over all signalgroups which belong to this IPdu */
-                    for (ComSignalGroupIndex = 0; ComIPduLocal->ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
-                    {
-                        ComSignalGroupLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex];
+							}
+						}
+						/* Loop over all signalgroups which belong to this IPdu */
+						for (ComSignalGroupIndex = 0; ComIPduLocal->ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+						{
+							ComSignalGroupLocal = Com.ComConfig.ComIPdu[ComIPduIndex].ComIPduSignalGroupRef[ComSignalGroupIndex];
 
-                        /* Check if the signalgroup was updated */
-                        if(ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupUpdated)
-                        {
-                            ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupUpdated = false;
+							/* Check if the signalgroup was updated */
+							if(ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupUpdated)
+							{
+								ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupUpdated = false;
 
-                            if(ComIPduLocal->ComTxIPdu.ComTxIPduClearUpdateBit == Confirmation)
-                            {
-                                /* Clear update bit */
-                                ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] &= ~(1<< (ComSignalGroupLocal->ComUpdateBitPosition % 8));
-                            }
-                            else
-                            {
+								if(ComIPduLocal->ComTxIPdu.ComTxIPduClearUpdateBit == Confirmation)
+								{
+									/* Clear update bit */
+									ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] &= ~(1<< (ComSignalGroupLocal->ComUpdateBitPosition % 8));
+								}
+								else
+								{
 
-                            }
-                            if(ComIPduLocal->ComIPduSignalProcessing == IMMEDIATE)
-                            {
-                                /* Notify RTE */
-                                if(ComSignalGroupLocal->ComNotification != NULL)
-                                {
-                                    ComSignalGroupLocal->ComNotification();
-                                }
-                                else
-                                {
+								}
+								if(ComIPduLocal->ComIPduSignalProcessing == IMMEDIATE)
+								{
+									/* Notify RTE */
+									if(ComSignalGroupLocal->ComNotification != NULL)
+									{
+										ComSignalGroupLocal->ComNotification();
+									}
+									else
+									{
 
-                                }
-                            }
-                            else if(ComIPduLocal->ComIPduSignalProcessing == DEFERRED)
-                            {
-                                /* Set Flag so Com_MainFunctionTx can check it at a later cyclic call */
-                                ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupConfirmed = true;
-                            }
-                            else
-                            {
+									}
+								}
+								else if(ComIPduLocal->ComIPduSignalProcessing == DEFERRED)
+								{
+									/* Set Flag so Com_MainFunctionTx can check it at a later cyclic call */
+									ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupConfirmed = true;
+								}
+								else
+								{
 
-                            }
-                        }
-                        else
-                        {
+								}
+							}
+							else
+							{
 
-                        }
-                    }
+							}
+						}
+					}
+					else
+					{
+						
+					}
                 }
                 else
                 {
@@ -1269,130 +1223,128 @@ uint8 Com_SendSignalGroup(Com_SignalGroupIdType SignalGroupId)
                     /* Get IPdu */
                     ComIPduLocal = &Com.ComConfig.ComIPdu[ComIPduIndex];
 
-                    if((Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT)||\
-                        (Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED))
-                    {
-                        switch(ComSignalGroupLocal->ComTransferProperty)
-                        {
-                            /*At any send request of a signal group with ComTransferProperty TRIGGERED assigned to an I-PDU with
-                             *ComTxModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately (within the next main function at the latest)
-                             *initiate ComTxModeNumberOfRepetitions plus one transmissions of the as-signed I-PDU.*/
-                            case TRIGGERED:
-                            {
-                                ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions +1 ;
-                                ComCopySignalGroup = true;
-                                break;
-                            }
+                    
+					switch(ComSignalGroupLocal->ComTransferProperty)
+					{
+						case PENDING:
+						{
+							ComCopySignalGroup = true;
+							break;
+						}
+						/*At any send request of a signal group with ComTransferProperty TRIGGERED assigned to an I-PDU with
+						 *ComTxModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately (within the next main function at the latest)
+						 *initiate ComTxModeNumberOfRepetitions plus one transmissions of the as-signed I-PDU.*/
+						case TRIGGERED:
+						{
+							ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions +1 ;
+							ComCopySignalGroup = true;
+							break;
+						}
 
-                            /*At any send request of a signal group with ComTransferProperty TRIGGERED_WITHOUT_REPETITION assigned to an I-PDU
-                             *with ComTx-ModeMode DIRECT or MIXED, the AUTOSAR COM module shall initiate one transmission of the assigned I-PDU
-                             *within the next main function at the latest.*/
-                            case TRIGGERED_WITHOUT_REPETITION:
-                            {
-                                ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = 1;
-                                ComCopySignalGroup = true;
-                                break;
-                            }
+						/*At any send request of a signal group with ComTransferProperty TRIGGERED_WITHOUT_REPETITION assigned to an I-PDU
+						 *with ComTx-ModeMode DIRECT or MIXED, the AUTOSAR COM module shall initiate one transmission of the assigned I-PDU
+						 *within the next main function at the latest.*/
+						case TRIGGERED_WITHOUT_REPETITION:
+						{
+							ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = 1;
+							ComCopySignalGroup = true;
+							break;
+						}
 
-                            /*At a send request of a signal group with ComTransferProperty TRIGGERED_ON_CHANGE_WITHOUT_REPETITION assigned to an I-PDU
-                             *with ComTxModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately (within the next main function at the latest)
-                             *initiate one transmission of the as-signed I-PDU, if at least one new sent group signal differs to the locally
-                             *stored (last sent or init) in length or value.*/
-                            case TRIGGERED_ON_CHANGE_WITHOUT_REPETITION:
-                            {
-                                for(ComGroupSignalIndex=0;Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex]!= NULL; ComGroupSignalIndex++)
-                                {
-                                    /* Compare data value between ComIPduBuffer and ComGroupSignalBuffer */
-                                    if(Com_GroupSignalDataCmp(ComIPduIndex, ComGroupSignalIndex))
-                                    {
-                                        ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = 1;
-                                        ComCopySignalGroup = true;
-                                        break;
-                                    }
-                                    else
-                                    {
+						/*At a send request of a signal group with ComTransferProperty TRIGGERED_ON_CHANGE_WITHOUT_REPETITION assigned to an I-PDU
+						 *with ComTxModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately (within the next main function at the latest)
+						 *initiate one transmission of the as-signed I-PDU, if at least one new sent group signal differs to the locally
+						 *stored (last sent or init) in length or value.*/
+						case TRIGGERED_ON_CHANGE_WITHOUT_REPETITION:
+						{
+							for(ComGroupSignalIndex=0;Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex]!= NULL; ComGroupSignalIndex++)
+							{
+								/* Compare data value between ComIPduBuffer and ComGroupSignalBuffer */
+								if(Com_GroupSignalDataCmp(ComIPduIndex, ComGroupSignalIndex))
+								{
+									ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = 1;
+									ComCopySignalGroup = true;
+									break;
+								}
+								else
+								{
 
-                                    }
+								}
 
-                                }
-                                break;
-                            }
-                            /*Regarding signal groups with ComTransferProperty TRIG-GERED_ON_CHANGE which do not contain any signals
-                             *that have an own ComTransferProperty configured: At any send request of such a signal group assigned to an I-PDU
-                             *with ComTx-ModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately (with-in the next main function at the latest)
-                             *initiate ComTxModeNumberOfRepetitions plus one transmissions of the assigned I-PDU, if at least one new sent group signal
-                             *differs to the locally stored (last sent or init) in length or value.*/
-                            case TRIGGERED_ON_CHANGE:
-                            {
-                                for(ComGroupSignalIndex=0;Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex]!= NULL; ComGroupSignalIndex++)
-                                {
-                                    /* Compare data value between ComIPduBuffer and ComGroupSignalBuffer */
-                                    if(Com_GroupSignalDataCmp(ComIPduIndex, ComGroupSignalIndex))
-                                    {
-                                        ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions + 1;
-                                        ComCopySignalGroup = true;
-                                        break;
-                                    }
-                                    else
-                                    {
+							}
+							break;
+						}
+						/*Regarding signal groups with ComTransferProperty TRIG-GERED_ON_CHANGE which do not contain any signals
+						 *that have an own ComTransferProperty configured: At any send request of such a signal group assigned to an I-PDU
+						 *with ComTx-ModeMode DIRECT or MIXED, the AUTOSAR COM module shall immediately (with-in the next main function at the latest)
+						 *initiate ComTxModeNumberOfRepetitions plus one transmissions of the assigned I-PDU, if at least one new sent group signal
+						 *differs to the locally stored (last sent or init) in length or value.*/
+						case TRIGGERED_ON_CHANGE:
+						{
+							for(ComGroupSignalIndex=0;Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex]!= NULL; ComGroupSignalIndex++)
+							{
+								/* Compare data value between ComIPduBuffer and ComGroupSignalBuffer */
+								if(Com_GroupSignalDataCmp(ComIPduIndex, ComGroupSignalIndex))
+								{
+									ComTeamConfig.ComTeamIPdu[ComIPduIndex].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions = Com.ComConfig.ComIPdu[ComIPduIndex].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeNumberOfRepetitions + 1;
+									ComCopySignalGroup = true;
+									break;
+								}
+								else
+								{
 
-                                    }
-                                }
-                                break;
-                            }
+								}
+							}
+							break;
+						}
 
-                            default:
-                                break;
-                            }
-                        }
-                        else
-                        {
+						default:
+							break;
+					}
 
-                        }
+					if(ComCopySignalGroup)
+					{
+						for(ComGroupSignalIndex = 0; Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex] != NULL; ComGroupSignalIndex++)
+						{
+							/*Get Group Signal*/
+							ComGroupSignalLocal = Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex];
+							/*The service Com_SendSignalGroup shall copy the content of the shadow buffer referenced by parameter SignalGroupId
+							 *to the associated I-PDU.*/
+							for(BitIndex = 0; BitIndex < ComGroupSignalLocal->ComBitSize; BitIndex++)
+							{
+								if((ComGroupSignalLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
+								{
+									ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8);
+								}
+								else
+								{
+									ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8));
+								}
 
-                        if(ComCopySignalGroup)
-                        {
-                            for(ComGroupSignalIndex = 0; Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex] != NULL; ComGroupSignalIndex++)
-                            {
-                                /*Get Group Signal*/
-                                ComGroupSignalLocal = Com.ComConfig.ComSignalGroup[ComSignalGroupIndex].ComGroupSignalRef[ComGroupSignalIndex];
-                                /*The service Com_SendSignalGroup shall copy the content of the shadow buffer referenced by parameter SignalGroupId
-                                 *to the associated I-PDU.*/
-                                for(BitIndex = 0; BitIndex < ComGroupSignalLocal->ComBitSize; BitIndex++)
-                                {
-                                    if((ComGroupSignalLocal->ComBufferRef[BitIndex / 8] >> (BitIndex % 8)) & 1)
-                                    {
-                                        ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] |= 1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8);
-                                    }
-                                    else
-                                    {
-                                        ComIPduLocal->ComBufferRef[(BitIndex + ComGroupSignalLocal->ComBitPosition) / 8] &= ~(1 << ((BitIndex + ComGroupSignalLocal->ComBitPosition)%8));
-                                    }
+							}
+						}
+						/*Set update bit*/
+						ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] |= 1 << (ComSignalGroupLocal->ComUpdateBitPosition % 8);
+						ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupUpdated = true;
+					}
+					else
+					{
 
-                                }
-                            }
-                            /*Set update bit*/
-                            ComIPduLocal->ComBufferRef[ComSignalGroupLocal->ComUpdateBitPosition / 8] |= 1 << (ComSignalGroupLocal->ComUpdateBitPosition % 8);
-                            ComTeamConfig.ComTeamSignalGroup[ComSignalGroupIndex].ComTeamSignalGroupUpdated = true;
-                        }
-                        else
-                        {
+					}
+					return E_OK;
+				}
+				else
+				{
+				}
 
-                        }
-                        return E_OK;
-                    }
-                    else
-                    {
-                    }
+			}
+		}
+	}
+	else
+	{
 
-                }
-            }
-        }
-        else
-        {
-
-        }
-        return COM_SERVICE_NOT_AVAILABLE;
+	}
+	return COM_SERVICE_NOT_AVAILABLE;
 }
 /*********************************************************************************************************************************
  Service name:               Com_ReceiveSignalGroup
@@ -1502,54 +1454,57 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 
         if (PduR_ComTransmit(PduId, pduinfo) == E_OK)
         {
+			if (Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit == Transmit)
+			{
+				if( Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == PERIODIC ||
+					((Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == DIRECT || Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxModeFalse.ComTxMode.ComTxModeMode == MIXED)
+					&& ComTeamConfig.ComTeamIPdu[PduId].ComTeamTxMode.ComTeamTxIPduNumberOfRepetitions == 1))
+				{
+					/* Loop over all Signals in this IPDU */
+					for (ComSignalIndex = 0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex] != NULL; ComSignalIndex++)
+					{
+						ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
 
-            if (Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComTxIPduClearUpdateBit
-                    == Transmit)
-            {
-                /* Loop over all Signals in this IPDU */
-                for (ComSignalIndex = 0;
-                        Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]
-                                != NULL; ComSignalIndex++)
-                {
-                    ComUpdateBitPositionLocal =
-                            Com.ComConfig.ComIPdu[PduId].ComIPduSignalRef[ComSignalIndex]->ComUpdateBitPosition;
+						/* Check if update bit is set*/
+						if (Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+						{
 
-                    /* Check if update bit is set*/
-                    if (Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal
-                            / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
-                    {
+							/* Clear update bit */
+							Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+						}
+						else
+						{
 
-                        /* Clear update bit */
-                        Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal
-                                / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
-                    }
-                    else
-                    {
+						}
+					}
+					/* Loop over all Signal groups in this IPDU */
+					for (ComSignalGroupIndex = 0; Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex] != NULL; ComSignalGroupIndex++)
+					{
+						ComUpdateBitPositionLocal = Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
 
-                    }
-                }
-                /* Loop over all Signal groups in this IPDU */
-                for (ComSignalGroupIndex = 0;
-                        Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]
-                                != NULL; ComSignalGroupIndex++)
-                {
-                    ComUpdateBitPositionLocal =
-                            Com.ComConfig.ComIPdu[PduId].ComIPduSignalGroupRef[ComSignalGroupIndex]->ComUpdateBitPosition;
+						/* Check if update bit is set*/
+						if (Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
+						{
+							/* Clear update bit */
+							Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal
+									/ 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
+						}
+						else
+						{
 
-                    /* Check if update bit is set*/
-                    if (Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal
-                            / 8] & (1 << (ComUpdateBitPositionLocal % 8)))
-                    {
-                        /* Clear update bit */
-                        Com.ComConfig.ComIPdu[PduId].ComBufferRef[ComUpdateBitPositionLocal
-                                / 8] &= ~(1 << (ComUpdateBitPositionLocal % 8));
-                    }
-                    else
-                    {
+						}
+					}
+				}
+				else
+				{
+					
+				}
+			}
+			else
+			{
+				
+			}
 
-                    }
-                }
-            }
             #if ComEnableMDTForCyclicTransmission
             ComTeamConfig.ComTeamIPdu[PduId]ComTeamTxMode.ComTeamMinimumDelayTimer = Com.ComConfig.ComIPdu[PduId].ComTxIPdu.ComMinimumDelayTime;
             #endif
@@ -1575,7 +1530,8 @@ Std_ReturnType  Com_TriggerIPDUSend(PduIdType PduId)
 
 
 #define CONTROLLER_ID   (uint8)0
-#define SIGNAL_ID       (uint8)1
+#define SIGNAL1_ID       (uint8)0
+#define SIGNAL2_ID       (uint8)1
 #define GROUPSIGNAL_ID  (uint8)0
 #define SIGNALGROUP_ID  (uint8)0
 
@@ -1588,9 +1544,10 @@ void main()
 {
     uint32 Period;
     Com_IPduType *ComIPduLoc = &Com.ComConfig.ComIPdu[0];
-    uint8 SignalData = 0x00;
+    uint8 Signal1Data = 0x00, Signal2Data= 0x55;
     uint16 GroupSignalData = 0xFFFF;
-    const void* SignalDataPtr = &SignalData;
+    const void* Signal1DataPtr = &Signal1Data;
+    const void* Signal2DataPtr = &Signal2Data;
     const void* GroupSignalDataPtr = &GroupSignalData;
 
     SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
@@ -1635,9 +1592,6 @@ void main()
     TimerEnable(TIMER0_BASE, TIMER_A);
     */
     /***************************************************************/
-
-    CanIf_SetControllerMode(CONTROLLER_ID, CANIF_CS_STARTED);
-    //SysCtlDelay(SysCtlClockGet() / 3);
     uint8 Counter = 0;
 
     if(CanIf_SetControllerMode(CONTROLLER_ID, CANIF_CS_STARTED) == E_OK)
@@ -1646,26 +1600,30 @@ void main()
         Can_MainFunction_Mode();
         while(1)
         {
-            Com_MainFunctionRx();
-            /*Counter++;
+            Com_MainFunctionTx();
+            Counter++;
             if(Counter == 11)
             {
-                if(Com_SendSignal(SIGNAL_ID, SignalDataPtr) == E_OK)
+                if(Com_SendSignal(SIGNAL1_ID, Signal1DataPtr) == E_OK)
                 {
-                    SignalData ++;
-                    UARTprintf("Com_SendSignal\n");
+                    UARTprintf("Com_SendSignal %d\n", Signal1Data);
+                    Signal1Data ++;
+                }
+                if(Com_SendSignal(SIGNAL2_ID, Signal2DataPtr) == E_OK)
+                {
+                    UARTprintf("Com_SendSignal %d\n", Signal2Data);
+                    Signal2Data ++;
                 }
                 Com_UpdateShadowSignal(GROUPSIGNAL_ID, GroupSignalDataPtr);
                 if(Com_SendSignalGroup(SIGNALGROUP_ID) == E_OK)
                 {
-                    UARTprintf("Com_SendSignalGroup\n");
+                    UARTprintf("Com_SendSignalGroup %d\n", GroupSignalData);
+                    GroupSignalData--;
                 }
-                GroupSignalData++;
-                Counter = 0;
 
+                Counter = 0;
             }
             SysCtlDelay(SysCtlClockGet() / 30);
-            */
         }
     }
     else
@@ -1673,5 +1631,4 @@ void main()
 
     }
 }
-
 

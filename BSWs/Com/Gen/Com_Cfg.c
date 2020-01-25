@@ -41,7 +41,7 @@ void Com_CbkSignal3RxAck(void)
 
 void Com_CbkSignalGroup0TxAck(void)
 {
-    UARTprintf("Com_CbkSignalGroup0TxAck\n");
+    UARTprintf("Com_CbkSignalGroup0TxAck\n\n");
 }
 
 void Com_CbkSignalGroup1RxAck(void)
@@ -50,7 +50,7 @@ void Com_CbkSignalGroup1RxAck(void)
     if(Com_ReceiveSignalGroup(1) == E_OK)
     {
         Com_ReceiveShadowSignal(1, &SignalData);
-        UARTprintf("Com_CbkSignalGroup1RxAck = %d\n", SignalData);
+        UARTprintf("Com_CbkSignalGroup1RxAck = %d\n\n", SignalData);
     }
 }
 
@@ -82,7 +82,7 @@ Com_Type Com =
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
-             .ComTransferProperty =  TRIGGERED_WITHOUT_REPETITION,
+             .ComTransferProperty =  TRIGGERED,
              .ComUpdateBitPosition = 8,
              .ComSignalInitValue = COM_SIGNAL_INIT_VALUE,
              .ComBufferRef = ComSignal0Buffer
@@ -95,7 +95,7 @@ Com_Type Com =
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
-             .ComTransferProperty =  TRIGGERED_ON_CHANGE_WITHOUT_REPETITION,
+             .ComTransferProperty =  PENDING,
              .ComUpdateBitPosition = 17,
              .ComSignalInitValue = COM_SIGNAL_INIT_VALUE,
              .ComBufferRef = ComSignal1Buffer
@@ -108,7 +108,7 @@ Com_Type Com =
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
-             .ComTransferProperty =  TRIGGERED_WITHOUT_REPETITION,
+             .ComTransferProperty =  TRIGGERED,
              .ComUpdateBitPosition = 8,
              .ComSignalInitValue = COM_SIGNAL_INIT_VALUE,
              .ComBufferRef = ComSignal2Buffer
@@ -121,7 +121,7 @@ Com_Type Com =
              .ComSignalEndianness = LITTLE_ENDIAN,
              .ComSignalLength = 1,
              .ComSignalType= UINT8,
-             .ComTransferProperty =  TRIGGERED_ON_CHANGE_WITHOUT_REPETITION,
+             .ComTransferProperty =  PENDING,
              .ComUpdateBitPosition = 17,
              .ComSignalInitValue = COM_SIGNAL_INIT_VALUE,
              .ComBufferRef = ComSignal3Buffer
@@ -166,7 +166,7 @@ Com_Type Com =
             {
                 .ComHandleId=0,
                 .ComNotification = &Com_CbkSignalGroup0TxAck,
-                .ComTransferProperty = TRIGGERED_ON_CHANGE,
+                .ComTransferProperty = PENDING,
                 .ComUpdateBitPosition =34,
                 /*.ComInitialValueOnly= false,*/
                 .ComGroupSignalRef=
@@ -178,7 +178,7 @@ Com_Type Com =
             {
                 .ComHandleId=1,
                 .ComNotification = &Com_CbkSignalGroup1RxAck,
-                .ComTransferProperty = TRIGGERED_ON_CHANGE,
+                .ComTransferProperty = PENDING,
                 .ComUpdateBitPosition =34,
                 /*.ComInitialValueOnly= false,*/
                 .ComGroupSignalRef=
@@ -221,9 +221,9 @@ Com_Type Com =
                     {
                         .ComTxMode=
                         {
-                            .ComTxModeMode = DIRECT,
-                            .ComTxModeNumberOfRepetitions = 1,
-                            .ComTxModeRepetitionPeriod = 0.1,
+                            .ComTxModeMode = PERIODIC,
+                            .ComTxModeNumberOfRepetitions = 2,
+                            .ComTxModeRepetitionPeriod = 0.5,
                             .ComTxModeTimePeriod=1
                         }
                     }
@@ -234,7 +234,7 @@ Com_Type Com =
                 .ComIPduLength = 5,
                 .ComIPduDirection = Receive,
                 .ComIPduHandleId= 1,
-                .ComIPduSignalProcessing = IMMEDIATE,
+                .ComIPduSignalProcessing = DEFERRED,
                 .ComIPduType = NORMAL,
                 .ComIPduGroupRef=
                 {
