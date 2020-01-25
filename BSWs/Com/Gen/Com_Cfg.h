@@ -94,7 +94,7 @@ Description:                The period between successive calls to Com_MainFunct
                             Com_MainFunctionTx is scheduled according to the value configured here
 Range:                                  0 ---> 3600
 **************************************************************************************************/
-#define ComTxTimeBase   (float32)    0.1
+#define ComTxTimeBase   (float32)    0.5
 
 
 /**************************************************************************************************

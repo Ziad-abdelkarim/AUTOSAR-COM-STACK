@@ -50,7 +50,7 @@ void Com_CbkSignalGroup1RxAck(void)
     if(Com_ReceiveSignalGroup(1) == E_OK)
     {
         Com_ReceiveShadowSignal(1, &SignalData);
-        UARTprintf("Com_CbkSignalGroup1RxAck = %d\n\n", SignalData);
+        UARTprintf("Com_CbkSignalGroup1RxAck = %d\n", SignalData);
     }
 }
 
@@ -194,7 +194,7 @@ Com_Type Com =
                .ComIPduLength = 5,
                .ComIPduDirection = Send,
                .ComIPduHandleId= 0,
-               .ComIPduSignalProcessing = DEFERRED,
+               .ComIPduSignalProcessing = IMMEDIATE,
                .ComIPduType = NORMAL,
                .ComIPduGroupRef=
                 {
@@ -223,8 +223,8 @@ Com_Type Com =
                         {
                             .ComTxModeMode = PERIODIC,
                             .ComTxModeNumberOfRepetitions = 2,
-                            .ComTxModeRepetitionPeriod = 0.5,
-                            .ComTxModeTimePeriod=1
+                            .ComTxModeRepetitionPeriod = 2,
+                            .ComTxModeTimePeriod=2
                         }
                     }
                 },
