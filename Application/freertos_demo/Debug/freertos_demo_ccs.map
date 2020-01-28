@@ -1,7 +1,7 @@
 ******************************************************************************
                   TI ARM Linker Unix v18.12.2                  
 ******************************************************************************
->> Linked Tue Jan 28 19:27:30 2020
+>> Linked Tue Jan 28 19:37:17 2020
 
 OUTPUT FILE NAME:   <freertos_demo.out>
 ENTRY POINT SYMBOL: "_c_int00_noargs"  address: 00001cfd

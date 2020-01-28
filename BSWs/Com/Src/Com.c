@@ -1546,8 +1546,8 @@ void Timer0IntHandler(void)
 
 void main()
 {
-    uint32 Period;
-    Com_IPduType *ComIPduLoc = &Com.ComConfig.ComIPdu[0];
+    //uint32 Period;
+    //Com_IPduType *ComIPduLoc = &Com.ComConfig.ComIPdu[0];
     uint8 Signal1Data = 0x00, Signal2Data= 0x55;
     uint16 GroupSignalData = 0xFFFF;
     const void* Signal1DataPtr = &Signal1Data;
