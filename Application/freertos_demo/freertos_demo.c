@@ -31,6 +31,7 @@
 #include "driverlib/rom.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
+#include "driverlib/timer.h"
 #include "utils/uartstdio.h"
 #include "led_task.h"
 #include "switch_task.h"
@@ -150,6 +151,54 @@ ConfigureUART(void)
     //
     UARTStdioConfig(0, 115200, 16000000);
 }
+/*****************************************************************
+ * timer initialization function
+ */
+void ConfigureTimer(void){
+   uint32_t ui32Period=0;
+   ulHighFrequencyTimerTicks = 0UL ;
+  /*  SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
+
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_TIMER0))
+    {
+        ;
+    }
+
+    TimerConfigure(TIMER0_BASE, TIMER_CFG_ONE_SHOT_UP);
+
+    //TimerLoadSet64(TIMER0_BASE, 0);
+
+    TimerEnable(TIMER0_BASE, TIMER_BOTH);
+
+    */
+
+
+    //
+    // Enable the Timer0 peripheral
+    //
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_WTIMER0);
+    //
+    // Wait for the Timer0 module to be ready.
+    //
+    while(!SysCtlPeripheralReady(SYSCTL_PERIPH_WTIMER0))
+    {
+    }
+    //
+    // Configure TimerA as a half-width one-shot timer, and TimerB as a
+    // half-width edge capture counter.
+    //
+    TimerConfigure(WTIMER0_BASE , TIMER_CFG_ONE_SHOT_UP);
+
+    ui32Period =(( SysCtlClockGet())/configCPU_CLOCK_HZ )/100;
+    TimerLoadSet(WTIMER0_BASE, TIMER_A, ui32Period -1);
+
+    //
+    // Enable the timers.
+    //
+    TimerEnable(WTIMER0_BASE , TIMER_A);
+
+
+}
 
 //*****************************************************************************
 //
@@ -169,6 +218,10 @@ main(void)
     // Initialize the UART and configure it for 115,200, 8-N-1 operation.
     //
     ConfigureUART();
+
+    //initialize timer0 full width
+
+    //ConfigureTimer();
 
     //
     // Print demo introduction.

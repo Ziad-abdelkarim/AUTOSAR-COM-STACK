@@ -29,6 +29,7 @@
 #include "inc/hw_gpio.h"
 #include "driverlib/sysctl.h"
 #include "driverlib/gpio.h"
+#include "driverlib/timer.h"
 #include "driverlib/rom.h"
 #include "drivers/buttons.h"
 #include "utils/uartstdio.h"
@@ -79,7 +80,7 @@ SwitchTask(void *pvParameters)
         // Poll the debounced state of the buttons.
         //
         ui8CurButtonState = ButtonsPoll(0, 0);
-
+       // ulHighFrequencyTimerTicks = TimerValueGet(TIMER0_BASE, TIMER_A);
         //
         // Check if previous debounced state is equal to the current state.
         //

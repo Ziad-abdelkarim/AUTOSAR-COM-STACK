@@ -15,6 +15,7 @@ switch_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/inc/hw_types.h
 switch_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/inc/hw_gpio.h
 switch_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/sysctl.h
 switch_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/gpio.h
+switch_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/timer.h
 switch_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/rom.h
 switch_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/examples/boards/ek-tm4c123gxl/drivers/buttons.h
 switch_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/utils/uartstdio.h
@@ -52,6 +53,7 @@ switch_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/third_party/FreeRTOS/S
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/inc/hw_gpio.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/sysctl.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/gpio.h: 
+/home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/timer.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/rom.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/examples/boards/ek-tm4c123gxl/drivers/buttons.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/utils/uartstdio.h: 

@@ -72,7 +72,7 @@
 #define configCPU_CLOCK_HZ                  ( ( unsigned long ) 50000000 )
 #define configTICK_RATE_HZ                  ( ( portTickType ) 1000 )
 #define configMINIMAL_STACK_SIZE            ( ( unsigned short ) 200 )
-#define configTOTAL_HEAP_SIZE               ( ( size_t ) ( 30000 ) )
+#define configTOTAL_HEAP_SIZE               ( ( size_t ) ( 3000 ) )
 #define configMAX_TASK_NAME_LEN             ( 12 )
 #define configUSE_TRACE_FACILITY            1
 #define configUSE_16_BIT_TICKS              0
@@ -81,6 +81,7 @@
 #define configUSE_MUTEXES                   1
 #define configUSE_RECURSIVE_MUTEXES         1
 #define configCHECK_FOR_STACK_OVERFLOW      2
+
 
 #define configMAX_PRIORITIES                16
 #define configMAX_CO_ROUTINE_PRIORITIES     ( 2 )
@@ -98,10 +99,23 @@ to exclude the API function. */
 #define INCLUDE_vTaskDelay                  1
 #define INCLUDE_uxTaskGetStackHighWaterMark 1
 
+volatile unsigned long   ulHighFrequencyTimerTicks;
+/* There is already a high frequency timer running - just reset its count back
+to zero. */
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()  ConfigureTimer();
+#define portGET_RUN_TIME_COUNTER_VALUE()     ulHighFrequencyTimerTicks = TimerValueGet(WTIMER0_BASE, TIMER_A);
+
+
+#define configGENERATE_RUN_TIME_STATS      1
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1
+
+
 /* Be ENORMOUSLY careful if you want to modify these two values and make sure
  * you read http://www.freertos.org/a00110.html#kernel_priority first!
  */
 #define configKERNEL_INTERRUPT_PRIORITY         ( 7 << 5 )    /* Priority 7, or 0xE0 as only the top three bits are implemented.  This is the lowest priority. */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY     ( 5 << 5 )  /* Priority 5, or 0xA0 as only the top three bits are implemented. */
+
+extern void ConfigureTimer(void);
 
 #endif /* FREERTOS_CONFIG_H */

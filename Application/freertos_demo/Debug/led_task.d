@@ -16,6 +16,7 @@ led_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/gpio.h
 led_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/rom.h
 led_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/examples/boards/ek-tm4c123gxl/drivers/rgb.h
 led_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/examples/boards/ek-tm4c123gxl/drivers/buttons.h
+led_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/timer.h
 led_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/utils/uartstdio.h
 led_task.obj: /home/ziad/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include/stdarg.h
 led_task.obj: ../led_task.h
@@ -51,6 +52,7 @@ led_task.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/third_party/FreeRTOS/Sour
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/rom.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/examples/boards/ek-tm4c123gxl/drivers/rgb.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/examples/boards/ek-tm4c123gxl/drivers/buttons.h: 
+/home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/timer.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/utils/uartstdio.h: 
 /home/ziad/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include/stdarg.h: 
 ../led_task.h: 

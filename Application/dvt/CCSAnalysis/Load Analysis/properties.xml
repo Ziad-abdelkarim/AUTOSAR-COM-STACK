@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_112" class="java.beans.XMLDecoder">
+ <object class="com.ti.dvt.control.engine.activities.controlxml.ControlXMLActivity">
+  <object class="com.ti.dvt.control.engine.activities.controlxml.ControlFileActivity$ControlFile">
+   <string>Load Analysis.control.xml</string>
+   <void property="priority">
+    <int>130</int>
+   </void>
+  </object>
+  <void method="setProperty">
+   <string>p.sa.uc.helper</string>
+   <object class="com.ti.dvt.analysis.suite.usecasehelpers.SystemAnalyzerUseCaseHelper">
+    <void method="initialize">
+     <object class="com.ti.dvt.analysis.suite.usecasehelpers.SAUCHSaveRestore">
+      <void property="UCFeatures">
+       <string>CPU Load,Task Load,Execution Graph:false,Printf Logs:false,Concurrency:false,Task Profiler:false,Duration:false,Count Analysis:false,Context Aware Profile:false</string>
+      </void>
+      <void property="UCName">
+       <string>Load Analysis</string>
+      </void>
+      <void property="absoluteDataLoss">
+       <string></string>
+      </void>
+      <void property="programToCoresMap">
+       <object class="java.util.HashMap"/>
+      </void>
+      <void property="programToIsprojectMap">
+       <object class="java.util.HashMap"/>
+      </void>
+      <void property="programToimageMap">
+       <object class="java.util.HashMap"/>
+      </void>
+     </object>
+    </void>
+   </object>
+  </void>
+  <void method="setProperty">
+   <string>p.m.state</string>
+   <object class="com.ti.dvt.uia.utils.PersistState">
+    <void property="analysisTable">
+     <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable" id="AnalysisFeatureTable0">
+      <void property="items">
+       <array class="java.lang.String" length="5">
+        <void index="0">
+         <string>Analysis Feature</string>
+        </void>
+        <void index="1">
+         <string>Which Cores</string>
+        </void>
+        <void index="2">
+         <string>Which Views to Open</string>
+        </void>
+        <void index="3">
+         <string>Instrumentation Status</string>
+        </void>
+        <void index="4">
+         <string>Tips</string>
+        </void>
+       </array>
+      </void>
+      <void id="AnalysisFeatureTable$AnalysisFeatureRow0" property="row">
+       <void property="values">
+        <void method="put">
+         <string>Instrumentation Status</string>
+         <string>Instrumentation Status</string>
+        </void>
+        <void method="put">
+         <string>Tips</string>
+         <string>Tips</string>
+        </void>
+       </void>
+      </void>
+      <void property="rows">
+       <void method="add">
+        <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisFeatureRow" id="AnalysisFeatureTable$AnalysisFeatureRow1">
+         <void property="activity">
+          <string>CPU Load</string>
+         </void>
+         <void property="configRow">
+          <object class="com.ti.dvt.control.engine.types.ConfigRow">
+           <void property="numColumns">
+            <int>5</int>
+           </void>
+           <void property="text">
+            <string>CPU Load</string>
+           </void>
+          </object>
+         </void>
+         <void property="parentTable">
+          <object idref="AnalysisFeatureTable0"/>
+         </void>
+         <void property="values">
+          <void method="put">
+           <string>Analysis Feature</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>CPU Load</string>
+             <boolean>true</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Instrumentation Status</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigLabel">
+            <void property="text">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Cores</string>
+           <object class="java.util.Vector">
+            <void method="add">
+             <string>ALL</string>
+            </void>
+            <void method="add">
+             <string>ALL</string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Views to Open</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Graph</string>
+             <boolean>true</boolean>
+            </void>
+            <void method="put">
+             <string>Summary</string>
+             <boolean>false</boolean>
+            </void>
+            <void method="put">
+             <string>Detail</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Tips</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigButton">
+            <void property="text">
+             <string>...</string>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+       <void method="add">
+        <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisFeatureRow" id="AnalysisFeatureTable$AnalysisFeatureRow2">
+         <void property="activity">
+          <string>Task Load</string>
+         </void>
+         <void property="configRow">
+          <object class="com.ti.dvt.control.engine.types.ConfigRow">
+           <void property="numColumns">
+            <int>5</int>
+           </void>
+           <void property="text">
+            <string>Task Load</string>
+           </void>
+          </object>
+         </void>
+         <void property="parentTable">
+          <object idref="AnalysisFeatureTable0"/>
+         </void>
+         <void property="values">
+          <void method="put">
+           <string>Analysis Feature</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Task Load</string>
+             <boolean>true</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Instrumentation Status</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigLabel">
+            <void property="text">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Cores</string>
+           <object class="java.util.Vector">
+            <void method="add">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Views to Open</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Graph</string>
+             <boolean>true</boolean>
+            </void>
+            <void method="put">
+             <string>Summary</string>
+             <boolean>false</boolean>
+            </void>
+            <void method="put">
+             <string>Detail</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Tips</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigButton">
+            <void property="text">
+             <string>...</string>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+       <void method="add">
+        <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisFeatureRow" id="AnalysisFeatureTable$AnalysisFeatureRow3">
+         <void property="activity">
+          <string>Execution Graph</string>
+         </void>
+         <void property="configRow">
+          <object class="com.ti.dvt.control.engine.types.ConfigRow">
+           <void property="numColumns">
+            <int>5</int>
+           </void>
+           <void property="text">
+            <string>Execution Graph</string>
+           </void>
+          </object>
+         </void>
+         <void property="parentTable">
+          <object idref="AnalysisFeatureTable0"/>
+         </void>
+         <void property="values">
+          <void method="put">
+           <string>Analysis Feature</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Execution Graph</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Instrumentation Status</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigLabel">
+            <void property="text">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Cores</string>
+           <object class="java.util.Vector">
+            <void method="add">
+             <string>ALL</string>
+            </void>
+            <void method="add">
+             <string>ALL</string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Views to Open</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Graph</string>
+             <boolean>true</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Tips</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigButton">
+            <void property="text">
+             <string>...</string>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+       <void method="add">
+        <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisFeatureRow" id="AnalysisFeatureTable$AnalysisFeatureRow4">
+         <void property="activity">
+          <string>Printf Logs</string>
+         </void>
+         <void property="configRow">
+          <object class="com.ti.dvt.control.engine.types.ConfigRow">
+           <void property="numColumns">
+            <int>5</int>
+           </void>
+           <void property="text">
+            <string>Printf Logs</string>
+           </void>
+          </object>
+         </void>
+         <void property="parentTable">
+          <object idref="AnalysisFeatureTable0"/>
+         </void>
+         <void property="values">
+          <void method="put">
+           <string>Analysis Feature</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Printf Logs</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Instrumentation Status</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigLabel">
+            <void property="text">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Cores</string>
+           <object class="java.util.Vector">
+            <void method="add">
+             <string>ALL</string>
+            </void>
+            <void method="add">
+             <string>ALL</string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Views to Open</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Summary</string>
+             <boolean>true</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Tips</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigButton">
+            <void property="text">
+             <string>...</string>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+       <void method="add">
+        <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisFeatureRow" id="AnalysisFeatureTable$AnalysisFeatureRow5">
+         <void property="activity">
+          <string>Concurrency</string>
+         </void>
+         <void property="configRow">
+          <object class="com.ti.dvt.control.engine.types.ConfigRow">
+           <void property="numColumns">
+            <int>5</int>
+           </void>
+           <void property="text">
+            <string>Concurrency</string>
+           </void>
+          </object>
+         </void>
+         <void property="parentTable">
+          <object idref="AnalysisFeatureTable0"/>
+         </void>
+         <void property="values">
+          <void method="put">
+           <string>Analysis Feature</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Concurrency</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Instrumentation Status</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigLabel">
+            <void property="text">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Cores</string>
+           <object class="java.util.Vector">
+            <void method="add">
+             <string>ALL</string>
+            </void>
+            <void method="add">
+             <string>ALL</string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Views to Open</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Graph</string>
+             <boolean>true</boolean>
+            </void>
+            <void method="put">
+             <string>Summary</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Tips</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigButton">
+            <void property="text">
+             <string>...</string>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+       <void method="add">
+        <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisFeatureRow" id="AnalysisFeatureTable$AnalysisFeatureRow6">
+         <void property="activity">
+          <string>Task Profiler</string>
+         </void>
+         <void property="configRow">
+          <object class="com.ti.dvt.control.engine.types.ConfigRow">
+           <void property="numColumns">
+            <int>5</int>
+           </void>
+           <void property="text">
+            <string>Task Profiler</string>
+           </void>
+          </object>
+         </void>
+         <void property="parentTable">
+          <object idref="AnalysisFeatureTable0"/>
+         </void>
+         <void property="values">
+          <void method="put">
+           <string>Analysis Feature</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Task Profiler</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Instrumentation Status</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigLabel">
+            <void property="text">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Cores</string>
+           <object class="java.util.Vector">
+            <void method="add">
+             <string>ALL</string>
+            </void>
+            <void method="add">
+             <string>ALL</string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Views to Open</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Summary</string>
+             <boolean>true</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Tips</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigButton">
+            <void property="text">
+             <string>...</string>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+       <void method="add">
+        <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisFeatureRow" id="AnalysisFeatureTable$AnalysisFeatureRow7">
+         <void property="activity">
+          <string>Duration</string>
+         </void>
+         <void property="configRow">
+          <object class="com.ti.dvt.control.engine.types.ConfigRow">
+           <void property="numColumns">
+            <int>5</int>
+           </void>
+           <void property="text">
+            <string>Duration</string>
+           </void>
+          </object>
+         </void>
+         <void property="parentTable">
+          <object idref="AnalysisFeatureTable0"/>
+         </void>
+         <void property="values">
+          <void method="put">
+           <string>Analysis Feature</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Duration</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Instrumentation Status</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigLabel">
+            <void property="text">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Cores</string>
+           <object class="java.util.Vector">
+            <void method="add">
+             <string>ALL</string>
+            </void>
+            <void method="add">
+             <string>ALL</string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Views to Open</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Graph</string>
+             <boolean>false</boolean>
+            </void>
+            <void method="put">
+             <string>Summary</string>
+             <boolean>true</boolean>
+            </void>
+            <void method="put">
+             <string>Detail</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Tips</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigButton">
+            <void property="text">
+             <string>...</string>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+       <void method="add">
+        <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisFeatureRow" id="AnalysisFeatureTable$AnalysisFeatureRow8">
+         <void property="activity">
+          <string>Count Analysis</string>
+         </void>
+         <void property="configRow">
+          <object class="com.ti.dvt.control.engine.types.ConfigRow">
+           <void property="numColumns">
+            <int>5</int>
+           </void>
+           <void property="text">
+            <string>Count Analysis</string>
+           </void>
+          </object>
+         </void>
+         <void property="parentTable">
+          <object idref="AnalysisFeatureTable0"/>
+         </void>
+         <void property="values">
+          <void method="put">
+           <string>Analysis Feature</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Count Analysis</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Instrumentation Status</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigLabel">
+            <void property="text">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Cores</string>
+           <object class="java.util.Vector">
+            <void method="add">
+             <string>ALL</string>
+            </void>
+            <void method="add">
+             <string>ALL</string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Views to Open</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Graph</string>
+             <boolean>false</boolean>
+            </void>
+            <void method="put">
+             <string>Summary</string>
+             <boolean>true</boolean>
+            </void>
+            <void method="put">
+             <string>Detail</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Tips</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigButton">
+            <void property="text">
+             <string>...</string>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+       <void method="add">
+        <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisFeatureRow" id="AnalysisFeatureTable$AnalysisFeatureRow9">
+         <void property="activity">
+          <string>Context Aware Profile</string>
+         </void>
+         <void property="configRow">
+          <object class="com.ti.dvt.control.engine.types.ConfigRow">
+           <void property="numColumns">
+            <int>5</int>
+           </void>
+           <void property="text">
+            <string>Context Aware Profile</string>
+           </void>
+          </object>
+         </void>
+         <void property="parentTable">
+          <object idref="AnalysisFeatureTable0"/>
+         </void>
+         <void property="values">
+          <void method="put">
+           <string>Analysis Feature</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Context Aware Profile</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Instrumentation Status</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigLabel">
+            <void property="text">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Cores</string>
+           <object class="java.util.Vector">
+            <void method="add">
+             <string></string>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Which Views to Open</string>
+           <object class="com.ti.dvt.control.engine.types.AnalysisFeatureTable$AnalysisChecks">
+            <void method="put">
+             <string>Summary</string>
+             <boolean>true</boolean>
+            </void>
+            <void method="put">
+             <string>Detail</string>
+             <boolean>false</boolean>
+            </void>
+           </object>
+          </void>
+          <void method="put">
+           <string>Tips</string>
+           <object class="com.ti.dvt.control.engine.types.ConfigButton">
+            <void property="text">
+             <string>...</string>
+            </void>
+           </object>
+          </void>
+         </void>
+        </object>
+       </void>
+      </void>
+     </object>
+    </void>
+    <void property="liveParam">
+     <object class="com.ti.dvt.uia.utils.RunParam" id="RunParam0">
+      <void class="com.ti.dvt.uia.utils.RunParam" method="getField">
+       <string>captureFilename</string>
+       <void method="set">
+        <object idref="RunParam0"/>
+        <string>/home/ziad/Desktop/GraduationProject_BigRepo/Adaptive-Cruise-Control/Application/dvt/systemAnalyzerData</string>
+       </void>
+      </void>
+     </object>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>

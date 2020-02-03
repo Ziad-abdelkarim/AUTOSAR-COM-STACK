@@ -17,6 +17,7 @@ freertos_demo.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/pin_map.h
 freertos_demo.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/rom.h
 freertos_demo.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/sysctl.h
 freertos_demo.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/uart.h
+freertos_demo.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/timer.h
 freertos_demo.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/utils/uartstdio.h
 freertos_demo.obj: /home/ziad/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include/stdarg.h
 freertos_demo.obj: ../led_task.h
@@ -53,6 +54,7 @@ freertos_demo.obj: /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/third_party/FreeRTOS
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/rom.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/sysctl.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/uart.h: 
+/home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/driverlib/timer.h: 
 /home/ziad/ti/SW-EK-TM4C123GXL-2.1.4.178/utils/uartstdio.h: 
 /home/ziad/ti/ccs910/ccs/tools/compiler/ti-cgt-arm_18.12.2.LTS/include/stdarg.h: 
 ../led_task.h: 

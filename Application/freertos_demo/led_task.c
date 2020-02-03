@@ -30,6 +30,7 @@
 #include "driverlib/rom.h"
 #include "drivers/rgb.h"
 #include "drivers/buttons.h"
+#include "driverlib/timer.h"
 #include "utils/uartstdio.h"
 #include "led_task.h"
 #include "priorities.h"
@@ -43,7 +44,7 @@
 // The stack size for the LED toggle task.
 //
 //*****************************************************************************
-#define LEDTASKSTACKSIZE        128         // Stack size in words
+#define LEDTASKSTACKSIZE       20       // Stack size in words
 
 //*****************************************************************************
 //
@@ -58,7 +59,7 @@
 // Default LED toggle delay value. LED toggling frequency is twice this number.
 //
 //*****************************************************************************
-#define LED_TOGGLE_DELAY        250
+#define LED_TOGGLE_DELAY        1
 
 //*****************************************************************************
 //
@@ -72,6 +73,8 @@ xQueueHandle g_pLEDQueue;
 //
 static uint32_t g_pui32Colors[3] = { 0x0000, 0x0000, 0x0000 };
 static uint8_t g_ui8ColorsIndx;
+int X=0;
+uint64_t Y=0;
 
 extern xSemaphoreHandle g_pUARTSemaphore;
 
@@ -87,6 +90,8 @@ LEDTask(void *pvParameters)
     portTickType ui32WakeTime;
     uint32_t ui32LEDToggleDelay;
     uint8_t i8Message;
+    UBaseType_t uxHighWaterMark;
+    int Y;
 
     //
     // Initialize the LED Toggle Delay to default value.
@@ -164,7 +169,9 @@ LEDTask(void *pvParameters)
                 UARTprintf("Led blinking frequency is %d ms.\n",
                            (ui32LEDToggleDelay * 2));
                 xSemaphoreGive(g_pUARTSemaphore);
+
             }
+
         }
 
         //
@@ -175,12 +182,31 @@ LEDTask(void *pvParameters)
         //
         // Wait for the required amount of time.
         //
-        vTaskDelayUntil(&ui32WakeTime, ui32LEDToggleDelay / portTICK_RATE_MS);
+        vTaskDelayUntil(&ui32WakeTime, (ui32LEDToggleDelay) / portTICK_RATE_MS);
 
         //
         // Turn off the LED.
         //
         RGBDisable();
+
+       // ulHighFrequencyTimerTicks = TimerValueGet(TIMER0_BASE, TIMER_A);
+        X++;
+       // UARTprintf("\n\n timer value : %u \n\n",ulHighFrequencyTimerTicks);
+
+        if(X==40){
+                            X=0;
+                             /*-Define a buffer that is large enough to hold the generated table. In most cases
+                            the buffer will be too large to allocate on the stack, hence in this example it is
+                            declared static. */
+
+                            char cBuffer[ 1000 ];
+                            /* Pass the buffer into vTaskGetRunTimeStats() to generate the table of data. */
+                            vTaskGetRunTimeStats( cBuffer );
+                            UARTprintf("\n\n %s \n\n",cBuffer);
+                            uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
+                            UARTprintf("\n\n Stack size: %u \n\n",uxHighWaterMark);
+
+                        }
 
         //
         // Wait for the required amount of time.
