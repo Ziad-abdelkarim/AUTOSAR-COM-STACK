@@ -17,11 +17,11 @@ E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Src/CanIf.
 E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.c \
 E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/CanSM/Src/CanSM.c \
 E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_PBcfg.c \
-E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/Com/Src/Com.c \
-E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/Com/Gen/Com_Cfg.c \
+D:/Projects/Graduation_Project/Shared_Area/Trial2/AUTOSAR-COM-STACK/BSWs/Com/Src/Com.c \
+D:/Projects/Graduation_Project/Shared_Area/Trial2/AUTOSAR-COM-STACK/BSWs/Com/Gen/Com_Cfg.c \
 E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/Det/Src/Det.c \
 E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/PduR/Src/PduR.c \
-E:/Engineering/Graduation\ Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_PBCfg.c \
+D:/Projects/Graduation_Project/Shared_Area/Trial2/AUTOSAR-COM-STACK/BSWs/PduR/Gen/PduR_PBCfg.c \
 ../tm4c123gh6pm_startup_ccs.c \
 C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.c 
 
@@ -87,11 +87,11 @@ C_SRCS__QUOTED += \
 "E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/CanIf/Gen/CanIf_Cfg.c" \
 "E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/CanSM/Src/CanSM.c" \
 "E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/CanDrv/Gen/Can_PBcfg.c" \
-"E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/Com/Src/Com.c" \
-"E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/Com/Gen/Com_Cfg.c" \
+"D:/Projects/Graduation_Project/Shared_Area/Trial2/AUTOSAR-COM-STACK/BSWs/Com/Src/Com.c" \
+"D:/Projects/Graduation_Project/Shared_Area/Trial2/AUTOSAR-COM-STACK/BSWs/Com/Gen/Com_Cfg.c" \
 "E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/Det/Src/Det.c" \
 "E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/PduR/Src/PduR.c" \
-"E:/Engineering/Graduation Project/Adaptive-Cruise-Control/BSWs/PduR/Gen/PduR_PBCfg.c" \
+"D:/Projects/Graduation_Project/Shared_Area/Trial2/AUTOSAR-COM-STACK/BSWs/PduR/Gen/PduR_PBCfg.c" \
 "../tm4c123gh6pm_startup_ccs.c" \
 "C:/ti/TivaWare_C_Series-2.1.4.178/utils/uartstdio.c" 
 
