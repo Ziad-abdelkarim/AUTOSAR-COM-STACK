@@ -26,7 +26,7 @@ void Com_CbkSignal2RxAck(void)
     uint8 SignalData;
     if(Com_ReceiveSignal(2, &SignalData) == E_OK)
     {
-        UARTprintf("Com_CbkSignal2RxAck = %d\n", SignalData);
+        UARTprintf("%d", SignalData);
     }
 }
 
@@ -35,13 +35,13 @@ void Com_CbkSignal3RxAck(void)
     uint8 SignalData;
     if(Com_ReceiveSignal(3, &SignalData) == E_OK)
     {
-        UARTprintf("Com_CbkSignal3RxAck = %d\n", SignalData);
+        UARTprintf("%d", SignalData);
     }
 }
 
 void Com_CbkSignalGroup0TxAck(void)
 {
-    UARTprintf("Com_CbkSignalGroup0TxAck\n\n");
+
 }
 
 void Com_CbkSignalGroup1RxAck(void)
@@ -50,7 +50,7 @@ void Com_CbkSignalGroup1RxAck(void)
     if(Com_ReceiveSignalGroup(1) == E_OK)
     {
         Com_ReceiveShadowSignal(1, &SignalData);
-        UARTprintf("Com_CbkSignalGroup1RxAck = %d\n", SignalData);
+
     }
 }
 

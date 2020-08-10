@@ -1,7 +1,7 @@
 /*
  * Setup.h
  *
- *  Created on: ??þ/??þ/????
+ *  Created on: ??ï¿½/??ï¿½/????
  *      Author: PC
  */
 
@@ -33,10 +33,7 @@
 /*AUTOSAR SPECIFIC CONFIGURATION*/
 
 #define CONTROLLER_ID   (uint8)0
-#define SIGNAL1_ID       (uint8)0
-#define SIGNAL2_ID       (uint8)1
-#define GROUPSIGNAL_ID  (uint8)0
-#define SIGNALGROUP_ID  (uint8)0
+
 
 
 
