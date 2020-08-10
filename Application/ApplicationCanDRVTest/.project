@@ -151,6 +151,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanDrv/Inc/Platform_Types.h</locationURI>
 		</link>
 		<link>
+			<name>Setup.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/BSWs/App(Main)/Setup.h</locationURI>
+		</link>
+		<link>
 			<name>Std_Types.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/BSWs/CanDrv/Inc/Std_Types.h</locationURI>

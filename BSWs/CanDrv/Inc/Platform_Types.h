@@ -28,6 +28,7 @@ AUTOSAR Version:                            4.2.2
 #include <driverlib/gpio.h>
 #include <driverlib/debug.h>
 #include <utils/uartstdio.h>
+#include <driverlib/uart.h>
 #include <driverlib/timer.h>
 
 
