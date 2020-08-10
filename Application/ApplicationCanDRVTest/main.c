@@ -19,7 +19,8 @@ void main()
 {
 
 
-
+    uint8 SignalData;
+    uint8 counter;
 
     SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
     Port_Init();
@@ -36,8 +37,19 @@ void main()
         while(1)
         {
             Com_MainFunctionRx();
-            SysCtlDelay(SysCtlClockGet() / 3);
-
+           SysCtlDelay(SysCtlClockGet() / 30);
+           counter++;
+           if(counter == 10){
+            if(Com_ReceiveSignal(2, &SignalData) == E_OK)
+                {
+                    UARTprintf("%d\n", SignalData);
+                }
+            if(Com_ReceiveSignal(3, &SignalData) == E_OK)
+                {
+                    UARTprintf("%d\n", SignalData);
+                }
+            counter=0;
+           }
 
         }
     }

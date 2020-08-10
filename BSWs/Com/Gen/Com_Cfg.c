@@ -24,19 +24,13 @@ void Com_CbkSignal1TxAck(void)
 void Com_CbkSignal2RxAck(void)
 {
     uint8 SignalData;
-    if(Com_ReceiveSignal(2, &SignalData) == E_OK)
-    {
-        UARTprintf("%d", SignalData);
-    }
+
 }
 
 void Com_CbkSignal3RxAck(void)
 {
     uint8 SignalData;
-    if(Com_ReceiveSignal(3, &SignalData) == E_OK)
-    {
-        UARTprintf("%d", SignalData);
-    }
+
 }
 
 void Com_CbkSignalGroup0TxAck(void)
