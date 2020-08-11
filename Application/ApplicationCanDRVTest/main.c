@@ -41,7 +41,7 @@ void main()
         {
             Com_MainFunctionTx();
             Counter++;
-            SysCtlDelay(SysCtlClockGet()/20);
+            SysCtlDelay(SysCtlClockGet()/80);
             if(Counter == 1)
             {
                 if(Com_SendSignal(SIGNAL1_ID, Signal1DataPtr) == E_OK)
