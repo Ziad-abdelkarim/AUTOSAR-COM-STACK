@@ -32,7 +32,7 @@ void main()
 
     if(CanIf_SetControllerMode(CONTROLLER_ID, CANIF_CS_STARTED) == E_OK)
     {
-        UARTprintf("CanIf_SetControllerMode E_OK\n");
+        //UARTprintf("CanIf_SetControllerMode E_OK\n");
         Can_MainFunction_Mode();
         while(1)
         {
