@@ -37,8 +37,8 @@ void main()
         while(1)
         {
             Com_MainFunctionRx();
-           SysCtlDelay(SysCtlClockGet() / 30);
-           counter++;
+           SysCtlDelay(SysCtlClockGet() / 40);
+           /*counter++;
            if(counter == 10){
             if(Com_ReceiveSignal(2, &SignalData) == E_OK)
                 {
@@ -49,7 +49,7 @@ void main()
                     UARTprintf("%d\n", SignalData);
                 }
             counter=0;
-           }
+           }*/
 
         }
     }

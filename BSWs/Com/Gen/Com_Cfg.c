@@ -13,23 +13,31 @@ AUTOSAR Version:                                          4.2.2
 
 void Com_CbkSignal0TxAck(void)
 {
-    UARTprintf("Com_CbkSignal0TxAck\n");
+    //UARTprintf("Com_CbkSignal0TxAck\n");
 }
 
 void Com_CbkSignal1TxAck(void)
 {
-    UARTprintf("Com_CbkSignal1TxAck\n");
+    //UARTprintf("Com_CbkSignal1TxAck\n");
 }
 
 void Com_CbkSignal2RxAck(void)
 {
     uint8 SignalData;
+    if(Com_ReceiveSignal(2, &SignalData) == E_OK)
+                    {
+                        UARTprintf("%d\n", SignalData);
+                    }
 
 }
 
 void Com_CbkSignal3RxAck(void)
 {
     uint8 SignalData;
+    if(Com_ReceiveSignal(3, &SignalData) == E_OK)
+                    {
+                        UARTprintf("%d\n", SignalData);
+                    }
 
 }
 
@@ -40,12 +48,12 @@ void Com_CbkSignalGroup0TxAck(void)
 
 void Com_CbkSignalGroup1RxAck(void)
 {
-    uint16 SignalData;
+    /*uint16 SignalData;
     if(Com_ReceiveSignalGroup(1) == E_OK)
     {
         Com_ReceiveShadowSignal(1, &SignalData);
 
-    }
+    }*/
 }
 
 /* ComSignal Buffers */
