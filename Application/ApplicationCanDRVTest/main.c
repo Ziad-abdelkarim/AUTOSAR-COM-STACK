@@ -41,17 +41,17 @@ void main()
         {
             Com_MainFunctionTx();
             Counter++;
-            SysCtlDelay(SysCtlClockGet()/3);
+            SysCtlDelay(SysCtlClockGet()/20);
             if(Counter == 1)
             {
                 if(Com_SendSignal(SIGNAL1_ID, Signal1DataPtr) == E_OK)
                 {
-                    UARTprintf("Com_SendSignal %d\n", Signal1Data);
+                    //UARTprintf("Com_SendSignal %d\n", Signal1Data);
                     //Signal1Data ++;
                 }
                 if(Com_SendSignal(SIGNAL2_ID, Signal2DataPtr) == E_OK)
                 {
-                    UARTprintf("Com_SendSignal %d\n", Signal2Data);
+                   // UARTprintf("Com_SendSignal %d\n", Signal2Data);
                     //Signal2Data ++;
                 }
                 /*Com_UpdateShadowSignal(GROUPSIGNAL_ID, GroupSignalDataPtr);

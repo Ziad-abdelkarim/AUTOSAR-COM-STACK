@@ -13,12 +13,12 @@ AUTOSAR Version:                                          4.2.2
 
 void Com_CbkSignal0TxAck(void)
 {
-    UARTprintf("Com_CbkSignal0TxAck\n");
+   // UARTprintf("Com_CbkSignal0TxAck\n");
 }
 
 void Com_CbkSignal1TxAck(void)
 {
-    UARTprintf("Com_CbkSignal1TxAck\n");
+   // UARTprintf("Com_CbkSignal1TxAck\n");
 }
 
 void Com_CbkSignal2RxAck(void)
@@ -41,7 +41,7 @@ void Com_CbkSignal3RxAck(void)
 
 void Com_CbkSignalGroup0TxAck(void)
 {
-    UARTprintf("Com_CbkSignalGroup0TxAck\n\n");
+    //UARTprintf("Com_CbkSignalGroup0TxAck\n\n");
 }
 
 void Com_CbkSignalGroup1RxAck(void)
