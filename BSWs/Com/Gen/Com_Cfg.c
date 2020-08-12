@@ -10,6 +10,8 @@ AUTOSAR Version:                                          4.2.2
 /*****************************************************************************************************************************
  **                                         Post-Build Configuration variables values                                       **
  *****************************************************************************************************************************/
+ uint8 Signal2Data;
+ uint8 Signal3Data;
 
 void Com_CbkSignal0TxAck(void)
 {
@@ -23,23 +25,25 @@ void Com_CbkSignal1TxAck(void)
 
 void Com_CbkSignal2RxAck(void)
 {
-   /* uint8 SignalData;
-    if(Com_ReceiveSignal(2, &SignalData) == E_OK)
+
+    if(Com_ReceiveSignal(2, &Signal2Data) == E_OK)
                     {
-                        UARTprintf("%c", (unsigned char)SignalData);
-                        UARTCharPut(UART0_BASE ,(char)SignalData );
+                        UARTprintf("%c", (unsigned char)Signal2Data);
+                        UARTprintf("%c", (unsigned char)Signal3Data);
+
                     }
-*/
+
 }
 
 void Com_CbkSignal3RxAck(void)
 {
-  /*  uint8 SignalData;
-    if(Com_ReceiveSignal(3, &SignalData) == E_OK)
+
+    if(Com_ReceiveSignal(3, &Signal3Data) == E_OK)
                     {
-                        UARTprintf("%c", (unsigned char)SignalData);
-                        UARTCharPut(UART0_BASE ,(char)SignalData );
-                    }*/
+                        UARTprintf("%c", (unsigned char)Signal2Data);
+                        UARTprintf("%c", (unsigned char)Signal3Data);
+
+                    }
 
 }
 

@@ -19,8 +19,8 @@ void main()
 {
 
 
-    uint8 SignalData;
-    uint8 counter;
+   // uint8 SignalData;
+    //uint8 counter;
 
     SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_XTAL_16MHZ | SYSCTL_OSC_MAIN);
     Port_Init();
@@ -38,7 +38,7 @@ void main()
         {
             Com_MainFunctionRx();
            SysCtlDelay(SysCtlClockGet() / 150);
-           counter++;
+          /* counter++;
            if(counter == 15){
             if(Com_ReceiveSignal(2, &SignalData) == E_OK)
                 {
@@ -49,7 +49,7 @@ void main()
                     UARTprintf("%c",(unsigned char)SignalData);
                 }
             counter=0;
-           }
+           }*/
 
         }
     }
