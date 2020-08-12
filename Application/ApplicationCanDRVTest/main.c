@@ -89,11 +89,11 @@ void UARTIntHandler(void)
 {
 uint32 ui32Status;
 uint8  RecievedSignal;
-ui32Status = UARTIntStatus(UART0_BASE, true); //get interrupt status
-UARTIntClear(UART0_BASE, ui32Status); //clear the asserted interrupts
-while(UARTCharsAvail(UART0_BASE)) //loop while there are chars
+ui32Status = UARTIntStatus(UART1_BASE, true); //get interrupt status
+UARTIntClear(UART1_BASE, ui32Status); //clear the asserted interrupts
+while(UARTCharsAvail(UART1_BASE)) //loop while there are chars
 {
-    RecievedSignal=(uint8)UARTCharGetNonBlocking(UART0_BASE);
+    RecievedSignal=(uint8)UARTCharGetNonBlocking(UART1_BASE);
       if(RecievedSignal & 0b10000000){
           Signal1Data = RecievedSignal;
       }

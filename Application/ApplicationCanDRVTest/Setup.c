@@ -31,9 +31,17 @@ void UART_Setup(void)
 
 #if UART1_ENABLED ==1
     //For Commands
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
+       while(!SysCtlPeripheralReady(SYSCTL_PERIPH_UART1))
+       {; }
+       SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+
     GPIOPinConfigure(GPIO_PC4_U1RX);
     GPIOPinConfigure(GPIO_PC5_U1TX);
     GPIOPinTypeUART(GPIO_PORTC_BASE, GPIO_PIN_4 | GPIO_PIN_5);
+    UARTConfigSetExpClk(UART1_BASE, SysCtlClockGet(), 115200,(UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE));
+       UARTStdioConfig(1, BAUD_UART1, SysCtlClockGet());
+
     SysCtlPeripheralEnable(SYSCTL_PERIPH_UART1);
     while(!SysCtlPeripheralReady(SYSCTL_PERIPH_UART1))
     {; }
@@ -41,6 +49,9 @@ void UART_Setup(void)
     (UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE |
     UART_CONFIG_PAR_NONE));
     UARTEnable(UART1_BASE);
+    IntMasterEnable(); //enable processor interrupts
+       IntEnable(INT_UART1); //enable the UART interrupt
+       UARTIntEnable(UART1_BASE, UART_INT_RX | UART_INT_RT); //only enable RX and TX interrupts
 #endif
 
     return;

@@ -1,7 +1,7 @@
 /*
  * Setup.h
  *
- *  Created on: ??þ/??þ/????
+ *  Created on: ??ï¿½/??ï¿½/????
  *      Author: PC
  */
 
@@ -13,8 +13,8 @@
 /*Configuration Section*/
 
     /*Peripherals*/
-    #define UART0_ENABLED 1
-    #define UART1_ENABLED 0
+    #define UART0_ENABLED 0
+    #define UART1_ENABLED 1
     #define BAUD_UART0 115200
     #define BAUD_UART1 115200
 
@@ -23,7 +23,7 @@
     /*PORTS*/
     #define PORTA 1
     #define PORTB 1
-    #define PORTC 0
+    #define PORTC 1
     #define PORTD 0
     #define PORTE 0
     #define PORTF 1
